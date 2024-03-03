@@ -1,0 +1,29 @@
+<nav class="navbar is-black" role="navigation" aria-label="main navigation">
+    <div class="navbar-brand">
+        <a class="navbar-item">
+            <img src="/imgs/wellbeing_icon.png">
+        </a>
+    </div>
+  
+    <div class="navbar-menu is-active">
+        <div class="navbar-start">
+            <% if (currentPage !== '/' ) { %>
+                <a class="navbar-item is-hoverable" href="/">Favourites</a>
+            <% } %>
+            <% if (currentPage !== '/newfav' && currentPage !== '/login') { %>
+                <a class="navbar-item is-hoverable" href="/newfav">Add Favourite</a>
+            <% } %>
+            <% if (currentPage !== '/editfav' && currentPage !== '/login' ) { %>
+                <a class="navbar-item is-hoverable" href="/editfav">Edit Favourites</a>
+            <% } %>
+        </div>
+    
+        <div class="navbar-end">
+            <% if (!isLoggedIn && currentPage !== '/login') { %>
+                <a class="navbar-item is-hoverable" href="/login">Login</a>
+            <% } else if (currentPage !== '/login'){ %>
+                <a class="navbar-item is-hoverable" href="/logout">Logout</a>
+            <% } %>
+        </div> 
+    </div>
+</nav>

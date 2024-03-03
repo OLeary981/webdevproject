@@ -20,7 +20,13 @@
                 <a class="navbar-item is-hoverable" href="/newfav">Add Favourite</a>
             </div>
         
-            <div class="navbar-end"></div> 
+            <div class="navbar-end">
+                <% if (!isLoggedIn) { %>
+                    <a class="navbar-item is-hoverable" href="/login">Login</a>
+                <% } else { %>
+                    <a class="navbar-item is-hoverable" href="/logout">Logout</a>
+                <% } %>
+            </div> 
         </div>
     </nav>
 

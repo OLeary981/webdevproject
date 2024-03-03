@@ -8,22 +8,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
 </head>
 <body>
-    <nav class="navbar is-black" role="navigation" aria-label="main navigation">
-        <div class="navbar-brand">
-            <a class="navbar-item">
-                <img src="/imgs/food_icon.png">
-            </a>
-        </div>
-      
-        <div class="navbar-menu is-active">
-            <div class="navbar-start">
-                <a class="navbar-item is-hoverable" href="/">Favourites</a>
-                <a class="navbar-item is-hoverable" href="/newfav">Add Favourite</a>
-            </div>
-        
-            <div class="navbar-end"></div> 
-        </div>
-    </nav>
+    <%- include ('navbar.ejs') %>
 
     <section class="section">
         <div class="container">

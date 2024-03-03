@@ -5,26 +5,12 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Express Favourites</title>
+    <link rel="icon" href="/imgs/favicon-16x16.png">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js" integrity="sha512-ZwR1/gSZM3ai6vCdI+LVF1zSq/5HznD3ZSTk7kajkaj4D292NLuduDCO1c/NT8Id+jE58KYLKT7hXnbtryGmMg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 </head>
 <body>
-    <nav class="navbar is-black" role="navigation" aria-label="main navigation">
-        <div class="navbar-brand">
-            <a class="navbar-item">
-                <img src="/imgs/food_icon.png">
-            </a>
-        </div>
-      
-        <div class="navbar-menu is-active">
-            <div class="navbar-start">
-                <a class="navbar-item is-hoverable" href="/newfav">Add Favourite</a>
-                <a class="navbar-item is-hoverable" href="/editfav">Edit Favourites</a>
-            </div>
-        
-            <div class="navbar-end"></div> 
-        </div>
-    </nav>
-
+    <%- include ('navbar.ejs') %>
     <section class="section">
         <div class="container">
             <h1 class="title">Favourite Foods</h1>
@@ -47,6 +33,52 @@
             </table>
         </div>
     </section>
+
+    <section class="section">
+        <div class="container">
+            <div class="columns is-centred">
+                <canvas id="bkgcanvas" width="500px" height="500px"></canvas>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        const xlabels = ["Meat", "Fish", "Vegetables", "Desert"];
+        const yvals = JSON.parse(`<%- JSON.stringify(vals) %>`);
+        console.log(yvals);
+
+        const chartdata = {
+            labels: xlabels,
+            datasets: [{
+                data: yvals
+            }]
+        };
+
+        const chartconfig = {
+            type: 'bar',
+            data: chartdata,
+            options: {
+                responsive: false,
+                animation: true,
+                maintainAspectRatio: true,
+                scales: { y: { min: 0, max: 10 } },
+                plugins: {
+                    legend: { display: false },
+                    tooltips: { enabled: true },
+                    title: {
+                        display: true,
+                        text: 'Favourites Histogram',
+                        font: { size: 20 }
+                    }
+                }
+            }
+        };
+
+        const chart = new Chart('bkgcanvas', chartconfig);
+
+
+
+    </script>
     
     
 </body>

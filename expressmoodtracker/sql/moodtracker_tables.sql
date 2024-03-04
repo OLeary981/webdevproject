@@ -1,18 +1,18 @@
-DROP TABLE IF EXISTS user_details;
+DROP TABLE IF EXISTS `snapshot_trigger`;
 DROP TABLE IF EXISTS `snapshot`;
 DROP TABLE IF EXISTS `trigger`;
-DROP TABLE IF EXISTS `snapshot_trigger`;
+DROP TABLE IF EXISTS user_details;
 
 -- User table
 CREATE TABLE user_details (
-    user_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_ID INT AUTO_INCREMENT PRIMARY KEY,
     first_name VARCHAR(255),
     last_name VARCHAR(255),
     email_address VARCHAR(255),
     Password VARCHAR(255)
 );
 INSERT INTO user_details (first_name, last_name, email_address) VALUES
-('Joan', 'Bloggs', 'joan.bloggs@gmail.com')
+('Joan', 'Bloggs', 'joan.bloggs@gmail.com');
 
 -- Snapshot table
 CREATE TABLE `snapshot` (
@@ -187,15 +187,60 @@ INSERT INTO `snapshot` (`snapshot_ID`, `enjoyment_level`, `surprise_level`, `con
 
 -- Trigger table
 CREATE TABLE `trigger` (
-    trigger_id INT AUTO_INCREMENT PRIMARY KEY,
+    trigger_ID INT AUTO_INCREMENT PRIMARY KEY,
     trigger_name VARCHAR(255)
 );
+INSERT INTO `trigger` (trigger_name) VALUES
+('Work'),
+('Commute'),
+('Traffic'),
+('Friends'),
+('Family'),
+('Health'),
+('Sleep'),
+('Weather'),
+('Finances'),
+('Social interactions'),
+('Relationships'),
+('Exercise'),
+('Nutrition'),
+('Hobbies'),
+('Time management'),
+('Productivity'),
+('Self-care'),
+('Environment'),
+('Daily routine'),
+('Home maintenance');
 
 -- Snapshot_trigger table
 CREATE TABLE snapshot_trigger (
-    snapshot_trigger_id INT PRIMARY KEY,
-    snapshot_id INT,
-    trigger_id INT,
-    FOREIGN KEY (snapshot_id) REFERENCES snapshot(Snapshot_ID),
-    FOREIGN KEY (trigger_id) REFERENCES `trigger`(trigger_id)
+    snapshot_trigger_ID INT AUTO_INCREMENT PRIMARY KEY ,
+    snapshot_ID INT,
+    trigger_ID INT,
+    FOREIGN KEY (snapshot_ID) REFERENCES snapshot(snapshot_ID),
+    FOREIGN KEY (trigger_ID) REFERENCES `trigger`(trigger_ID)
 );
+INSERT INTO `snapshot_trigger` (snapshot_id, trigger_id) VALUES
+(82, 4),  (82, 6), (82, 9), (82, 10), (82, 11),  
+(82, 14), (82, 15),  (82, 17), (82, 18),(82, 19), 
+(87, 4),  (87, 6),  (87, 8), (87, 9),    (87, 13),
+(87, 14), (87, 16), (87, 17), (87, 20), (92, 4), (92, 6), 
+ (92, 10), (92, 12),  (92, 15), (92, 16), 
+ (92, 20), (97, 1), (97, 4), (97, 5), 
+(97, 9),  (97, 11),  (97, 13),  (97, 15), (97, 16), 
+(97, 19), (97, 20), (102, 1), (102, 4), (102, 5),  (102, 7),
+(102, 9),  (102, 17), (102, 18), (107, 11), (107, 12), (107, 13),
+(107, 14), (107, 19), (107, 20), (113, 1), 
+(115, 1), (115, 4),  (115, 7),  (115, 13),
+(115, 14), (115, 15), (115, 16), (115, 17), (115, 18), 
+ (117, 4), (117, 5), (117, 6), 
+ (117, 10), (117, 11), (117, 12), 
+ (117, 15), (117, 16), (117, 17), 
+(117, 19), (117, 20),
+ (119, 4), (119, 5), 
+(119, 9), (119, 10), (119, 12), (119, 13),
+(119, 14), (119, 15), (119, 16), (119, 17), 
+(119, 19), (119, 20),
+(121, 1), (123, 4), (125, 5), (125, 6), (127, 7),
+(157, 9), (157, 10), (121, 11), (127, 12), (125, 13),
+(125, 14), (127, 15), (151, 16), (157, 17);

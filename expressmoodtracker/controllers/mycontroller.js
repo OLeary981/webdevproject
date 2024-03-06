@@ -1,5 +1,7 @@
 const conn = require('./../util/dbconn');
 const { validationResult } = require('express-validator');
+const bcrypt = require('bcrypt');
+
 
 //GET /
 /*
@@ -193,10 +195,24 @@ exports.postDeleteFavourite = (req, res) => {
 
 /////////////////////////////////////////
 // New methods
+
+exports.getRegisterUser = (req, res) => {
+    res.render('register'); //add protection etc so can only register if not logged in?
+}
+
+
 exports.getLogin = (req, res) => {
     const { isLoggedIn } = req.session;
     res.render('login', {currentPage: '/login', isLoggedIn, error: null });
 };
+
+exports.getAddSnapshot = (req, res) => {
+    res.render('addsnapshot');
+}
+
+exports.getColumns = (req, res) => {
+    res.render('columns');
+}
 
 exports.getLogout = (req, res) => {
     req.session.destroy(() => {
@@ -221,8 +237,8 @@ exports.postLogin = (req, res) => {
                             AND favourites_users.password = '${ userpass }'`;
     */
 
-    const checkuserSQL = `SELECT * FROM favourites_users WHERE favourites_users.username = ? 
-                            AND favourites_users.password = ?`;
+    const checkuserSQL = `SELECT * FROM user_details WHERE user_details.username = ? 
+                            AND user_details.user_password = ?`;
 
     conn.query( checkuserSQL, vals, (err, rows) => {
         if (err) throw err;
@@ -246,5 +262,93 @@ exports.postLogin = (req, res) => {
         } else {
             res.redirect('/');
         }
+    });
+};
+
+exports.postLoginBcrypt = (req, res) => {
+    const { isLoggedIn } = req.session;
+    const errors = validationResult(req);
+    console.log(errors.array());
+    if (!errors.isEmpty()) {
+        return res.status(422).render('login', { error: errors.array()[0].msg });
+    }
+
+    const { username, userpass } = req.body;
+    const vals = [ username, userpass ];
+    console.log(`postLogin vals: ${vals}`);
+
+    /*
+    const checkuserSQL = `SELECT * FROM favourites_users WHERE favourites_users.username = '${ username }' 
+                            AND favourites_users.password = '${ userpass }'`;
+    */
+
+    const checkuserSQL = `SELECT * FROM user_details WHERE user_details.username = ? `;
+
+    conn.query( checkuserSQL, vals, (err, rows) => {
+        if (err) {
+            console.error(err);
+            return res.status(500).send('Error checking username'); //consider changing this to something more graceful
+        }
+       
+
+        if (rows.length === 0) {
+            return res.redirect('/login?error=User not found');
+        }
+
+        const hashedPassword = rows[0].user_password;
+
+        bcrypt.compare(userpass, hashedPassword, (err, result) => {
+                if (err) {
+                    console.error(err);
+                    return res.status(500).send('Error comparing passwords');
+                }
+
+                if (result) {
+                    const session = req.session;
+                    session.isLoggedIn = true;
+                    console.log(`postLogin: session: ${session}`);
+
+
+                     var orig_route = session.route;
+                    console.log(`postLogin: orig_route: ${orig_route}`);
+                    if (!orig_route) {
+                        orig_route = '/';
+                         }
+                    return res.redirect(orig_route);
+
+
+
+
+
+                } else {
+                    return res.render('login', { currentPage: '/login', error: 'Incorrect password', isLoggedIn });
+                }
+            });
+        });
+    };
+
+exports.postRegisterUser = (req, res) => {
+    const { username, password } = req.body;
+    console.log(username);
+    console.log(password);
+
+    // Hash password
+    bcrypt.hash(password, 10, (err, hash) => {
+        if (err) {
+            console.error(err);
+            res.status(500).send('Error hashing password');
+            return;
+        }
+        const insertSQL = 'INSERT INTO user_details (username, user_password) VALUES (?, ?)';
+        // Insert user into database - NEED TO ADD CHECK THAT THE USER IS NOT ALREADY REGISTERED?
+        const newUser = { username, password: hash };
+        conn.query(insertSQL, [newUser.username, newUser.password], (error, rows) => {
+            if (error) {
+                console.error(error);
+                res.status(500).send('Error registering user');
+                return;
+            }
+            res.redirect('/login');
+        });
     });
 };

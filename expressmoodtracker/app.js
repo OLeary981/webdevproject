@@ -5,6 +5,8 @@ const dotenv = require('dotenv').config({ path: './config.env' });
 const session = require('express-session');
 const router = require('./routes/myroutes');
 const helmet = require('helmet');
+const bodyParser = require('body-parser');
+const bcrypt = require('bcrypt');
 
 const app = express();
 
@@ -13,6 +15,7 @@ app.set('view engine', 'ejs');
 app.use(express.static(path.join(__dirname, '/public')));
 app.use(morgan('tiny'));
 app.use(express.urlencoded({ extended: true }));
+
 
 app.use(session({
     secret: 'thesecretstring', 

@@ -35,29 +35,32 @@
         </div>
         <% if (error) { %>
             <script>
-                const msg = ' <%= error %>';
-                $('#message').html(msg)
-                .css('color', 'red')
-                .show()
-                .fadeOut(8000);
+                $(document).ready(function() {
+                    const msg = '<%= error %>';
+                    $('#message').html(msg)
+                        .css('color', 'red')
+                        .show()
+                        .fadeOut(8000);
+                });
             </script>
         <% } %>
-
     </section>
 
 
     <script>
-        $("form").submit((event) => {
-            const regex = /^[a-zA-Z]+$/;
-            const msg = ' Username must be alphabetic!!';
-            var currentUsername = $('#username-input').val();
-            if (regex.test(currentUsername) == false) {
-                $('#message').html(msg)
-                .css('color', 'red')
-                .show()
-                .fadeOut(4000);
-                event.preventDefault();
-            }
+        $(document).ready(function() {
+            $("form").submit(function(event) {
+                const regex = /^[a-zA-Z0-9]+$/; // Allow alphanumeric characters
+                const msg = 'Username must be alphanumeric!!';
+                var currentUsername = $('#username').val(); // Corrected selector
+                if (!regex.test(currentUsername)) {
+                    $('#message').html(msg)
+                        .css('color', 'red')
+                        .show()
+                        .fadeOut(4000);
+                    event.preventDefault();
+                }
+            });
         });
     </script>
 </body>

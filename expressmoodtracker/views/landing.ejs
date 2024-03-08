@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Express Favourites</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+</head>
+<body>
+    <%- include ('navbar.ejs') %>
+    <section class="section">
+        <div class="container">
+
+            <h1 class='title'>Login</h1>
+            <form id="login-form" action="/login" method="post">
+
+                <div class="field">
+                    <label class="label" for="username-input">Enter your username:<span id="message"></span></label>
+                
+                    <div class="control">
+                        <input class="input" name="username" type="text" placeholder="Username" id="username-input">
+                    </div>
+
+                    <label class="label" for="userpass-input">Enter your password:</label>
+                
+                    <div class="control">
+                        <input class="input" name="userpass" type="password" placeholder="Password" id="userpass-input">
+                    </div>
+                </div>
+
+                <div class="field">
+                    <div class="control">
+                        <input class="button is-success" type="submit" value="Login">
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <% if (error) { %>
+            <script>
+                const msg = ' <%= error %>';
+                $('#message').html(msg)
+                .css('color', 'red')
+                .show()
+                .fadeOut(3000);
+            </script>
+        <% } %>
+
+    </section>
+
+    <section class="section">
+        <div class="container">
+            <h1 class="title">Register</h1>
+            <form id = "register-form" action="/register" method="post">
+                <div class="field">
+                    <label class="label" for="username">Username:</label>
+                    <div class="control">
+                        <input class="input" type="text" id="username" name="username" required>
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label" for="password">Password:</label>
+                    <div class="control">
+                        <input class="input" type="password" id="password" name="password" required>
+                    </div>
+                </div>
+                <div class="field">
+                    <div class="control">
+                        <button class="button is-primary" type="submit">Register</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </section>
+
+
+    <script>
+        $("#login-form").submit((event) => {
+            const regex = /^[a-zA-Z]+$/;
+            const msg = ' Username must be alphabetic!!';
+            var currentUsername = $('#username-input').val();
+            if (regex.test(currentUsername) == false) {
+                $('#message').html(msg)
+                .css('color', 'red')
+                .show()
+                .fadeOut(3000);
+                event.preventDefault();
+            }
+        });
+    </script>
+    
+</body>
+</html>

@@ -204,6 +204,7 @@ exports.getLogin = (req, res) => {
 };
 
 exports.getAddSnapshot = (req, res) => {
+    const { isLoggedIn } = req.session;
   conn.query("SELECT * FROM `trigger`", (err, rows) => {
     if (err) {
       console.error(err);
@@ -217,11 +218,54 @@ exports.getColumns = (req, res) => {
   res.render("columns");
 };
 
+exports.getAllSnapshots = (req, res) => {
+    const {user_ID} = req.session;
+    vals = user_ID
+    const selectDateSQL = `SELECT timestamp FROM snapshot WHERE user_id = ? ORDER BY timestamp`;
+    conn.query(selectDateSQL, vals, (err, dates) => {
+      if (err) throw err; 
+  
+      const selectLevelSQLs = [
+        `SELECT enjoyment_level FROM snapshot WHERE user_id = ? ORDER BY timestamp`,
+        `SELECT surprise_level FROM snapshot WHERE user_id = ? ORDER BY timestamp`,
+        `SELECT contempt_level FROM snapshot WHERE user_id = ? ORDER BY timestamp`,
+        `SELECT sadness_level FROM snapshot WHERE user_id = ? ORDER BY timestamp`,
+        `SELECT fear_level FROM snapshot WHERE user_id = ? ORDER BY timestamp`,
+        `SELECT disgust_level FROM snapshot WHERE user_id = ? ORDER BY timestamp`,
+        `SELECT anger_level FROM snapshot WHERE user_id = ? ORDER BY timestamp`
+      ];
+  
+      const levels = [];
+      let counter = 0;
+  
+      selectLevelSQLs.forEach((selectLevelSQL, index) => {
+        conn.query(selectLevelSQL, vals, (err, level) => {
+          if (err) throw err;
+          levels[index] = level;
+          counter++;
+  
+          if (counter === selectLevelSQLs.length) {
+            // All levels have been fetched
+            console.log(dates);
+            console.log(levels);
+            // Send dates and levels to the view
+            res.render("graphmultiminimalchange", { dates, levels });
+          }
+        });
+      });
+    });
+  };
+
 exports.getLogout = (req, res) => {
   req.session.destroy(() => {
     res.redirect("/");
   });
 };
+
+exports.getLanding = (req,res) =>{
+    const { isLoggedIn } = req.session; //use this later to redirect to home page if already logged in?
+    res.render("landing", { currentPage: "/landing", isLoggedIn, error: null });
+}
 
 exports.postLogin = (req, res) => {
   const errors = validationResult(req);

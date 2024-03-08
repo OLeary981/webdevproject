@@ -123,7 +123,7 @@ INSERT INTO `snapshot` (`snapshot_ID`, `enjoyment_level`, `surprise_level`, `con
 (140, 7, 1, 0, 4, 3, 1, 1, 1, '2023-11-25 08:00:00', NULL),
 (141, 6, 1, 0, 6, 4, 1, 1, 1, '2023-11-27 10:00:00', 'Struggling with the shorter days and lack of sunlight.'),
 (142, 5, 1, 0, 7, 2, 1, 1, 1, '2023-11-29 12:00:00', NULL),
-(143, 6, 1, 0, 5, 3, 1, 1, 1, '0000-00-00 00:00:00', 'Feeling stressed about holiday expenses.'),
+(143, 6, 1, 0, 5, 3, 1, 1, 1, '2023-11-30 00:01:00', 'Feeling stressed about holiday expenses.'),
 (144, 6, 1, 0, 4, 3, 1, 1, 1, '2023-12-01 10:00:00', 'Missing the daylight during these short days.'),
 (145, 7, 1, 0, 2, 4, 1, 1, 1, '2023-12-03 12:00:00', NULL),
 (146, 5, 1, 0, 6, 3, 1, 1, 1, '2023-12-05 14:00:00', NULL),
@@ -178,17 +178,11 @@ INSERT INTO `snapshot` (`snapshot_ID`, `enjoyment_level`, `surprise_level`, `con
 (195, 2, 3, 0, 7, 8, 6, 1, 1, '2024-03-05 18:00:00', 'Struggling to manage project workload.'),
 (196, 2, 4, 0, 7, 8, 6, 1, 1, '2024-03-06 20:00:00', 'Feeling overwhelmed with project demands.'),
 (197, 2, 4, 0, 7, 8, 6, 1, 1, '2024-03-07 22:00:00', 'Finding it challenging to stay positive.'),
-(198, 2, 5, 0, 6, 7, 5, 1, 1, '2024-03-08 09:00:00', 'Struggling to balance project and personal life.'),
-(199, 2, 5, 0, 6, 7, 5, 1, 1, '2024-03-09 11:00:00', 'Feeling drained from project stress.'),
-(200, 3, 4, 0, 5, 6, 4, 1, 1, '2024-03-10 13:00:00', 'Trying to stay focused despite project challenges.'),
-(201, 3, 3, 0, 5, 6, 4, 1, 1, '2024-03-11 15:00:00', 'Feeling demotivated but pushing through.'),
-(202, 3, 2, 0, 4, 5, 3, 1, 1, '2024-03-12 17:00:00', 'Finding it hard to maintain project momentum.'),
-(203, 4, 2, 0, 3, 4, 2, 1, 1, '2024-03-13 19:00:00', 'Struggling with project workload.'),
-(204, 4, 1, 0, 3, 4, 2, 1, 1, '2024-03-14 21:00:00', 'Relieved to have completed the project.'),
-(205, 6, 1, 0, 4, 3, 1, 1, 1, '2024-03-15 08:00:00', 'Enjoying a break after completing the project.');
+(198, 2, 5, 0, 6, 7, 5, 1, 1, '2024-03-08 09:00:00', 'Struggling to balance project and personal life.');
+
 
 -- Trigger table
-CREATE TABLE `triggers` (
+CREATE TABLE `trigger` (
     trigger_ID INT AUTO_INCREMENT PRIMARY KEY,
     trigger_name VARCHAR(255)
 );

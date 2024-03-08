@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Line Graph</title>
+    <!-- Include Chart.js library -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Include Moment.js library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <!-- Include Moment.js adapter for Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-moment"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
+</head>
+</head>
+<body>
+    <h1 class="title">Line Graph</h1>
+    <!-- Container for the graph using Bulma columns -->
+    <div class="columns is-centered">
+        <div class="column is-half">
+            <!-- Canvas element for the chart -->
+            <canvas id="myChart" width="400" height="400"></canvas>
+        </div>
+    </div>
+    <div class="buttons is-flex is-justify-content-center">
+        <!-- Buttons for changing the time range -->
+        <button id="allButton" class="button is-info">All Time</button>
+        <button id="yearButton" class="button is-info">Year</button>
+        <button id="threeMonthsButton" class="button is-info">3 Months</button>
+        <button id="monthButton" class="button is-info">Month</button>
+        <button id="weekButton" class="button is-info">Week</button>
+    </div>
+
+    <script>
+        let myChart; // Declare myChart variable in the global scope
+    
+        // Extracting dates and levels from EJS variables
+        const dates = JSON.parse('<%- JSON.stringify(dates.map(dateObj => dateObj.timestamp)) %>');
+        const levelData = JSON.parse(`<%- JSON.stringify(levels) %>`);
+        const levels = levelData.map(level => level.map(levelObj => Object.values(levelObj)[0]));
+    
+        // Create initial chart with one week worth of data
+        const defaultStartDate = moment().subtract(1, 'week');
+        const filteredDates = dates.filter(date => moment(date).isSameOrAfter(defaultStartDate));
+        const filteredLevels = filteredDates.map((date, index) => levels.map(level => level[index]));
+    
+        // Function to create chart
+        function createChart(dates, levels) {
+            const datasets = levels.map((level, index) => ({
+                label: `Level ${index + 1}`,
+                data: level,
+                fill: false,
+                borderColor: colorPalette[index % colorPalette.length],
+                tension: 0.1
+            }));
+    
+            const chartData = {
+                labels: dates,
+                datasets: datasets
+            };
+    
+            const chartConfig = {
+                type: "line",
+                data: chartData,
+                options: {
+                    responsive: true,
+                    animation: true,
+                    maintainAspectRatio: true,
+                    scales: {
+                        y: {
+                            min: 0,
+                            max: 10
+                        },
+                        x: {
+                            type: 'time',
+                            time: {
+                                unit: 'day',
+                                displayFormats: {
+                                    'day': 'DD/MM/YYYY'
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: true, position: 'right' }, // Display legend to the right of the chart
+                        tooltips: { enabled: true },
+                        title: {
+                            display: true,
+                            text: "Levels Snapshot",
+                            font: { size: 20 },
+                        },
+                    },
+                },
+            };
+    
+            return new Chart("myChart", chartConfig);
+        }
+    
+        const colorPalette = [
+            "#E69F00", // Orange
+            "#56B4E9", // Sky Blue
+            "#009E73", // Bluish Green
+            "#F0E442", // Yellow
+            "#0072B2", // Blue
+            "#D55E00", // Vermillion
+            "#CC79A7"  // Reddish Purple
+        ];
+    
+        // Function to change time range
+        function changeTimeRange(range) {
+            let filteredDates, filteredLevels;
+            const currentDate = moment();
+            switch (range) {
+                case 'all':
+                    // No filtering needed, use all data
+                    filteredDates = dates;
+                    filteredLevels = levels;
+                    break;
+                case 'year':
+                    // Filter data for the last year
+                    const defaultStartDateYear = currentDate.clone().subtract(1, 'year');
+                    filteredDates = dates.filter(date => moment(date).isSameOrAfter(defaultStartDateYear));
+                    filteredLevels = levels.map(level => level.slice(-filteredDates.length));
+                    break;
+                case '3months':
+                    // Filter data for the last 3 months
+                    const defaultStartDate3Months = currentDate.clone().subtract(3, 'months');
+                    filteredDates = dates.filter(date => moment(date).isSameOrAfter(defaultStartDate3Months));
+                    filteredLevels = levels.map(level => level.slice(-filteredDates.length));
+                    break;
+                case 'month':
+                    // Filter data for the last month
+                    const defaultStartDateMonth = currentDate.clone().subtract(1, 'month');
+                    filteredDates = dates.filter(date => moment(date).isSameOrAfter(defaultStartDateMonth));
+                    filteredLevels = levels.map(level => level.slice(-filteredDates.length));
+                    break;
+                case 'week':
+                    // Filter data for the last week
+                    const defaultStartDateWeek = currentDate.clone().subtract(1, 'week');
+                    filteredDates = dates.filter(date => moment(date).isSameOrAfter(defaultStartDateWeek));
+                    filteredLevels = levels.map(level => level.slice(-filteredDates.length));
+                    break;
+                default:
+                    break;
+            }
+    
+            // Update chart with filtered data
+            myChart.data.labels = filteredDates;
+            myChart.data.datasets = filteredLevels.map((level, index) => ({
+                label: `Level ${index + 1}`,
+                data: level,
+                fill: false,
+                borderColor: colorPalette[index % colorPalette.length],
+                tension: 0.1
+            }));
+            myChart.update();
+    
+            // Sort legend items based on the values of the last data points on the graph
+            myChart.legend.legendItems.sort((a, b) => {
+                const lastDataPointA = myChart.data.datasets[a.datasetIndex].data.slice(-1)[0];
+                const lastDataPointB = myChart.data.datasets[b.datasetIndex].data.slice(-1)[0];
+                return lastDataPointB - lastDataPointA;
+            });
+        };
+
+         // Add event listeners to each button
+    document.getElementById("allButton").addEventListener("click", function() {
+        changeTimeRange("all");
+    });
+
+    document.getElementById("yearButton").addEventListener("click", function() {
+        changeTimeRange("year");
+    });
+
+    document.getElementById("threeMonthsButton").addEventListener("click", function() {
+        changeTimeRange("3months");
+    });
+
+    document.getElementById("monthButton").addEventListener("click", function() {
+        changeTimeRange("month");
+    });
+
+    document.getElementById("weekButton").addEventListener("click", function() {
+        changeTimeRange("week");
+    });
+    
+        window.onload = function () {
+            myChart = createChart(filteredDates, filteredLevels); // Initialize chart
+            changeTimeRange('week'); // Set default time range
+        };
+    </script>
+    
+</body>
+</html>

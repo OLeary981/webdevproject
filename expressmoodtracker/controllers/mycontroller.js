@@ -218,55 +218,47 @@ exports.getColumns = (req, res) => {
   res.render("columns");
 };
 
-exports.getAllSnapshots = (req, res) => {
+exports.getAllSnapshots = async (req, res) => {
     const { user_ID } = req.session;
-    vals = user_ID;
-    const selectDateSQL = `SELECT timestamp FROM snapshot WHERE user_id = ? ORDER BY timestamp`;
-    conn.query(selectDateSQL, vals, (err, dates) => {
-      if (err) throw err;
-  
-      const selectLevelSQLs = [
-        `SELECT enjoyment_level FROM snapshot WHERE user_id = ? ORDER BY timestamp`,
-        `SELECT surprise_level FROM snapshot WHERE user_id = ? ORDER BY timestamp`,
-        `SELECT contempt_level FROM snapshot WHERE user_id = ? ORDER BY timestamp`,
-        `SELECT sadness_level FROM snapshot WHERE user_id = ? ORDER BY timestamp`,
-        `SELECT fear_level FROM snapshot WHERE user_id = ? ORDER BY timestamp`,
-        `SELECT disgust_level FROM snapshot WHERE user_id = ? ORDER BY timestamp`,
-        `SELECT anger_level FROM snapshot WHERE user_id = ? ORDER BY timestamp`,
-      ];
-  
-      const levels = [];
-      let counter = 0;
-  
-      selectLevelSQLs.forEach((selectLevelSQL, index) => {
-        conn.query(selectLevelSQL, vals, (err, level) => {
-          if (err) throw err;
-          levels[index] = level;
-          counter++;
-  
-          if (counter === selectLevelSQLs.length) {
-            // All levels have been fetched
-            // Now fetch snapshot IDs
-            const selectSnapshot_IDSQL = `SELECT snapshot_id FROM snapshot WHERE user_id = ? ORDER BY timestamp`;
-            conn.query(selectSnapshot_IDSQL, vals, (err, snapshot_IDs) => {
-              if (err) throw err;
-  
-              console.log(dates);
-              console.log(levels);
-              console.log(snapshot_IDs);
-  
-              // Send dates, levels, and snapshot IDs to the view
-              res.render("graphmultiminimalchange", {
-                dates,
-                levels,
-                snapshot_IDs
-              });
-            });
-          }
+    const vals = user_ID;
+
+    try {
+        const dates = await queryDatabase(`SELECT timestamp FROM snapshot WHERE user_id = ? ORDER BY timestamp`, vals);
+        const levels = await Promise.all([
+            queryDatabase(`SELECT enjoyment_level FROM snapshot WHERE user_id = ? ORDER BY timestamp`, vals),
+            queryDatabase(`SELECT surprise_level FROM snapshot WHERE user_id = ? ORDER BY timestamp`, vals),
+            queryDatabase(`SELECT contempt_level FROM snapshot WHERE user_id = ? ORDER BY timestamp`, vals),
+            queryDatabase(`SELECT sadness_level FROM snapshot WHERE user_id = ? ORDER BY timestamp`, vals),
+            queryDatabase(`SELECT fear_level FROM snapshot WHERE user_id = ? ORDER BY timestamp`, vals),
+            queryDatabase(`SELECT disgust_level FROM snapshot WHERE user_id = ? ORDER BY timestamp`, vals),
+            queryDatabase(`SELECT anger_level FROM snapshot WHERE user_id = ? ORDER BY timestamp`, vals)
+        ]);
+
+        const snapshots = await queryDatabase(`SELECT * FROM snapshot WHERE user_id = ? ORDER BY timestamp`, vals);
+        console.log(snapshots);
+
+        res.render("graphmultiminimalchange", {
+            dates,
+            levels,
+            snapshots
         });
-      });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send("Internal server error");
+    }
+};
+
+const queryDatabase = (sql, params) => {
+    return new Promise((resolve, reject) => {
+        conn.query(sql, params, (err, result) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(result);
+            }
+        });
     });
-  };
+};
 
 exports.getLogout = (req, res) => {
   req.session.destroy(() => {

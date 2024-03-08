@@ -31,24 +31,104 @@
         <button id="monthButton" class="button is-info">Month</button>
         <button id="weekButton" class="button is-info">Week</button>
     </div>
+    <script>
+        const emotionColorMap = {
+            "enjoyment": "#E69F00",   // Orange
+            "surprise": "#56B4E9",    // Sky Blue
+            "contempt": "#009E73",    // Bluish Green
+            "fear": "#F0E442",        // Yellow
+            "sadness": "#0072B2",     // Blue
+            "disgust": "#D55E00",     // Vermillion
+            "anger": "#CC79A7"        // Reddish Purple
+        };
+    //non-working code attempting to colour the backgrounds of the cards according to emotion.
+    //     function getDominantEmotions(snapshot) {
+    // const levelsForDate = [
+    //     snapshot.enjoyment_level,
+    //     snapshot.surprise_level,
+    //     snapshot.contempt_level,
+    //     snapshot.sadness_level,
+    //     snapshot.fear_level,
+    //     snapshot.disgust_level,
+    //     snapshot.anger_level
+    // ];
+
+//     const dominantEmotions = [];
+//     const maxLevel = Math.max(...levelsForDate);
+//     Object.keys(snapshot).forEach((emotion, index) => {
+//         if (levelsForDate[index] === maxLevel) {
+//             dominantEmotions.push(emotion);
+//         }
+//     });
+//     return dominantEmotions;
+// }
+
+// // Function to generate a gradient CSS string based on dominant emotions
+// function generateGradient(dominantEmotions) {
+//     // Calculate color stops for gradient
+//     const numEmotions = dominantEmotions.length;
+//     const colorStops = dominantEmotions.map((emotion, index) => {
+//         const color = emotionColorMap[emotion];
+//         const position = index * (100 / (numEmotions - 1));
+//         return `${color} ${position}%`;
+//     });
+
+//     // Construct gradient CSS string
+//     return `linear-gradient(to right, ${colorStops.join(', ')})`;
+// }
+
+// document.addEventListener('DOMContentLoaded', () => {
+//     const snapshotCards = document.querySelectorAll('.date-card');
+//     snapshotCards.forEach((card, index) => {
+//         const snapshot = snapshots[index]; // Assuming snapshots array is available
+//         const dominantEmotions = getDominantEmotions(snapshot);
+//         const gradient = generateGradient(dominantEmotions);
+//         card.style.backgroundImage = gradient;
+//     });
+// });
+
+document.addEventListener('DOMContentLoaded', () => {
+    const snapshotCards = document.querySelectorAll('.date-card');
+    snapshotCards.forEach((card) => {
+        card.addEventListener('mouseover', (event) => {
+            const notes = event.currentTarget.dataset.notes; // Get the notes from the data attribute
+            if (notes) {
+                const tooltip = document.createElement('div');
+                tooltip.classList.add('tooltip');
+                tooltip.textContent = notes;
+                card.appendChild(tooltip);
+            }
+        });
+
+        card.addEventListener('mouseout', (event) => {
+            const tooltip = event.currentTarget.querySelector('.tooltip');
+            if (tooltip) {
+                tooltip.remove();
+            }
+        });
+    });
+});
+    </script>
+    
     <div class="container">
         <div class="uk-grid uk-child-width-1-5" uk-grid>
-            <% const reversedDates = [...dates].reverse(); %>
-            <% const reversedSnapshotIds = [...snapshot_IDs].reverse(); %>
-            <% reversedDates.forEach((dateObj, index) => { %>
+            <% snapshots.reverse().forEach((snapshot) => { %>
                 <div>
-                    <div class="uk-card uk-card-body uk-card-default date-card">
-                        <% var formattedDate = new Date(dateObj.timestamp); %>
-                        <% var snapshotId = reversedSnapshotIds[index].snapshot_id; %>
-                        <a href="/singlesnapshot/<%= snapshotId %>" class="uk-link-toggle">
+                    <div class="uk-card uk-card-body uk-card-default date-card" data-notes="<%= snapshot.notes %>">
+                        <% var formattedDate = new Date(snapshot.timestamp); %>
+                        <a href="/singlesnapshot/<%= snapshot.snapshot_ID %>" class="uk-link-toggle">
                             <h3 class="uk-card-title"><%= formattedDate.toLocaleDateString('en-GB') %></h3>
                         </a>
+                        <!-- Add a hidden paragraph to store the notes -->
+                        <p class="notes" style="display: none;"><%= snapshot.notes %></p>
                     </div>
                 </div>
             <% }); %>
         </div>
     </div>
     <script>
+       
+
         let myChart; // Declare myChart variable in the global scope
     
         // Extracting dates and levels from EJS variables
@@ -115,15 +195,7 @@
             return new Chart("myChart", chartConfig);
         }
     
-        const emotionColorMap = {
-    "enjoyment": "#E69F00",   // Orange
-    "surprise": "#56B4E9",    // Sky Blue
-    "contempt": "#009E73",    // Bluish Green
-    "fear": "#F0E442",     // Yellow
-    "sadness": "#0072B2",        // Blue
-    "disgust": "#D55E00",     // Vermillion
-    "anger": "#CC79A7"        // Reddish Purple
-};
+        
     
         // Function to change time range
         function changeTimeRange(range) {
@@ -207,6 +279,12 @@
             myChart = createChart(filteredDates, filteredLevels); // Initialize chart
             changeTimeRange('week'); // Set default time range
         };
+
+
+
+        
+
+
     </script>
     
 </body>

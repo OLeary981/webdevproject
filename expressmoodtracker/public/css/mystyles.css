@@ -3,3 +3,22 @@
     color: #777; /* Change text color */
     cursor: default; /* Prevent cursor change */
 }
+
+.container {
+    display: flex;
+    justify-content: center;
+    width: 80%; /* Set a fixed width for the container and adjust as needed */
+}
+
+/* Custom styling for card grid */
+.date-card {
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.1); /* Add shadow effect */
+    padding: 1rem; /* Add padding */
+    margin-bottom: 1rem; /* Add margin between cards */
+}
+
+.uk-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center; /* Center items horizontally */
+}

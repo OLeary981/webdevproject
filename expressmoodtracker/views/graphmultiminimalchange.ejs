@@ -11,6 +11,7 @@
     <!-- Include Moment.js adapter for Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-moment"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
+    <link rel="stylesheet" href="/css/mystyles.css">
 </head>
 </head>
 <body>
@@ -30,21 +31,23 @@
         <button id="monthButton" class="button is-info">Month</button>
         <button id="weekButton" class="button is-info">Week</button>
     </div>
-    <div class="uk-grid uk-child-width-1-3" uk-grid>
-        <% const reversedDates = [...dates].reverse(); %>
-        <% const reversedSnapshotIds = [...snapshot_IDs].reverse(); %>
-        <% reversedDates.forEach((dateObj, index) => { %>
-          <div>
-            <div class="uk-card uk-card-body uk-card-default">
-              <% var formattedDate = new Date(dateObj.timestamp); %>
-              <% var snapshotId = reversedSnapshotIds[index].snapshot_id; %>
-              <a href="/singlesnapshot/<%= snapshotId %>" class="uk-link-toggle">
-                <h3 class="uk-card-title"><%= formattedDate.toLocaleDateString('en-GB') %></h3>
-              </a>
-            </div>
-          </div>
-        <% }); %>
-      </div>
+    <div class="container">
+        <div class="uk-grid uk-child-width-1-5" uk-grid>
+            <% const reversedDates = [...dates].reverse(); %>
+            <% const reversedSnapshotIds = [...snapshot_IDs].reverse(); %>
+            <% reversedDates.forEach((dateObj, index) => { %>
+                <div>
+                    <div class="uk-card uk-card-body uk-card-default date-card">
+                        <% var formattedDate = new Date(dateObj.timestamp); %>
+                        <% var snapshotId = reversedSnapshotIds[index].snapshot_id; %>
+                        <a href="/singlesnapshot/<%= snapshotId %>" class="uk-link-toggle">
+                            <h3 class="uk-card-title"><%= formattedDate.toLocaleDateString('en-GB') %></h3>
+                        </a>
+                    </div>
+                </div>
+            <% }); %>
+        </div>
+    </div>
     <script>
         let myChart; // Declare myChart variable in the global scope
     

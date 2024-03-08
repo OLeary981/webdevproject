@@ -219,7 +219,7 @@ exports.getColumns = (req, res) => {
 };
 
 exports.getAllSnapshots = async (req, res) => {
-    const { user_ID } = req.session;
+    const { user_ID, isLoggedIn } = req.session;
     const vals = user_ID;
 
     try {
@@ -240,7 +240,9 @@ exports.getAllSnapshots = async (req, res) => {
         res.render("graphmultiminimalchange", {
             dates,
             levels,
-            snapshots
+            snapshots,
+            currentPage: "/allsnapshots",
+            isLoggedIn
         });
     } catch (err) {
         console.error(err);
@@ -360,7 +362,7 @@ exports.postLoginBcrypt = (req, res) => {
         var orig_route = session.route;
         console.log(`postLogin: orig_route: ${orig_route}`);
         if (!orig_route) {
-          orig_route = "/";
+          orig_route = "/allsnapshots";
         }
         return res.redirect(orig_route);
       } else {

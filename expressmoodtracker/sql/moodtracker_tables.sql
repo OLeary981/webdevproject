@@ -188,7 +188,7 @@ INSERT INTO `snapshot` (`snapshot_ID`, `enjoyment_level`, `surprise_level`, `con
 (205, 6, 1, 0, 4, 3, 1, 1, 1, '2024-03-15 08:00:00', 'Enjoying a break after completing the project.');
 
 -- Trigger table
-CREATE TABLE `trigger` (
+CREATE TABLE `triggers` (
     trigger_ID INT AUTO_INCREMENT PRIMARY KEY,
     trigger_name VARCHAR(255)
 );

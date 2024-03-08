@@ -11,7 +11,7 @@ router.get('/editfav/:id', isAuth, controller.getEditSingleFavourite);
 router.get('/delfav/:id', isAuth, controller.getDeleteSingleFavourite);
 router.get('/newfav', isAuth, controller.getAddFavourite);
 router.get('/newsnapshot', controller.getAddSnapshot); //need to add isauth to this later
-router.get('/columns', controller.getColumns);
+
 
 router.get('/register', controller.getRegisterUser)
 router.get('/login', controller.getLogin);
@@ -21,6 +21,7 @@ router.post('/newfav', controller.postInsertFavourite);
 router.post('/editfav/:id', controller.postUpdateFavourite);
 router.post('/delfav/:id', controller.postDeleteFavourite);
 router.post('/register', controller.postRegisterUser);
+router.post('/newsnapshot', controller.postAddSnapshot);
 
 //router.post('/login', controller.postLogin);
 

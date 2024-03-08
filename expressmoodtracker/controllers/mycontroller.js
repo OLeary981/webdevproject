@@ -195,12 +195,14 @@ exports.postDeleteFavourite = (req, res) => {
 // New methods
 
 exports.getRegisterUser = (req, res) => {
-  res.render("register"); //add protection etc so can only register if not logged in?
+    const {error} = req.query;
+  res.render("register", { error }); //add protection etc so can only register if not logged in?
 };
 
 exports.getLogin = (req, res) => {
   const { isLoggedIn } = req.session;
-  res.render("login", { currentPage: "/login", isLoggedIn, error: null });
+  const {error} = req.query;
+  res.render("login", { currentPage: "/login", isLoggedIn, error});
 };
 
 exports.getAddSnapshot = (req, res) => {
@@ -210,7 +212,7 @@ exports.getAddSnapshot = (req, res) => {
       console.error(err);
       return res.status(500).send("Error fetching triggers");
     }
-    res.render("addsnapshot", { triggers: rows });
+    res.render("addsnapshot", { triggers: rows, currentPage: "/newsnapshot" });
   });
 };
 
@@ -219,47 +221,74 @@ exports.getColumns = (req, res) => {
 };
 
 exports.getAllSnapshots = async (req, res) => {
-    const { user_ID, isLoggedIn } = req.session;
-    const vals = user_ID;
+  const { user_ID, isLoggedIn } = req.session;
+  const vals = user_ID;
 
-    try {
-        const dates = await queryDatabase(`SELECT timestamp FROM snapshot WHERE user_id = ? ORDER BY timestamp`, vals);
-        const levels = await Promise.all([
-            queryDatabase(`SELECT enjoyment_level FROM snapshot WHERE user_id = ? ORDER BY timestamp`, vals),
-            queryDatabase(`SELECT surprise_level FROM snapshot WHERE user_id = ? ORDER BY timestamp`, vals),
-            queryDatabase(`SELECT contempt_level FROM snapshot WHERE user_id = ? ORDER BY timestamp`, vals),
-            queryDatabase(`SELECT sadness_level FROM snapshot WHERE user_id = ? ORDER BY timestamp`, vals),
-            queryDatabase(`SELECT fear_level FROM snapshot WHERE user_id = ? ORDER BY timestamp`, vals),
-            queryDatabase(`SELECT disgust_level FROM snapshot WHERE user_id = ? ORDER BY timestamp`, vals),
-            queryDatabase(`SELECT anger_level FROM snapshot WHERE user_id = ? ORDER BY timestamp`, vals)
-        ]);
+  try {
+    const dates = await queryDatabase(
+      `SELECT timestamp FROM snapshot WHERE user_id = ? ORDER BY timestamp`,
+      vals
+    );
+    const levels = await Promise.all([
+      queryDatabase(
+        `SELECT enjoyment_level FROM snapshot WHERE user_id = ? ORDER BY timestamp`,
+        vals
+      ),
+      queryDatabase(
+        `SELECT surprise_level FROM snapshot WHERE user_id = ? ORDER BY timestamp`,
+        vals
+      ),
+      queryDatabase(
+        `SELECT contempt_level FROM snapshot WHERE user_id = ? ORDER BY timestamp`,
+        vals
+      ),
+      queryDatabase(
+        `SELECT sadness_level FROM snapshot WHERE user_id = ? ORDER BY timestamp`,
+        vals
+      ),
+      queryDatabase(
+        `SELECT fear_level FROM snapshot WHERE user_id = ? ORDER BY timestamp`,
+        vals
+      ),
+      queryDatabase(
+        `SELECT disgust_level FROM snapshot WHERE user_id = ? ORDER BY timestamp`,
+        vals
+      ),
+      queryDatabase(
+        `SELECT anger_level FROM snapshot WHERE user_id = ? ORDER BY timestamp`,
+        vals
+      ),
+    ]);
 
-        const snapshots = await queryDatabase(`SELECT * FROM snapshot WHERE user_id = ? ORDER BY timestamp`, vals);
-        console.log(snapshots);
+    const snapshots = await queryDatabase(
+      `SELECT * FROM snapshot WHERE user_id = ? ORDER BY timestamp`,
+      vals
+    );
+    console.log(snapshots);
 
-        res.render("graphmultiminimalchange", {
-            dates,
-            levels,
-            snapshots,
-            currentPage: "/allsnapshots",
-            isLoggedIn
-        });
-    } catch (err) {
-        console.error(err);
-        res.status(500).send("Internal server error");
-    }
+    res.render("graphmultiminimalchange", {
+      dates,
+      levels,
+      snapshots,
+      currentPage: "/allsnapshots",
+      isLoggedIn,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Internal server error");
+  }
 };
 
 const queryDatabase = (sql, params) => {
-    return new Promise((resolve, reject) => {
-        conn.query(sql, params, (err, result) => {
-            if (err) {
-                reject(err);
-            } else {
-                resolve(result);
-            }
-        });
+  return new Promise((resolve, reject) => {
+    conn.query(sql, params, (err, result) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(result);
+      }
     });
+  });
 };
 
 exports.getLogout = (req, res) => {
@@ -376,36 +405,85 @@ exports.postLoginBcrypt = (req, res) => {
   });
 };
 
-exports.postRegisterUser = (req, res) => {
+exports.postRegisterUser = async (req, res) => {
   const { username, password } = req.body;
-  console.log(username);
-  console.log(password);
+  const errors = validationResult(req);
+  console.log(errors.array());
+  if (!errors.isEmpty()) {
+    return res.status(422).render("register", { error: errors.array()[0].msg });
+  }
 
-  // Hash password
-  bcrypt.hash(password, 10, (err, hash) => {
-    if (err) {
-      console.error(err);
-      res.status(500).send("Error hashing password");
-      return;
-    }
-    const insertSQL =
-      "INSERT INTO user_details (username, user_password) VALUES (?, ?)";
-    // Insert user into database - NEED TO ADD CHECK THAT THE USER IS NOT ALREADY REGISTERED?
-    const newUser = { username, password: hash };
-    conn.query(
-      insertSQL,
-      [newUser.username, newUser.password],
-      (error, rows) => {
-        if (error) {
-          console.error(error);
-          res.status(500).send("Error registering user");
-          return;
-        }
-        res.redirect("/login");
+  try {
+    // Check if the username already exists in the database
+    const checkUserQuery = "SELECT * FROM user_details WHERE username = ?";
+    conn.query(checkUserQuery, [username], (err, rows) => {
+      if (err) {
+        console.error(err);
+        return res.status(500).send("Error checking username");
       }
-    );
-  });
+
+      if (rows.length > 0) {
+        // Username already exists
+        return res.redirect(
+            "/register?error=Username taken choose another or login</a>"
+        );
+      }
+
+      // Hash password
+      bcrypt.hash(password, 10, (err, hash) => {
+        if (err) {
+          console.error(err);
+          return res.status(500).send("Error hashing password");
+        }
+
+        // Insert user into database
+        const insertSQL =
+          "INSERT INTO user_details (username, user_password) VALUES (?, ?)";
+        conn.query(insertSQL, [username, hash], (error, result) => {
+          if (error) {
+            console.error(error);
+            return res.status(500).send("Error registering user");
+          }
+          res.redirect("/login");
+        });
+      });
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).send("Error registering user");
+  }
 };
+//commenting out but this one works, just playing around with enhancements.
+// exports.postRegisterUser = (req, res) => {
+//   const { username, password } = req.body;
+//   console.log(username);
+//   console.log(password);
+
+//   // Hash password
+//   bcrypt.hash(password, 10, (err, hash) => {
+//     if (err) {
+//       console.error(err);
+//       res.status(500).send("Error hashing password");
+//       return;
+//     }
+//     const insertSQL =
+//       "INSERT INTO user_details (username, user_password) VALUES (?, ?)";
+//     // Insert user into database - NEED TO ADD CHECK THAT THE USER IS NOT ALREADY REGISTERED?
+//     const newUser = { username, password: hash };
+//     conn.query(
+//       insertSQL,
+//       [newUser.username, newUser.password],
+//       (error, rows) => {
+//         if (error) {
+//           console.error(error);
+//           res.status(500).send("Error registering user");
+//           return;
+//         }
+//         res.redirect("/login");
+//       }
+//     );
+//   });
+// };
 // VERY MUCH UNFINISHED
 exports.postAddSnapshot = (req, res) => {
   // Extract slider levels and notes from request body

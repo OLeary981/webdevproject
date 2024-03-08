@@ -5,14 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
 </head>
 <body>
+    <%- include('navbar', { isLoggedIn, currentPage }) %>
     <section class="section">
         <div class="container">
             <h1 class="title">Register</h1>
             <form action="/register" method="post">
                 <div class="field">
-                    <label class="label" for="username">Username:</label>
+                    <label class="label" for="username">Username:<span id="message"></span></label>
                     <div class="control">
                         <input class="input" type="text" id="username" name="username" required>
                     </div>
@@ -30,6 +33,32 @@
                 </div>
             </form>
         </div>
+        <% if (error) { %>
+            <script>
+                const msg = ' <%= error %>';
+                $('#message').html(msg)
+                .css('color', 'red')
+                .show()
+                .fadeOut(8000);
+            </script>
+        <% } %>
+
     </section>
+
+
+    <script>
+        $("form").submit((event) => {
+            const regex = /^[a-zA-Z]+$/;
+            const msg = ' Username must be alphabetic!!';
+            var currentUsername = $('#username-input').val();
+            if (regex.test(currentUsername) == false) {
+                $('#message').html(msg)
+                .css('color', 'red')
+                .show()
+                .fadeOut(4000);
+                event.preventDefault();
+            }
+        });
+    </script>
 </body>
 </html>

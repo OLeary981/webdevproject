@@ -10,8 +10,8 @@ CREATE TABLE user_details (
     last_name VARCHAR(255),
     username VARCHAR (255),
     user_password VARCHAR (255),
-    email_address VARCHAR(255),
-    Password VARCHAR(255)
+    email_address VARCHAR(255)
+   
 );
 INSERT INTO user_details (first_name, last_name, username, user_password, email_address) VALUES
 ('Joan', 'Bloggs', 'bcrypt', '$2b$10$qtxfGJKpY7yGVP1VYqAq1uQCXURrYz8szojZkgCEvX4uschKMnCBS','joan.bloggs@gmail.com');

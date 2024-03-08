@@ -38,6 +38,8 @@
         const dates = JSON.parse('<%- JSON.stringify(dates.map(dateObj => dateObj.timestamp)) %>');
         const levelData = JSON.parse(`<%- JSON.stringify(levels) %>`);
         const levels = levelData.map(level => level.map(levelObj => Object.values(levelObj)[0]));
+        const emotionLabels = ["enjoyment", "surprise", "contempt", "sadness", "fear", "disgust", "anger"];
+        console.log(`emotion labels are: ${emotionLabels}`);
     
         // Create initial chart with one week worth of data
         const defaultStartDate = moment().subtract(1, 'week');
@@ -47,10 +49,10 @@
         // Function to create chart
         function createChart(dates, levels) {
             const datasets = levels.map((level, index) => ({
-                label: `Level ${index + 1}`,
+                label: emotionLabels[index],
                 data: level,
                 fill: false,
-                borderColor: colorPalette[index % colorPalette.length],
+                borderColor: emotionColorMap[emotionLabels[index]],
                 tension: 0.1
             }));
     
@@ -96,15 +98,15 @@
             return new Chart("myChart", chartConfig);
         }
     
-        const colorPalette = [
-            "#E69F00", // Orange
-            "#56B4E9", // Sky Blue
-            "#009E73", // Bluish Green
-            "#F0E442", // Yellow
-            "#0072B2", // Blue
-            "#D55E00", // Vermillion
-            "#CC79A7"  // Reddish Purple
-        ];
+        const emotionColorMap = {
+    "enjoyment": "#E69F00",   // Orange
+    "surprise": "#56B4E9",    // Sky Blue
+    "contempt": "#009E73",    // Bluish Green
+    "fear": "#F0E442",     // Yellow
+    "sadness": "#0072B2",        // Blue
+    "disgust": "#D55E00",     // Vermillion
+    "anger": "#CC79A7"        // Reddish Purple
+};
     
         // Function to change time range
         function changeTimeRange(range) {
@@ -147,10 +149,10 @@
             // Update chart with filtered data
             myChart.data.labels = filteredDates;
             myChart.data.datasets = filteredLevels.map((level, index) => ({
-                label: `Level ${index + 1}`,
+                label: emotionLabels[index].replace('_level', ''),
                 data: level,
                 fill: false,
-                borderColor: colorPalette[index % colorPalette.length],
+                borderColor: emotionColorMap[emotionLabels[index]],
                 tension: 0.1
             }));
             myChart.update();

@@ -204,7 +204,7 @@ exports.getLogin = (req, res) => {
 };
 
 exports.getAddSnapshot = (req, res) => {
-    const { isLoggedIn } = req.session;
+  const { isLoggedIn } = req.session;
   conn.query("SELECT * FROM `trigger`", (err, rows) => {
     if (err) {
       console.error(err);
@@ -219,11 +219,11 @@ exports.getColumns = (req, res) => {
 };
 
 exports.getAllSnapshots = (req, res) => {
-    const {user_ID} = req.session;
-    vals = user_ID
+    const { user_ID } = req.session;
+    vals = user_ID;
     const selectDateSQL = `SELECT timestamp FROM snapshot WHERE user_id = ? ORDER BY timestamp`;
     conn.query(selectDateSQL, vals, (err, dates) => {
-      if (err) throw err; 
+      if (err) throw err;
   
       const selectLevelSQLs = [
         `SELECT enjoyment_level FROM snapshot WHERE user_id = ? ORDER BY timestamp`,
@@ -232,7 +232,7 @@ exports.getAllSnapshots = (req, res) => {
         `SELECT sadness_level FROM snapshot WHERE user_id = ? ORDER BY timestamp`,
         `SELECT fear_level FROM snapshot WHERE user_id = ? ORDER BY timestamp`,
         `SELECT disgust_level FROM snapshot WHERE user_id = ? ORDER BY timestamp`,
-        `SELECT anger_level FROM snapshot WHERE user_id = ? ORDER BY timestamp`
+        `SELECT anger_level FROM snapshot WHERE user_id = ? ORDER BY timestamp`,
       ];
   
       const levels = [];
@@ -246,10 +246,22 @@ exports.getAllSnapshots = (req, res) => {
   
           if (counter === selectLevelSQLs.length) {
             // All levels have been fetched
-            console.log(dates);
-            console.log(levels);
-            // Send dates and levels to the view
-            res.render("graphmultiminimalchange", { dates, levels });
+            // Now fetch snapshot IDs
+            const selectSnapshot_IDSQL = `SELECT snapshot_id FROM snapshot WHERE user_id = ? ORDER BY timestamp`;
+            conn.query(selectSnapshot_IDSQL, vals, (err, snapshot_IDs) => {
+              if (err) throw err;
+  
+              console.log(dates);
+              console.log(levels);
+              console.log(snapshot_IDs);
+  
+              // Send dates, levels, and snapshot IDs to the view
+              res.render("graphmultiminimalchange", {
+                dates,
+                levels,
+                snapshot_IDs
+              });
+            });
           }
         });
       });
@@ -262,10 +274,10 @@ exports.getLogout = (req, res) => {
   });
 };
 
-exports.getLanding = (req,res) =>{
-    const { isLoggedIn } = req.session; //use this later to redirect to home page if already logged in?
-    res.render("landing", { currentPage: "/landing", isLoggedIn, error: null });
-}
+exports.getLanding = (req, res) => {
+  const { isLoggedIn } = req.session; //use this later to redirect to home page if already logged in?
+  res.render("landing", { currentPage: "/landing", isLoggedIn, error: null });
+};
 
 exports.postLogin = (req, res) => {
   const errors = validationResult(req);
@@ -402,77 +414,122 @@ exports.postRegisterUser = (req, res) => {
 };
 // VERY MUCH UNFINISHED
 exports.postAddSnapshot = (req, res) => {
-    // Extract slider levels and notes from request body
-    console.log(req.body);
-    
-    const { enjoyment, surprise, contempt, sadness, fear, disgust, anger, notes } = req.body;
-   const selectedTriggers = req.body.triggers;
-    const {user_ID} = req.session;
-    //const selectedTriggers = ["Work", "Commute"]
-    const notesValue = notes ? notes : null;
-    console.log( [enjoyment, surprise, contempt, sadness, fear, disgust, anger, user_ID, notesValue]);
-    console.log(selectedTriggers)
+  // Extract slider levels and notes from request body
+  console.log(req.body);
 
-    
-    
+  const {
+    enjoyment,
+    surprise,
+    contempt,
+    sadness,
+    fear,
+    disgust,
+    anger,
+    notes,
+  } = req.body;
+  const selectedTriggers = req.body.triggers;
+  const { user_ID } = req.session;
+  //const selectedTriggers = ["Work", "Commute"]
+  const notesValue = notes ? notes : null;
+  console.log([
+    enjoyment,
+    surprise,
+    contempt,
+    sadness,
+    fear,
+    disgust,
+    anger,
+    user_ID,
+    notesValue,
+  ]);
+  console.log(selectedTriggers);
 
-    // Start a transaction
-    conn.beginTransaction((err) => {
+  // Start a transaction
+  conn.beginTransaction((err) => {
+    if (err) {
+      console.error("Error beginning transaction:", err);
+      return res.status(500).send("Error beginning transaction");
+    }
+
+    // Insert snapshot data into the snapshot table
+    const insertSnapshotSQL = `INSERT INTO snapshot (enjoyment_level, surprise_level, contempt_level, sadness_level, fear_level, disgust_level, anger_level, user_id, timestamp, notes) VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW(), ?)`;
+    // Assuming user_ID is available from session
+    conn.query(
+      insertSnapshotSQL,
+      [
+        enjoyment,
+        surprise,
+        contempt,
+        sadness,
+        fear,
+        disgust,
+        anger,
+        user_ID,
+        notesValue,
+      ],
+      (err, result) => {
         if (err) {
-            console.error('Error beginning transaction:', err);
-            return res.status(500).send('Error beginning transaction');
+          console.error("Error inserting data into snapshot table:", err);
+          return conn.rollback(() => {
+            res.status(500).send("Error inserting data into snapshot table");
+          });
         }
 
-        // Insert snapshot data into the snapshot table
-        const insertSnapshotSQL = `INSERT INTO snapshot (enjoyment_level, surprise_level, contempt_level, sadness_level, fear_level, disgust_level, anger_level, user_id, timestamp, notes) VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW(), ?)`;
-         // Assuming user_ID is available from session
-        conn.query(insertSnapshotSQL, [enjoyment, surprise, contempt, sadness, fear, disgust, anger, user_ID, notesValue], (err, result) => {
+        // Get the auto-incremented snapshot_ID - do I need to add 1 to this because of the transaction?
+        const snapshotID = result.insertId;
+
+        // Retrieve trigger IDs for selected triggers
+        conn.query(
+          "SELECT trigger_ID FROM `trigger` WHERE trigger_name IN (?)",
+          [selectedTriggers],
+          (err, triggerResults) => {
+            console.log(`trigger results are: ${triggerResults}`);
             if (err) {
-                console.error('Error inserting data into snapshot table:', err);
-                return conn.rollback(() => {
-                    res.status(500).send('Error inserting data into snapshot table');
-                });
+              console.error("Error retrieving trigger IDs:", err);
+              return conn.rollback(() => {
+                res.status(500).send("Error retrieving trigger IDs");
+              });
             }
 
-            // Get the auto-incremented snapshot_ID - do I need to add 1 to this because of the transaction?
-            const snapshotID = result.insertId;
-
-            // Retrieve trigger IDs for selected triggers
-            conn.query('SELECT trigger_ID FROM `trigger` WHERE trigger_name IN (?)', [selectedTriggers], (err, triggerResults) => {
-                console.log(`trigger results are: ${triggerResults}`);
-                if (err) {
-                    console.error('Error retrieving trigger IDs:', err);
-                    return conn.rollback(() => {
-                        res.status(500).send('Error retrieving trigger IDs');
+            // Insert snapshot-trigger associations into the snapshot_trigger table
+            const insertSnapshotTriggerSQL = `INSERT INTO snapshot_trigger (snapshot_ID, trigger_ID) VALUES (?, ?)`;
+            triggerResults.forEach((row) => {
+              conn.query(
+                insertSnapshotTriggerSQL,
+                [snapshotID, row.trigger_ID],
+                (err, result) => {
+                  if (err) {
+                    console.error(
+                      "Error inserting data into snapshot_trigger table:",
+                      err
+                    );
+                    conn.rollback(() => {
+                      res
+                        .status(500)
+                        .send(
+                          "Error inserting data into snapshot_trigger table"
+                        );
                     });
+                  }
                 }
-
-                // Insert snapshot-trigger associations into the snapshot_trigger table
-                const insertSnapshotTriggerSQL = `INSERT INTO snapshot_trigger (snapshot_ID, trigger_ID) VALUES (?, ?)`;
-                triggerResults.forEach(row => {
-                    conn.query(insertSnapshotTriggerSQL, [snapshotID, row.trigger_ID], (err, result) => {
-                        if (err) {
-                            console.error('Error inserting data into snapshot_trigger table:', err);
-                            conn.rollback(() => {
-                                res.status(500).send('Error inserting data into snapshot_trigger table');
-                            });
-                        }
-                    });
-                });
-
-                // Commit the transaction
-                conn.commit((err) => {
-                    if (err) {
-                        console.error('Error committing transaction:', err);
-                        return conn.rollback(() => {
-                            res.status(500).send('Error committing transaction');
-                        });
-                    }
-                    console.log('Transaction successfully committed');
-                    // Redirect to index or any other page after successful transaction
-                    res.redirect('/');
-                });
+              );
             });
-        });
-    });
+
+            // Commit the transaction
+            conn.commit((err) => {
+              if (err) {
+                console.error("Error committing transaction:", err);
+                return conn.rollback(() => {
+                  res.status(500).send("Error committing transaction");
+                });
+              }
+              console.log("Transaction successfully committed");
+              // Redirect to index or any other page after successful transaction
+              res.redirect("/");
+            });
+          }
+        );
+      }
+    );
+  });
 };

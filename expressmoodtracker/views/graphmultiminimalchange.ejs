@@ -30,7 +30,21 @@
         <button id="monthButton" class="button is-info">Month</button>
         <button id="weekButton" class="button is-info">Week</button>
     </div>
-
+    <div class="uk-grid uk-child-width-1-3" uk-grid>
+        <% const reversedDates = [...dates].reverse(); %>
+        <% const reversedSnapshotIds = [...snapshot_IDs].reverse(); %>
+        <% reversedDates.forEach((dateObj, index) => { %>
+          <div>
+            <div class="uk-card uk-card-body uk-card-default">
+              <% var formattedDate = new Date(dateObj.timestamp); %>
+              <% var snapshotId = reversedSnapshotIds[index].snapshot_id; %>
+              <a href="/singlesnapshot/<%= snapshotId %>" class="uk-link-toggle">
+                <h3 class="uk-card-title"><%= formattedDate.toLocaleDateString('en-GB') %></h3>
+              </a>
+            </div>
+          </div>
+        <% }); %>
+      </div>
     <script>
         let myChart; // Declare myChart variable in the global scope
     

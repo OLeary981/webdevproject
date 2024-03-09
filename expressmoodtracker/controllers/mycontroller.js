@@ -207,7 +207,7 @@ exports.getLogin = (req, res) => {
 
 exports.getAddSnapshot = (req, res) => {
   const { isLoggedIn } = req.session;
-  conn.query("SELECT * FROM `trigger`", (err, rows) => {
+  conn.query("SELECT * FROM `trigger` ORDER BY trigger_name ASC", (err, rows) => {
     if (err) {
       console.error(err);
       return res.status(500).send("Error fetching triggers");

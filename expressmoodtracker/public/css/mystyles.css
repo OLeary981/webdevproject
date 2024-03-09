@@ -67,3 +67,23 @@
     background-color: black;
     color: #1ec4e1;
   }
+
+  .trigger-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px; /
+}
+
+.trigger {
+    margin-bottom: 10px; /
+}
+
+
+
+.trigger label {
+    font-size: 18px; 
+}
+
+.slider {
+    width: 75%; /* Adjust the width as needed */
+  }

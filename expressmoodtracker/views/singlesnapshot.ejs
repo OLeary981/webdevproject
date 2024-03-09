@@ -9,61 +9,61 @@
       href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css"
     />
     <link rel="stylesheet" href="/css/mystyles.css" />
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>    
   </head>
-
-  Apologies for the confusion. It seems I misplaced the notes box div. Let me correct that for you:
-
-  html
-  Copy code
   <body>
-      <%- include('navbar') %>
-      <section class="section">
-          <div class="container">
-              <h1>Single Snapshot Placeholder</h1>
-              <% for (let row of result) { %>
-                  <% var id = row.id; %>
-                  <% var date = row.timestamp; %>
-                  <% var enjoyment = row.enjoyment_level; %>
-                  <% var surprise = row.surprise_level; %>
-                  <% var contempt = row.contempt_level; %>
-                  <% var fear = row.fear_level; %>
-                  <% var sadness = row.sadness_level; %>
-                  <% var disgust = row.disgust_level; %>
-                  <% var anger = row.anger_level; %>
-                  <% var notes = row.notes; %>
-              
-                  <p>ID: <%= id %></p>
-                  <p>Date: <%= date %></p>
-                  <p>Enjoyment Level: <%= enjoyment %></p>
-                  <p>Surprise Level: <%= surprise %></p>
-                  <p>Contempt Level: <%= contempt %></p>
-                  <p>Fear Level: <%= fear %></p>
-                  <p>Sadness Level: <%= sadness %></p>
-                  <p>Disgust Level: <%= disgust %></p>
-                  <p>Anger Level: <%= anger %></p>
-              <% } %>
-          </div>
-          <div class="columns is-centered">
-              <div class="column is-half">
-                  <canvas id="emotionChart" width="500" height="400"></canvas>
-              </div>
-              <div class="column is-half">
-                  <!-- Box for displaying notes -->
-                  <div class="notes-box">
-                      <!-- Replace 'notes' with the actual variable containing your notes -->
-                      <% if (notes) { %>
-                          <p><%= notes %></p>
-                      <% } else { %>
-                          <p>No notes available</p>
-                      <% } %>
-                  </div>
-              </div>
-          </div>
-      </section>
+    <%- include('navbar') %>
+    <section class="section">
+        <%- result[0].snapshot_ID %>
+        <div class="container">
+            
+
+
+            <h1>Single Snapshot Placeholder</h1>
+            <% for (let row of result) { %>
+                <% var id = row.snapshot_ID; %>
+                <% var date = row.timestamp; %>
+                <% var enjoyment = row.enjoyment_level; %>
+                <% var surprise = row.surprise_level; %>
+                <% var contempt = row.contempt_level; %>
+                <% var fear = row.fear_level; %>
+                <% var sadness = row.sadness_level; %>
+                <% var disgust = row.disgust_level; %>
+                <% var anger = row.anger_level; %>
+                <% var notes = row.notes; %>
+            
+                <p>ID: <%= id %></p>
+                <p>Date: <%= date %></p>
+                <p>Enjoyment Level: <%= enjoyment %></p>
+                <p>Surprise Level: <%= surprise %></p>
+                <p>Contempt Level: <%= contempt %></p>
+                <p>Fear Level: <%= fear %></p>
+                <p>Sadness Level: <%= sadness %></p>
+                <p>Disgust Level: <%= disgust %></p>
+                <p>Anger Level: <%= anger %></p>
+            <% } %>
+        </div>
+        <div class="columns is-centered">
+            <div class="column is-half">
+                <canvas id="emotionChart" width="500" height="400"></canvas>
+            </div>
+        </div>
+            <div class="column is-half">
+                <!-- Box for displaying notes -->
+                <div class="notes-box">
+                    <!-- Replace 'notes' with the actual variable containing your notes -->
+                    <% if (notes) { %>
+                        <p><%= notes %></p>
+                    <% } else { %>
+                        <p>No notes available</p>
+                    <% } %>
+                </div>
+            </div>
+            <a href="/editsnapshotcheckbox/<%= result[0].snapshot_ID %>" class="button">Edit Snapshot</a>
+       
+    </section>
    
-      <script>
+    <script>
         // Data from your EJS template
         const result = <%- JSON.stringify(result) %>;
 

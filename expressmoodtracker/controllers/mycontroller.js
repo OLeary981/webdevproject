@@ -216,6 +216,98 @@ exports.getAddSnapshot = (req, res) => {
   });
 };
 
+exports.getEditSnapshot = (req, res) => {
+  const { id } = req.params;
+  const selectAllTriggersSQL = "SELECT * FROM `trigger` ORDER BY trigger_name ASC";
+  const selectChosenTriggersSQL = `SELECT t.trigger_name FROM snapshot_trigger st JOIN \`trigger\` t ON st.trigger_ID = t.trigger_ID WHERE st.snapshot_ID = ${id}`;
+  const selectSnapshotSQL = `SELECT enjoyment_level, surprise_level, contempt_level, sadness_level, fear_level, disgust_level, anger_level, timestamp FROM snapshot WHERE snapshot_ID = ${id}`;
+
+  conn.query(selectSnapshotSQL, (err, snapshot) => {
+      if (err) {
+          console.error("Error fetching snapshot:", err);
+          return res.render('404', { error: err });
+      }
+
+      conn.query(selectAllTriggersSQL, (err, triggers) => {
+          if (err) {
+              console.error("Error fetching triggers:", err);
+              return res.render('404', { error: err });
+          }
+
+          conn.query(selectChosenTriggersSQL, (err, selectedTriggers) => {
+              if (err) {
+                  console.error("Error fetching selected triggers:", err);
+                  return res.render('404', { error: err });
+              }
+
+              res.render("editsnapshotcheckboxes", { snapshot, triggers, selectedTriggers });
+          });
+      });
+  });
+};
+
+//overly complicated.
+// exports.getEditSnapshot = async (req, res) => {
+//   const { id } = req.params;
+//   const selectAllTriggersSQL = "SELECT * FROM `trigger` ORDER BY trigger_name ASC";
+//   const selectChosenTriggersSQL = `SELECT t.trigger_name FROM snapshot_trigger st  JOIN \`trigger\` t ON st.trigger_ID = t.trigger_ID WHERE st.snapshot_ID = ${id};`
+//   const selectSnapshotSQL = `SELECT enjoyment_level, surprise_level, contempt_level, sadness_level, fear_level, disgust_level, anger_level, timestamp FROM snapshot WHERE snapshot_ID = ${id};`
+
+//   const getSnapshot = () => {
+//     return new Promise((resolve, reject) => {
+//         conn.query(selectSnapshotSQL, (err, snapshot) => {
+//             if (err) {
+//                 reject(err);
+//             } else {
+//               console.log(snapshot);
+//                 resolve(snapshot);
+//             }
+//         });
+//     });
+// };
+
+// const getTriggers = () => {
+//     return new Promise((resolve, reject) => {
+//         conn.query(selectAllTriggersSQL, (err, triggers) => {
+//             if (err) {
+//                 reject(err);
+//             } else {
+//               console.log(triggers);
+//                 resolve(triggers);
+//             }
+//         });
+//     });
+// };
+
+// const getSelectedTriggers = () => {
+//     return new Promise((resolve, reject) => {
+//         conn.query(selectChosenTriggersSQL, (err, selectedTriggers) => {
+//             if (err) {
+//                 reject(err);
+//             } else {
+//               console.log(selectedTriggers);
+//                 resolve(selectedTriggers);
+//             }
+//         });
+//     });
+// };
+
+
+//   try {
+//       const snapshot = await getSnapshot();
+//       const triggers = await getTriggers();
+//       const selectedTriggers = await getSelectedTriggers();
+
+//       // Pass the data to your rendering function
+//       res.render("editsnapshotcheckboxes", { snapshot, triggers, selectedTriggers });
+//   } catch (error) {
+//       console.error("Error:", error);
+//       res.render('404', { error });
+//   }
+
+  
+// }
+
 
 
 exports.getSingleSnapshot = async (req, res) => {

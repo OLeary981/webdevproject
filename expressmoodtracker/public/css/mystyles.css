@@ -87,3 +87,10 @@
 .slider {
     width: 75%; /* Adjust the width as needed */
   }
+
+  .navbar-fixed {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 1000; /* Ensure the navbar appears above other content */
+}

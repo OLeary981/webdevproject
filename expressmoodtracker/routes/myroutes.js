@@ -17,6 +17,7 @@ router.get("/login", controller.getLogin);
 router.get("/logout", controller.getLogout);
 router.get("/landing", controller.getLanding);
 router.get("/allsnapshots", isAuth, controller.getAllSnapshots);
+router.get("/singlesnapshot/:id", isAuth, controller.getSingleSnapshot);
 
 router.post("/newfav", controller.postInsertFavourite);
 router.post("/editfav/:id", controller.postUpdateFavourite);

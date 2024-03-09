@@ -216,9 +216,26 @@ exports.getAddSnapshot = (req, res) => {
   });
 };
 
-exports.getColumns = (req, res) => {
-  res.render("columns");
-};
+
+
+exports.getSingleSnapshot = async (req, res) => {
+  const { id } = req.params;
+  const {user_ID} = req.session
+  const selectSQL = `SELECT * FROM snapshot WHERE snapshot_id = ${id} AND user_ID = ${user_ID}`;
+  conn.query(selectSQL, (err, rows) => {
+    if (err) {
+      throw err;
+    } else {
+      if (rows.length >0){
+        console.log(rows);
+      res.render("singlesnapshot", { result: rows});
+      } else {
+        res.render('404');
+      }
+      
+    }
+  });
+}
 
 exports.getAllSnapshots = async (req, res) => {
   const { user_ID, isLoggedIn } = req.session;
@@ -499,8 +516,11 @@ exports.postAddSnapshot = (req, res) => {
     anger,
     notes,
   } = req.body;
-  const selectedTriggers = req.body.triggers;
+  const formTriggers = req.body.triggers;
+  console.log(formTriggers);
+  const selectedTriggers = formTriggers.split(',');
   const { user_ID } = req.session;
+  console.log(selectedTriggers);
   //const selectedTriggers = ["Work", "Commute"]
   const notesValue = notes ? notes : null;
   console.log([

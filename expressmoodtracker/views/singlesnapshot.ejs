@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Single Snapshot</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css"
+    />
+    <link rel="stylesheet" href="/css/mystyles.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+  </head>
+
+  Apologies for the confusion. It seems I misplaced the notes box div. Let me correct that for you:
+
+  html
+  Copy code
+  <body>
+      <%- include('navbar') %>
+      <section class="section">
+          <div class="container">
+              <h1>Single Snapshot Placeholder</h1>
+              <% for (let row of result) { %>
+                  <% var id = row.id; %>
+                  <% var date = row.timestamp; %>
+                  <% var enjoyment = row.enjoyment_level; %>
+                  <% var surprise = row.surprise_level; %>
+                  <% var contempt = row.contempt_level; %>
+                  <% var fear = row.fear_level; %>
+                  <% var sadness = row.sadness_level; %>
+                  <% var disgust = row.disgust_level; %>
+                  <% var anger = row.anger_level; %>
+                  <% var notes = row.notes; %>
+              
+                  <p>ID: <%= id %></p>
+                  <p>Date: <%= date %></p>
+                  <p>Enjoyment Level: <%= enjoyment %></p>
+                  <p>Surprise Level: <%= surprise %></p>
+                  <p>Contempt Level: <%= contempt %></p>
+                  <p>Fear Level: <%= fear %></p>
+                  <p>Sadness Level: <%= sadness %></p>
+                  <p>Disgust Level: <%= disgust %></p>
+                  <p>Anger Level: <%= anger %></p>
+              <% } %>
+          </div>
+          <div class="columns is-centered">
+              <div class="column is-half">
+                  <canvas id="emotionChart" width="500" height="400"></canvas>
+              </div>
+              <div class="column is-half">
+                  <!-- Box for displaying notes -->
+                  <div class="notes-box">
+                      <!-- Replace 'notes' with the actual variable containing your notes -->
+                      <% if (notes) { %>
+                          <p><%= notes %></p>
+                      <% } else { %>
+                          <p>No notes available</p>
+                      <% } %>
+                  </div>
+              </div>
+          </div>
+      </section>
+   
+    <script>
+        // Data from your EJS template
+        const result = <%- JSON.stringify(result) %>;
+
+        // Extract emotion levels into separate arrays
+        const emotions = {
+            enjoyment: [],
+            surprise: [],
+            contempt: [],
+            fear: [],
+            sadness: [],
+            disgust: [],
+            anger: []
+        };
+
+        // Extract data from result
+        result.forEach(row => {
+            Object.keys(emotions).forEach(emotion => {
+                emotions[emotion].push(row[`${emotion}_level`]);
+            });
+        });
+
+        // Chart.js configuration
+        const ctx = document.getElementById('emotionChart').getContext('2d');
+        const chartconfig = {
+            type: 'bar',
+            data: {
+                labels: Object.keys(emotions),
+                datasets: [
+                    {
+                        label: '',
+                        data: Object.values(emotions).map(emotionLevels => emotionLevels.reduce((acc, curr) => acc + curr, 0) / emotionLevels.length), // Average level for each emotion
+                        backgroundColor: [
+                            '#E69F00', // Orange
+                            '#56B4E9', // Sky Blue
+                            '#009E73', // Bluish Green
+                            '#F0E442', // Yellow
+                            '#0072B2', // Blue
+                            '#D55E00', // Vermillion
+                            '#CC79A7'  // Reddish Purple
+                        ]
+                    }
+                ]
+            },
+            
+            options: {
+                responsive: true,
+                animation: true,
+                maintainAspectRatio: true,
+                scales: { y: { min: 0, max: 10 } },
+                plugins: {
+                    legend: { display: false },
+                    tooltips: { enabled: true },
+                    title: {
+                        display: true,
+                        text: 'Emotion Levels',
+                        font: { size: 20 }
+
+                    }
+                }
+            }
+        };
+        const emotionChart = new Chart('emotionChart', chartconfig);
+
+    </script>
+   
+  </body>
+</html>

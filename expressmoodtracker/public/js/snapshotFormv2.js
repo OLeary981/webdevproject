@@ -13,14 +13,21 @@ document.addEventListener('DOMContentLoaded', function() {
        
         // Get the value of the notes input field
         const notesValue = document.getElementById('notes').value;
+
+        const newElement = document.createElement('input');
+        newElement.name = 'triggers';
+        newElement.type = 'hidden';
+        newElement.value = selectedTriggers;
+        this.appendChild(newElement);
+
        
         // Prepare data to send to the server
-        const formData = {
-            triggers: selectedTriggers,
-            sliderLevels: sliderLevels,
-            notes: notesValue
-        };
-        console.log(formData);
+        // const formData = {
+        //     triggers: selectedTriggers,
+        //     sliderLevels: sliderLevels,
+        //     notes: notesValue
+        // };
+        // console.log(formData);
        
         // Trigger form submission
         this.submit(); // 'this' refers to the form element itself

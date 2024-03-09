@@ -239,7 +239,9 @@ exports.getEditSnapshot = (req, res) => {
                   console.error("Error fetching selected triggers:", err);
                   return res.render('404', { error: err });
               }
-
+console.log(snapshot);
+console.log(triggers);
+console.log(selectedTriggers);
               res.render("editsnapshotcheckboxes", { snapshot, triggers, selectedTriggers });
           });
       });

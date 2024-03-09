@@ -212,7 +212,7 @@ exports.getAddSnapshot = (req, res) => {
       console.error(err);
       return res.status(500).send("Error fetching triggers");
     }
-    res.render("addsnapshot", { triggers: rows, currentPage: "/newsnapshot" });
+    res.render("addsnapshotcheckboxes", { triggers: rows, currentPage: "/newsnapshot" });
   });
 };
 
@@ -518,9 +518,12 @@ exports.postAddSnapshot = (req, res) => {
   } = req.body;
   const formTriggers = req.body.triggers;
   console.log(formTriggers);
-  const selectedTriggers = formTriggers.split(',');
-  const { user_ID } = req.session;
+  const filteredTriggers = formTriggers.filter(item => item !== 'on');
+  const selectedTriggers = filteredTriggers.flatMap(element => element.split(',')); //to make the array of triggers that can be used by SQL statement
+   const { user_ID } = req.session;
+   console.log("Line 524");
   console.log(selectedTriggers);
+  
   //const selectedTriggers = ["Work", "Commute"]
   const notesValue = notes ? notes : null;
   console.log([
@@ -534,6 +537,7 @@ exports.postAddSnapshot = (req, res) => {
     user_ID,
     notesValue,
   ]);
+  console.log("line 540")
   console.log(selectedTriggers);
 
   // Start a transaction

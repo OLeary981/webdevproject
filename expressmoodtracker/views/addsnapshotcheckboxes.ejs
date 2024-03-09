@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css"
+    />
+    <link rel="stylesheet" href="/css/mystyles.css" />
+    <script src="/js/snapshotFormCheckboxes.js" defer></script>
+  </head>
+  <body>
+    <%- include('navbar', { isLoggedIn }) %>
+    <section class="section">
+      <div class="container">
+        <div class="container">
+          <div class="columns is-centered">
+            <div class="column is-centered is-half">
+              <p>
+                Lorem ipsum dolor sit amet consectetur, adipisicing elit. Quis
+                similique a dolore, aperiam illum corrupti tempora consectetur
+                placeat sunt ab molestias enim modi itaque illo voluptatem
+                praesentium? Distinctio, nam ducimus.
+              </p>
+              <h1>Add a Snapshot</h1>
+              <form id="snapshot-form" action="/newsnapshot" method="POST">
+                <div class="field">
+                  <label class="label" for="enjoyment">Enjoyment:</label>
+                  <div class="control slider-container">
+                    <input
+                      class="slider is-fullwidth"
+                      type="range"
+                      id="enjoyment"
+                      name="enjoyment"
+                      min="0"
+                      max="10"
+                      value="0"
+                    />
+                    <output
+                      for="enjoyment"
+                      id="output-enjoyment"
+                      class="slider-value"
+                      >0</output
+                    >
+                  </div>
+                </div>
+
+                <div class="field">
+                  <label class="label" for="surprise">Surprise:</label>
+                  <div class="control slider-container">
+                    <input
+                      class="slider is-fullwidth"
+                      type="range"
+                      id="surprise"
+                      name="surprise"
+                      min="0"
+                      max="10"
+                      value="0"
+                    />
+                    <output
+                      for="surprise"
+                      id="output-surprise"
+                      class="slider-value"
+                      >0</output
+                    >
+                  </div>
+                </div>
+
+                <div class="field">
+                  <label class="label" for="contempt">Contempt:</label>
+                  <div class="control slider-container">
+                    <input
+                      class="slider is-fullwidth"
+                      type="range"
+                      id="contempt"
+                      name="contempt"
+                      min="0"
+                      max="10"
+                      value="0"
+                    />
+                    <output
+                      for="contempt"
+                      id="output-contempt"
+                      class="slider-value"
+                      >0</output
+                    >
+                  </div>
+                </div>
+
+                <div class="field">
+                  <label class="label" for="sadness">Sadness:</label>
+                  <div class="control slider-container">
+                    <input
+                      class="slider is-fullwidth"
+                      type="range"
+                      id="sadness"
+                      name="sadness"
+                      min="0"
+                      max="10"
+                      value="0"
+                    />
+                    <output
+                      for="sadness"
+                      id="output-sadness"
+                      class="slider-value"
+                      >0</output
+                    >
+                  </div>
+                </div>
+
+                <div class="field">
+                  <label class="label" for="fear">Fear:</label>
+                  <div class="control slider-container">
+                    <input
+                      class="slider is-fullwidth"
+                      type="range"
+                      id="fear"
+                      name="fear"
+                      min="0"
+                      max="10"
+                      value="0"
+                    />
+                    <output for="fear" id="output-fear" class="slider-value"
+                      >0</output
+                    >
+                  </div>
+                </div>
+
+                <div class="field">
+                  <label class="label" for="disgust">Disgust:</label>
+                  <div class="control slider-container">
+                    <input
+                      class="slider is-fullwidth"
+                      type="range"
+                      id="disgust"
+                      name="disgust"
+                      min="0"
+                      max="10"
+                      value="0"
+                    />
+                    <output
+                      for="disgust"
+                      id="output-disgust"
+                      class="slider-value"
+                      >0</output
+                    >
+                  </div>
+                </div>
+
+                <div class="field">
+                  <label class="label" for="anger">Anger:</label>
+                  <div class="control slider-container">
+                    <input
+                      class="slider is-fullwidth"
+                      type="range"
+                      id="anger"
+                      name="anger"
+                      min="0"
+                      max="10"
+                      value="0"
+                    />
+                    <output for="anger" id="output-anger" class="slider-value"
+                      >0</output
+                    >
+                  </div>
+                </div>
+
+                <div class="field">
+                  <div class="control">
+                      <label class="label">Triggers:</label>
+                      <div class="buttons are-small">
+                          <% triggers.forEach((trigger, index) => { %>
+                              <label class="checkbox">
+                                  <input
+                                      type="checkbox"
+                                      class="trigger-checkbox"
+                                      data-trigger="<%= trigger.trigger_name %>"
+                                      name="triggers"
+                                  >
+                                  <%= trigger.trigger_name %>
+                              </label>
+                          <% }); %>
+                      </div>
+                  </div>
+              </div>
+                <div class="field">
+                  <label class="label" for="notes">Notes:</label>
+                  <div class="control">
+                    <textarea class="textarea" id="notes" name="notes" placeholder="Enter your notes here"></textarea>
+                  </div>
+                </div>
+
+                <div class="field">
+                  <div class="control">
+                    <button class="button is-primary" type="submit">
+                      Submit
+                    </button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <script>
+      // Update output values when sliders are changed
+      const sliders = document.querySelectorAll('input[type="range"]');
+      sliders.forEach((slider) => {
+        const output = document.getElementById(`output-${slider.id}`);
+        output.textContent = slider.value;
+        slider.addEventListener("input", () => {
+          output.textContent = slider.value;
+        });
+      });
+    </script>
+
+   
+  </body>
+</html>

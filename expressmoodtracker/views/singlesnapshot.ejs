@@ -63,38 +63,30 @@
           </div>
       </section>
    
-    <script>
+      <script>
         // Data from your EJS template
         const result = <%- JSON.stringify(result) %>;
 
-        // Extract emotion levels into separate arrays
-        const emotions = {
-            enjoyment: [],
-            surprise: [],
-            contempt: [],
-            fear: [],
-            sadness: [],
-            disgust: [],
-            anger: []
-        };
-
-        // Extract data from result
-        result.forEach(row => {
-            Object.keys(emotions).forEach(emotion => {
-                emotions[emotion].push(row[`${emotion}_level`]);
-            });
-        });
+        // Extracting levels from the first row (assuming all rows have the same levels)
+        const row = result[0];
+        const enjoyment_level = row.enjoyment_level;
+        const surprise_level = row.surprise_level;
+        const contempt_level = row.contempt_level;
+        const fear_level = row.fear_level;
+        const sadness_level = row.sadness_level;
+        const disgust_level = row.disgust_level;
+        const anger_level = row.anger_level;
 
         // Chart.js configuration
         const ctx = document.getElementById('emotionChart').getContext('2d');
         const chartconfig = {
             type: 'bar',
             data: {
-                labels: Object.keys(emotions),
+                labels: ["enjoyment", "surprise", "contempt", "fear", "sadness", "disgust", "anger"],
                 datasets: [
                     {
                         label: '',
-                        data: Object.values(emotions).map(emotionLevels => emotionLevels.reduce((acc, curr) => acc + curr, 0) / emotionLevels.length), // Average level for each emotion
+                        data: [enjoyment_level, surprise_level, contempt_level, fear_level, sadness_level, disgust_level, anger_level],
                         backgroundColor: [
                             '#E69F00', // Orange
                             '#56B4E9', // Sky Blue
@@ -107,7 +99,6 @@
                     }
                 ]
             },
-            
             options: {
                 responsive: true,
                 animation: true,
@@ -120,14 +111,11 @@
                         display: true,
                         text: 'Emotion Levels',
                         font: { size: 20 }
-
                     }
                 }
             }
         };
-        const emotionChart = new Chart('emotionChart', chartconfig);
-
+        const emotionChart = new Chart(ctx, chartconfig);
     </script>
-   
   </body>
 </html>

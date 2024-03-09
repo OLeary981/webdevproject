@@ -30,16 +30,21 @@
     </div>
     <div class="buttons is-flex is-justify-content-center">
         <!-- Buttons for changing the time range -->
-        <button id="allButton" class="button is-info">All Time</button>
-        <button id="yearButton" class="button is-info">Year</button>
-        <button id="threeMonthsButton" class="button is-info">3 Months</button>
-        <button id="monthButton" class="button is-info">Month</button>
-        <button id="weekButton" class="button is-info">Week</button>
+        <button id="allButton" class="button mybutton">All Time</button>
+        <button id="yearButton" class="button mybutton">Year</button>
+        <button id="threeMonthsButton" class="button mybutton">3 Months</button>
+        <button id="monthButton" class="button mybutton">Month</button>
+        <button id="weekButton" class="button mybutton">Week</button>
     </div>
     <div class="buttons is-flex is-justify-content-center">
-        <button id="showAllButton" class="button is-info">Show All</button>
-        <button id="showFearButton" class="button is-info">Show Fear</button>
-        <!-- Add buttons for other emotions if needed -->
+        <button id="showAllButton" class="button mybutton">Show All</button>
+        <button id="showEnjoymentButton" class="button enjoyment">Enjoyment</button>
+        <button id="showSurpriseButton" class="button surprise">Surprise</button>
+        <button id="showContemptButton" class="button contempt">Contempt</button>
+        <button id="showFearButton" class="button fear">Fear</button>
+        <button id="showSadnessButton" class="button sadness">Sadness</button>
+        <button id="showDisgustButton" class="button disgust">Disgust</button>
+        <button id="showAngerButton" class="button anger">Anger</button>
     </div>
 
     <script>
@@ -254,7 +259,7 @@ console.log(`Just before chart creation the chart data is:`, chartConfig.data.da
 
 const newChart = new Chart("myChart", chartConfig);
 
-//Sort legend labels after creating the chart
+//Sort legend labels after creating the chart - may be broken at the moment.
 newChart.legend.legendItems.sort((a, b) => {
     const datasetA = newChart.data.datasets[a.datasetIndex];
     const datasetB = newChart.data.datasets[b.datasetIndex];
@@ -388,11 +393,39 @@ if (existingChart) {
     });
 
     document.getElementById("showFearButton").addEventListener("click", function() {
-        selectedSeries = "fear";
-        console.log(selectedSeries);
-        //const timeRange = document.querySelector('input[name="timeRange"]:checked').value;
-        myChart = updateChart(timeRange, selectedSeries); // Set default time range to week when showing fear
-    });
+    selectedSeries = "fear";
+    updateChart(timeRange, selectedSeries);
+});
+
+document.getElementById("showAngerButton").addEventListener("click", function() {
+    selectedSeries = "anger";
+    updateChart(timeRange, selectedSeries);
+});
+
+document.getElementById("showDisgustButton").addEventListener("click", function() {
+    selectedSeries = "disgust";
+    updateChart(timeRange, selectedSeries);
+});
+
+document.getElementById("showSadnessButton").addEventListener("click", function() {
+    selectedSeries = "sadness";
+    updateChart(timeRange, selectedSeries);
+});
+
+document.getElementById("showContemptButton").addEventListener("click", function() {
+    selectedSeries = "contempt";
+    updateChart(timeRange, selectedSeries);
+});
+
+document.getElementById("showSurpriseButton").addEventListener("click", function() {
+    selectedSeries = "surprise";
+    updateChart(timeRange, selectedSeries);
+});
+
+document.getElementById("showEnjoymentButton").addEventListener("click", function() {
+    selectedSeries = "enjoyment";
+    updateChart(timeRange, selectedSeries);
+});
     
         window.onload = function () {
             myChart = createChart(filteredDates, filteredLevels, selectedSeries); // Initialize chart

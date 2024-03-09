@@ -6,8 +6,15 @@
     <title>Line Graph</title>
     <!-- Include Chart.js library -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- Include date-fns library -->
-    <script src="https://cdn.jsdelivr.net/npm/date-fns@2.23.0"></script>
+    <!-- Include Moment.js library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <!-- Include Moment.js adapter for Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-moment"></script>
+    <!-- Include Flatpickr CSS -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css"
+    />
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css"
@@ -31,6 +38,19 @@
       <button id="weekButton" class="button is-info">Week</button>
     </div>
 
+    <div class="columns is-centered">
+      <div class="column is-half">
+        <label for="startDate">Start Date:</label>
+        <input type="date" id="startDate" />
+        <label for="endDate">End Date:</label>
+        <input type="date" id="endDate" />
+        <button id="dateRangeButton" class="button is-info">
+          Apply Date Range
+        </button>
+      </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
     <script>
       let myChart; // Declare myChart variable in the global scope
 
@@ -38,15 +58,16 @@
       const dates = JSON.parse(
         "<%- JSON.stringify(dates.map(dateObj => dateObj.timestamp)) %>"
       );
-      const levelData = JSON.parse("<%- JSON.stringify(levels) %>");
+      console.log(`Here are the dates after line 51: ${dates}`);
+      const levelData = JSON.parse(`<%- JSON.stringify(levels) %>`);
       const levels = levelData.map((level) =>
         level.map((levelObj) => Object.values(levelObj)[0])
       );
 
       // Create initial chart with one week worth of data
-      const defaultStartDate = subWeeks(new Date(), 1); // Use subWeeks instead of addWeeks
+      const defaultStartDate = moment().subtract(1, "week");
       const filteredDates = dates.filter((date) =>
-        isAfter(new Date(date), defaultStartDate)
+        moment(date).isSameOrAfter(defaultStartDate)
       );
       const filteredLevels = filteredDates.map((date, index) =>
         levels.map((level) => level[index])
@@ -90,7 +111,7 @@
               },
             },
             plugins: {
-              legend: { display: true, position: "right" },
+              legend: { display: true, position: "right" }, // Display legend to the right of the chart
               tooltips: { enabled: true },
               title: {
                 display: true,
@@ -117,62 +138,100 @@
       // Function to change time range
       function changeTimeRange(range) {
         let filteredDates, filteredLevels;
-        const currentDate = new Date();
+        const currentDate = moment();
         switch (range) {
           case "all":
-            filteredDates = dates;
-            filteredLevels = levels;
+            const earliestDate = moment.min(dates.map((date) => moment(date)));
+            console.log(earliestDate);
+            filteredDates = dates.filter((date) =>
+              moment(date).isSameOrAfter(earliestDate)
+            );
+            filteredLevels = levels.map((level) =>
+              level.slice(0, filteredDates.length)
+            ); // Adjust the slice to match the length of filteredDates
             break;
           case "year":
-            const defaultStartDateYear = subYears(currentDate, 1);
+            // Filter data for the last year
+            const defaultStartDateYear = currentDate
+              .clone()
+              .subtract(1, "year");
             filteredDates = dates.filter((date) =>
-              isAfter(new Date(date), defaultStartDateYear)
+              moment(date).isSameOrAfter(defaultStartDateYear)
             );
             filteredLevels = levels.map((level) =>
               level.slice(-filteredDates.length)
             );
             break;
-          case "threeMonths":
-            const defaultStartDate3Months = subMonths(currentDate, 3);
+          case "3months":
+            // Filter data for the last 3 months
+            const defaultStartDate3Months = currentDate
+              .clone()
+              .subtract(3, "months");
             filteredDates = dates.filter((date) =>
-              isAfter(new Date(date), defaultStartDate3Months)
+              moment(date).isSameOrAfter(defaultStartDate3Months)
             );
             filteredLevels = levels.map((level) =>
               level.slice(-filteredDates.length)
             );
             break;
           case "month":
-            const defaultStartDateMonth = subMonths(currentDate, 1);
+            // Filter data for the last month
+            const defaultStartDateMonth = currentDate
+              .clone()
+              .subtract(1, "month");
             filteredDates = dates.filter((date) =>
-              isAfter(new Date(date), defaultStartDateMonth)
+              moment(date).isSameOrAfter(defaultStartDateMonth)
             );
             filteredLevels = levels.map((level) =>
               level.slice(-filteredDates.length)
             );
             break;
           case "week":
-            const defaultStartDateWeek = subWeeks(currentDate, 1);
+            // Filter data for the last week
+            const defaultStartDateWeek = currentDate
+              .clone()
+              .subtract(1, "week");
             filteredDates = dates.filter((date) =>
-              isAfter(new Date(date), defaultStartDateWeek)
+              moment(date).isSameOrAfter(defaultStartDateWeek)
             );
             filteredLevels = levels.map((level) =>
               level.slice(-filteredDates.length)
             );
             break;
+          case "dateRange":
+            // Filter data based on selected date range
+            filteredDates = dates.filter((date) =>
+              moment(date).isBetween(startDate, endDate)
+            );
+            const startIndex = dates.findIndex((date) =>
+              moment(date).isSame(startDate, "day")
+            );
+            const endIndex = dates.findIndex((date) =>
+              moment(date).isSame(endDate, "day")
+            );
+            filteredLevels = levels.map((level) =>
+              level.slice(startIndex, endIndex + 1)
+            );
+            break;
           default:
             break;
         }
+        // Update chart with filtered data
+        if (myChart && filteredDates && filteredLevels) {
+          console.log("filteredDates:", filteredDates);
+          console.log("filteredLevels:", filteredLevels);
+          myChart.data.labels = filteredDates;
+          myChart.data.datasets = filteredLevels.map((level, index) => ({
+            label: `Level ${index + 1}`,
+            data: level,
+            fill: false,
+            borderColor: colorPalette[index % colorPalette.length],
+            tension: 0.1,
+          }));
+          myChart.update();
+        }
 
-        myChart.data.labels = filteredDates;
-        myChart.data.datasets = filteredLevels.map((level, index) => ({
-          label: `Level ${index + 1}`,
-          data: level,
-          fill: false,
-          borderColor: colorPalette[index % colorPalette.length],
-          tension: 0.1,
-        }));
-        myChart.update();
-
+        // Sort legend items based on the values of the last data points on the graph
         myChart.legend.legendItems.sort((a, b) => {
           const lastDataPointA =
             myChart.data.datasets[a.datasetIndex].data.slice(-1)[0];
@@ -183,9 +242,9 @@
       }
 
       window.onload = function () {
-        myChart = createChart(filteredDates, filteredLevels);
-        changeTimeRange("week");
+        myChart = createChart(filteredDates, filteredLevels); // Initialize chart
 
+        // Add event listeners to buttons
         document
           .getElementById("allButton")
           .addEventListener("click", function () {
@@ -199,7 +258,7 @@
         document
           .getElementById("threeMonthsButton")
           .addEventListener("click", function () {
-            changeTimeRange("threeMonths");
+            changeTimeRange("3months");
           });
         document
           .getElementById("monthButton")
@@ -210,9 +269,44 @@
           .getElementById("weekButton")
           .addEventListener("click", function () {
             changeTimeRange("week");
+            console.log(
+              `These are the dates inside the switch: ${filteredDates}`
+            );
           });
 
-        
+        // Event listener for the "Apply Date Range" button
+        document
+          .getElementById("dateRangeButton")
+          .addEventListener("click", function () {
+            let startDate, endDate;
+
+            // Initialize Flatpickr for start date
+            const startDatePicker = flatpickr("#startDate", {
+              enableTime: true,
+              dateFormat: "Y-m-d\\TH:i:S.000\\Z",
+            });
+
+            // Initialize Flatpickr for end date
+            const endDatePicker = flatpickr("#endDate", {
+              enableTime: true,
+              dateFormat: "Y-m-d\\TH:i:S.000\\Z",
+            });
+
+            startDate = startDatePicker.selectedDates[0];
+            endDate = endDatePicker.selectedDates[0];
+
+            // Check if both start and end dates are selected
+            if (myChart && startDate && endDate) {
+              console.log(`correctly inside the event listener: ${startDate}`);
+              console.log(`correctly inside the event listener: ${endDate}`);
+              changeTimeRange("dateRange", startDate, endDate);
+            } else {
+              // If either start or end date is not selected, show an alert
+              alert("Please select both start and end dates.");
+            }
+          });
+
+        changeTimeRange("week"); // Set default time range
       };
     </script>
   </body>

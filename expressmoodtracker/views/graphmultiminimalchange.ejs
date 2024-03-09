@@ -25,7 +25,7 @@
     <div class="columns is-centered">
         <div class="column is-half">
             <!-- Canvas element for the chart -->
-            <canvas id="myChart" width="400" height="400"></canvas>
+            <canvas id="myChart" ></canvas>
         </div>
     </div>
     <div class="buttons is-flex is-justify-content-center">
@@ -140,6 +140,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const dates = JSON.parse('<%- JSON.stringify(dates.map(dateObj => dateObj.timestamp)) %>');
         const levelData = JSON.parse(`<%- JSON.stringify(levels) %>`);
         const levels = levelData.map(level => level.map(levelObj => Object.values(levelObj)[0]));
+        const levelNames = levelData.map(level => Object.keys(level)[0].replace('_level', ''));
+        console.log(levelNames)
         const emotionLabels = ["enjoyment", "surprise", "contempt", "sadness", "fear", "disgust", "anger"];
         console.log(`emotion labels are: ${emotionLabels}`);
     
@@ -169,7 +171,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 options: {
                     responsive: true,
                     animation: true,
-                    maintainAspectRatio: true,
+                    maintainAspectRatio: false,
                     scales: {
                         y: {
                             min: 0,
@@ -194,6 +196,13 @@ document.addEventListener('DOMContentLoaded', () => {
                             font: { size: 20 },
                         },
                     },
+                    onResize: function(chart, size) {
+      // Ensure chart is updated only if the size actually changes
+      if (size.width !== chart.width || size.height !== chart.height) {
+        chart.resize();
+      }
+    }
+
                 },
             };
     
@@ -243,7 +252,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Update chart with filtered data
             myChart.data.labels = filteredDates;
             myChart.data.datasets = filteredLevels.map((level, index) => ({
-                label: emotionLabels[index].replace('_level', ''),
+                label: emotionLabels[index],
                 data: level,
                 fill: false,
                 borderColor: emotionColorMap[emotionLabels[index]],

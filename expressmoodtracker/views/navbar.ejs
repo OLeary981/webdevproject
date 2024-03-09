@@ -7,7 +7,7 @@
   
     <div class="navbar-menu is-active">
         <div class="navbar-start">
-            <% if (isLoggedIn && currentPage !== '/allsnapshots' && currentPage!= '/register' ) { %>
+            <% if (currentPage !== '/allsnapshots' && currentPage!= '/register' ) { %>
                 <a class="navbar-item is-hoverable" href="/allsnapshots">Mood Overview</a>
             <% } %>
             <% if (currentPage !== '/newsnapshot' && currentPage !== '/login'&& currentPage!= '/register') { %>

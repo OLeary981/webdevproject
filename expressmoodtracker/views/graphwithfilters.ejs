@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Line Graph</title>
+    <!-- Include Chart.js library -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Include Moment.js library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <!-- Include Moment.js adapter for Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-moment"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
+    <link rel="stylesheet" href="/css/mystyles.css">
+</head>
+</head>
+<body>
+    <%- include('navbar', { isLoggedIn }) %>
+    <section class="section">
+        <div class="container">
+    <h1 class="title">Emotion Snapshot Overview</h1>
+</div>        
+</section>
+    <!-- Container for the graph using Bulma columns -->
+    <div class="columns is-centered">
+        <div class="column is-half">
+            <!-- Canvas element for the chart -->
+            <canvas id="myChart" ></canvas>
+        </div>
+    </div>
+    <div class="buttons is-flex is-justify-content-center">
+        <!-- Buttons for changing the time range -->
+        <button id="allButton" class="button is-info">All Time</button>
+        <button id="yearButton" class="button is-info">Year</button>
+        <button id="threeMonthsButton" class="button is-info">3 Months</button>
+        <button id="monthButton" class="button is-info">Month</button>
+        <button id="weekButton" class="button is-info">Week</button>
+    </div>
+    <div class="buttons is-flex is-justify-content-center">
+        <button id="showAllButton" class="button is-info">Show All</button>
+        <button id="showFearButton" class="button is-info">Show Fear</button>
+        <!-- Add buttons for other emotions if needed -->
+    </div>
+
+    <script>
+        // const emotionColorMap = {
+        //     "enjoyment": "#E69F00",   // Orange
+        //     "surprise": "#56B4E9",    // Sky Blue
+        //     "contempt": "#009E73",    // Bluish Green
+        //     "fear": "#F0E442",        // Yellow
+        //     "sadness": "#0072B2",     // Blue
+        //     "disgust": "#D55E00",     // Vermillion
+        //     "anger": "#CC79A7"        // Reddish Purple
+        // };
+    //non-working code attempting to colour the backgrounds of the cards according to emotion.
+    //     function getDominantEmotions(snapshot) {
+    // const levelsForDate = [
+    //     snapshot.enjoyment_level,
+    //     snapshot.surprise_level,
+    //     snapshot.contempt_level,
+    //     snapshot.sadness_level,
+    //     snapshot.fear_level,
+    //     snapshot.disgust_level,
+    //     snapshot.anger_level
+    // ];
+
+//     const dominantEmotions = [];
+//     const maxLevel = Math.max(...levelsForDate);
+//     Object.keys(snapshot).forEach((emotion, index) => {
+//         if (levelsForDate[index] === maxLevel) {
+//             dominantEmotions.push(emotion);
+//         }
+//     });
+//     return dominantEmotions;
+// }
+
+// // Function to generate a gradient CSS string based on dominant emotions
+// function generateGradient(dominantEmotions) {
+//     // Calculate color stops for gradient
+//     const numEmotions = dominantEmotions.length;
+//     const colorStops = dominantEmotions.map((emotion, index) => {
+//         const color = emotionColorMap[emotion];
+//         const position = index * (100 / (numEmotions - 1));
+//         return `${color} ${position}%`;
+//     });
+
+//     // Construct gradient CSS string
+//     return `linear-gradient(to right, ${colorStops.join(', ')})`;
+// }
+
+// document.addEventListener('DOMContentLoaded', () => {
+//     const snapshotCards = document.querySelectorAll('.date-card');
+//     snapshotCards.forEach((card, index) => {
+//         const snapshot = snapshots[index]; // Assuming snapshots array is available
+//         const dominantEmotions = getDominantEmotions(snapshot);
+//         const gradient = generateGradient(dominantEmotions);
+//         card.style.backgroundImage = gradient;
+//     });
+// });
+
+document.addEventListener('DOMContentLoaded', () => {
+    const snapshotCards = document.querySelectorAll('.date-card');
+    snapshotCards.forEach((card) => {
+        card.addEventListener('mouseover', (event) => {
+            const notes = event.currentTarget.dataset.notes; // Get the notes from the data attribute
+            if (notes) {
+                const tooltip = document.createElement('div');
+                tooltip.classList.add('tooltip');
+                tooltip.textContent = notes;
+                card.appendChild(tooltip);
+            }
+        });
+
+        card.addEventListener('mouseout', (event) => {
+            const tooltip = event.currentTarget.querySelector('.tooltip');
+            if (tooltip) {
+                tooltip.remove();
+            }
+        });
+    });
+});
+    </script>
+    
+    <div class="container">
+        <div class="uk-grid uk-child-width-1-5" uk-grid>
+            <% snapshots.reverse().forEach((snapshot) => { %>
+                <div>
+                    <div class="uk-card uk-card-body uk-card-default date-card" data-notes="<%= snapshot.notes %>">
+                        <% var formattedDate = new Date(snapshot.timestamp); %>
+                        <a href="/singlesnapshot/<%= snapshot.snapshot_ID %>" class="uk-link-toggle">
+                            <h3 class="uk-card-title"><%= formattedDate.toLocaleDateString('en-GB') %></h3>
+                        </a>
+                        <!-- Add a hidden paragraph to store the notes -->
+                        <p class="notes" style="display: none;"><%= snapshot.notes %></p>
+                    </div>
+                </div>
+            <% }); %>
+        </div>
+    </div>
+    <script>
+       const emotionColorMap = {
+            "enjoyment": "#E69F00",   // Orange
+            "surprise": "#56B4E9",    // Sky Blue
+            "contempt": "#009E73",    // Bluish Green
+            "fear": "#F0E442",        // Yellow
+            "sadness": "#0072B2",     // Blue
+            "disgust": "#D55E00",     // Vermillion
+            "anger": "#CC79A7"        // Reddish Purple
+        };
+
+        let myChart; // Declare myChart variable in the global scope
+    
+        // Extracting dates and levels from EJS variables
+        const dates = JSON.parse('<%- JSON.stringify(dates.map(dateObj => dateObj.timestamp)) %>');
+        const levelData = JSON.parse(`<%- JSON.stringify(levels) %>`);
+        const levels = levelData.map(level => level.map(levelObj => Object.values(levelObj)[0]));
+        const levelNames = levelData.map(level => Object.keys((level)[0])[0].replace('_level', ''));
+        console.log(`Level names from the start of the code ${levelNames}`);
+        const emotionLabels = ["enjoyment", "surprise", "contempt", "sadness", "fear", "disgust", "anger"];
+        let timeRange = 'week'; // Default time range
+        let selectedSeries = null;
+        
+        console.log(`emotion labels are: ${emotionLabels}`);
+    
+        // Create initial chart with one week worth of data
+        const defaultStartDate = moment().subtract(1, 'week');
+        const filteredDates = dates.filter(date => moment(date).isSameOrAfter(defaultStartDate));
+        const filteredLevels = filteredDates.map((date, index) => levels.map(level => level[index]));
+    
+        // Function to create chart
+        function createChart(dates, levels, selectedSeries) {
+            //console.log("at the createChart destroy call");
+        
+            
+    //destroyChart(myChart);
+    
+
+            console.log("Making a chart");
+            console.log(`levels on chart creation ${levels}`);
+            console.log(`inside create chart, selected series is: ${selectedSeries}`);
+    const datasets = levels.map((level, index) => {
+        //const datasetLabel = levelNames[index]; // Use levelNames instead of emotionLabels
+        console.log(`datasetLabel is :${levelNames[index]}`);
+
+        if (selectedSeries && levelNames[index] !== selectedSeries) {
+            console.log("in the top if statement")
+            return  {
+                label: levelNames[index],
+                data: [],
+                fill: false,
+                borderColor: 'rgba(0, 0, 0, 0)',
+                tension: 0.1
+            };;
+        } else  {
+            console.log("in the bottom if statement");
+            return {
+                label: levelNames[index],
+                data: level,
+                fill: false,
+                borderColor: emotionColorMap[levelNames[index]],
+                tension: 0.1
+            };
+        }
+    });
+
+    console.log("Datasets:", datasets.data);
+
+    const chartData = {
+        labels: dates,
+        datasets: datasets
+    };
+
+    console.log(`Just before chart config the chart data datasets are:`, chartData.datasets);
+    const chartConfig = {
+        type: "line",
+        data: chartData,
+        options: {
+            responsive: true,
+            animation: true,
+            maintainAspectRatio: true,
+            scales: {
+                y: {
+                    min: 0,
+                    max: 10
+                },
+                x: {
+                    type: 'time',
+                    time: {
+                        unit: 'day',
+                        displayFormats: {
+                            'day': 'DD/MM/YYYY'
+                        }
+                    }
+                }
+            },
+            plugins: {
+                legend: { display: true, position: 'right' },
+                tooltips: { enabled: true },
+                title: {
+                    display: true,
+                    text: "Levels Snapshot",
+                    font: { size: 20 },
+                },
+            },
+            onResize: function(chart, size) {
+                if (size.width !== chart.width || size.height !== chart.height) {
+                    chart.resize();
+                }
+            }
+        },
+    };
+
+console.log(`Just before chart creation the chart data is:`, chartConfig.data.datasets);
+
+const newChart = new Chart("myChart", chartConfig);
+
+//Sort legend labels after creating the chart
+newChart.legend.legendItems.sort((a, b) => {
+    const datasetA = newChart.data.datasets[a.datasetIndex];
+    const datasetB = newChart.data.datasets[b.datasetIndex];
+
+    // Get the last data points from datasets A and B
+    const lastDataPointA = datasetA.data[datasetA.data.length - 1];
+    const lastDataPointB = datasetB.data[datasetB.data.length - 1];
+
+    // Compare the last data points
+    return lastDataPointB - lastDataPointA;
+});
+
+console.log("About to return new chart");
+return newChart;
+}
+    
+function updateChart(timeRange, selectedSeries) {
+    
+    destroyChart(myChart);
+    
+    // Filter dates and levels based on the selected time range
+    let filteredDates, filteredLevels;
+    console.log("at the beginning of update chart");
+    console.log(selectedSeries);
+    const currentDate = moment();
+    switch (timeRange) {
+        case 'all':
+            // Use all data
+            filteredDates = dates;
+            filteredLevels = levels;
+            break;
+        case 'year':
+            // Filter data for the last year
+            const defaultStartDateYear = currentDate.clone().subtract(1, 'year');
+            filteredDates = dates.filter(date => moment(date).isSameOrAfter(defaultStartDateYear));
+            filteredLevels = levels.map(level => level.slice(-filteredDates.length));
+            break;
+        case '3months':
+            // Filter data for the last 3 months
+            const defaultStartDate3Months = currentDate.clone().subtract(3, 'months');
+            filteredDates = dates.filter(date => moment(date).isSameOrAfter(defaultStartDate3Months));
+            filteredLevels = levels.map(level => level.slice(-filteredDates.length));
+            break;
+        case 'month':
+            // Filter data for the last month
+            const defaultStartDateMonth = currentDate.clone().subtract(1, 'month');
+            filteredDates = dates.filter(date => moment(date).isSameOrAfter(defaultStartDateMonth));
+            filteredLevels = levels.map(level => level.slice(-filteredDates.length));
+            break;
+        case 'week':
+            // Filter data for the last week
+            const defaultStartDateWeek = currentDate.clone().subtract(1, 'week');
+            filteredDates = dates.filter(date => moment(date).isSameOrAfter(defaultStartDateWeek));
+            filteredLevels = levels.map(level => level.slice(-filteredDates.length));
+            break;
+        default:
+            break;
+    }
+
+    // Update chart with filtered data
+   
+    console.log("just before new chart creation");
+    myChart = createChart(filteredDates, filteredLevels, selectedSeries);
+    console.log("near the bottom of update chart");
+   
+
+    // Update chart data
+//     myChart.data.labels = filteredDates;
+// myChart.data.datasets = filteredLevels.map((level, index) => {
+//     //const datasetLabel = Object.keys(levelData[index])[0].replace('_level', '');
+//     return {
+//         label: levelNames[index],
+//         data: level,
+//         fill: false,
+//         borderColor: emotionColorMap[levelNames[index]],
+//         tension: 0.1
+//     };
+//});
+    //myChart.update();
+
+    // Sort legend items based on the values of the last data points on the graph
+    return myChart;
+}
+
+function destroyChart(chartInstance) {
+    // console.log("inside destroy method")
+    // if (chartInstance instanceof Chart) {
+    //     console.log("chart deteceted and inside destroy part of if statement");
+    //     chartInstance.destroy();
+    //     console.log("Chart destroyed successfully.");
+    // } else {
+    //     console.log("No chart instance found.");
+    //}
+    const existingChart = Chart.getChart(chartInstance);
+
+// Destroy the existing chart if it exists
+if (existingChart) {
+    existingChart.destroy();
+}
+    
+}
+
+         // Add event listeners to each button
+    document.getElementById("allButton").addEventListener("click", function() {
+        updateChart("all", selectedSeries);
+    });
+
+    document.getElementById("yearButton").addEventListener("click", function() {
+        timeRange = "year"
+        updateChart(timeRange, selectedSeries);
+    });
+
+    document.getElementById("threeMonthsButton").addEventListener("click", function() {
+        timeRange = "3months"
+        updateChart(timeRange, selectedSeries);
+    });
+
+    document.getElementById("monthButton").addEventListener("click", function() {
+        timeRange = "month"
+        updateChart(timeRange, selectedSeries);
+    });
+
+    document.getElementById("weekButton").addEventListener("click", function() {
+        timeRange = "week"
+        updateChart(timeRange, selectedSeries);
+    });
+
+    document.getElementById("showAllButton").addEventListener("click", function() {
+        selectedSeries = null;
+        updateChart(timeRange, selectedSeries); // Set default time range to week when showing all data
+    });
+
+    document.getElementById("showFearButton").addEventListener("click", function() {
+        selectedSeries = "fear";
+        console.log(selectedSeries);
+        //const timeRange = document.querySelector('input[name="timeRange"]:checked').value;
+        myChart = updateChart(timeRange, selectedSeries); // Set default time range to week when showing fear
+    });
+    
+        window.onload = function () {
+            myChart = createChart(filteredDates, filteredLevels, selectedSeries); // Initialize chart
+            updateChart(timeRange, selectedSeries); // Set default time range
+        };
+
+
+
+        
+
+
+    </script>
+    
+</body>
+</html>

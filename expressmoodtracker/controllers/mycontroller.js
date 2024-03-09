@@ -266,7 +266,7 @@ exports.getAllSnapshots = async (req, res) => {
     );
     console.log(snapshots);
 
-    res.render("graphmultiminimalchange", {
+    res.render("graphwithfilters", {
       dates,
       levels,
       snapshots,

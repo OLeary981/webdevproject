@@ -3,9 +3,17 @@
         <a <% if (isLoggedIn) { %>href="/allSnapshots"<% } else { %>href="/" <% } %> class="navbar-item">
             <img src="/imgs/wellbeing_icon.png" alt="Wellbeing Icon" width="30" height="30" style="margin-top: auto; margin-bottom: auto;">
         </a>
+
+        <!-- Add a hamburger menu button -->
+        <a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+        </a>
     </div>
   
-    <div class="navbar-menu is-active">
+    <!-- Navbar menu -->
+    <div id="navbarBasicExample" class="navbar-menu">
         <div class="navbar-start">
             <% if (currentPage !== '/allsnapshots' && currentPage!= '/register' ) { %>
                 <a class="navbar-item is-hoverable" href="/allsnapshots">Mood Overview</a>

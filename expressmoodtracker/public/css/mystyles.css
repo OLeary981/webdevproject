@@ -30,6 +30,15 @@
     justify-content: center; /* Center items horizontally */
 }
 
+
+.section-form .title, .section-form .label {
+  color: #4a4a4a;; /* Change the color to blue */
+}
+
+.column:first-child {
+  margin-right: 80px; /* Add some space between the forms */
+}
+
 #myChart {
     width: 100%;
     height: 50%;
@@ -71,8 +80,11 @@
   }
 
   .mybutton {
-    background-color: black;
-    color: #1ec4e1;
+    color: white;    
+    background-color:  #4a4a4a;
+    font-weight: bold;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.1);
+    border: 1px solid #333;
   }
 
   .trigger-container {
@@ -128,4 +140,8 @@
 /* Adjust label font size */
 .trigger label {
   font-size: 16px; /* Adjust font size as needed */
+}
+
+body {
+  height: 100vh;
 }

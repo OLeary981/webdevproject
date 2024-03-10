@@ -195,6 +195,11 @@ exports.postDeleteFavourite = (req, res) => {
 /////////////////////////////////////////
 // New methods
 
+exports.getIndex = (req, res) => { 
+  const {error} = req.query;
+      res.render("index", { error });    
+};
+
 exports.getRegisterUser = (req, res) => {
     const {error} = req.query;
   res.render("register", { error }); //add protection etc so can only register if not logged in?
@@ -577,7 +582,7 @@ exports.postRegisterUser = async (req, res) => {
       if (rows.length > 0) {
         // Username already exists
         return res.redirect(
-            "/register?error=Username taken choose another or login</a>"
+            "/register?error=Username taken choose another or <a>/login</a>"
         );
       }
 
@@ -707,7 +712,7 @@ exports.postAddSnapshot = (req, res) => {
         }
 
         // Get the auto-incremented snapshot_ID - do I need to add 1 to this because of the transaction?
-        const snapshotID = result.insertId;
+        const snapshot_ID = result.insertId;
 
         // Retrieve trigger IDs for selected triggers
         conn.query(
@@ -727,7 +732,7 @@ exports.postAddSnapshot = (req, res) => {
             triggerResults.forEach((row) => {
               conn.query(
                 insertSnapshotTriggerSQL,
-                [snapshotID, row.trigger_ID],
+                [snapshot_ID, row.trigger_ID],
                 (err, result) => {
                   if (err) {
                     console.error(
@@ -756,7 +761,7 @@ exports.postAddSnapshot = (req, res) => {
               }
               console.log("Transaction successfully committed");
               // Redirect to index or any other page after successful transaction
-              res.redirect("/");
+              res.redirect(`/singlesnapshot/${snapshot_ID}`);
             });
           }
         );
@@ -893,8 +898,6 @@ exports.postDeleteSnapshot = (req, res) => {
 
   const { id: snapshot_ID } = req.params;
   const { user_ID } = req.session;
-
-  const deleteSnapshotTriggerSQL = `DELETE FROM snapshot_trigger WHERE snapshot_ID = ?`;
   const deleteSnapshotSQL = `DELETE FROM snapshot WHERE snapshot_ID = ? AND user_ID = ?`;
 
   conn.query(deleteSnapshotSQL, [snapshot_ID, user_ID], (err, rows) => {

@@ -23,7 +23,7 @@
 </section>
     <!-- Container for the graph using Bulma columns -->
     <div class="columns is-centered">
-        <div class="column is-half">
+        <div class="column is-half is-centered">
             <!-- Canvas element for the chart -->
             <canvas id="myChart" ></canvas>
         </div>
@@ -35,6 +35,7 @@
         <button id="threeMonthsButton" class="button mybutton">3 Months</button>
         <button id="monthButton" class="button mybutton">Month</button>
         <button id="weekButton" class="button mybutton">Week</button>
+        <button id="dayButton" class="button mybutton">Day</button>
     </div>
     <div class="buttons is-flex is-justify-content-center">
         <button id="showAllButton" class="button mybutton">Show All</button>
@@ -164,6 +165,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const emotionLabels = ["enjoyment", "surprise", "contempt", "sadness", "fear", "disgust", "anger"];
         let timeRange = 'week'; // Default time range
         let selectedSeries = null;
+        let xAxisUnit='day';
         
         console.log(`emotion labels are: ${emotionLabels}`);
     
@@ -173,7 +175,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const filteredLevels = filteredDates.map((date, index) => levels.map(level => level[index]));
     
         // Function to create chart
-        function createChart(dates, levels, selectedSeries) {
+        function createChart(dates, levels, selectedSeries, xAxisUnit) {
             //console.log("at the createChart destroy call");
         
             
@@ -231,7 +233,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 x: {
                     type: 'time',
                     time: {
-                        unit: 'day',
+                        unit: xAxisUnit,
                         displayFormats: {
                             'day': 'DD/MM/YYYY'
                         }
@@ -276,7 +278,7 @@ console.log("About to return new chart");
 return newChart;
 }
     
-function updateChart(timeRange, selectedSeries) {
+function updateChart(timeRange, selectedSeries, xAxisUnit) {
     
     destroyChart(myChart);
     
@@ -315,6 +317,12 @@ function updateChart(timeRange, selectedSeries) {
             filteredDates = dates.filter(date => moment(date).isSameOrAfter(defaultStartDateWeek));
             filteredLevels = levels.map(level => level.slice(-filteredDates.length));
             break;
+            case 'day':
+            // Filter data for the last week
+            const defaultStartDateDay = currentDate.clone().startOf('day');
+            filteredDates = dates.filter(date => moment(date).isSameOrAfter(defaultStartDateDay));
+            filteredLevels = levels.map(level => level.slice(-filteredDates.length));
+            break;
         default:
             break;
     }
@@ -322,7 +330,7 @@ function updateChart(timeRange, selectedSeries) {
     // Update chart with filtered data
    
     console.log("just before new chart creation");
-    myChart = createChart(filteredDates, filteredLevels, selectedSeries);
+    myChart = createChart(filteredDates, filteredLevels, selectedSeries, xAxisUnit);
     console.log("near the bottom of update chart");
    
 
@@ -364,72 +372,81 @@ if (existingChart) {
 
          // Add event listeners to each button
     document.getElementById("allButton").addEventListener("click", function() {
-        updateChart("all", selectedSeries);
+        updateChart("all", selectedSeries, xAxisUnit);
     });
 
     document.getElementById("yearButton").addEventListener("click", function() {
         timeRange = "year"
-        updateChart(timeRange, selectedSeries);
+        xAxisUnit = 'day'
+        updateChart(timeRange, selectedSeries, xAxisUnit);
     });
 
     document.getElementById("threeMonthsButton").addEventListener("click", function() {
         timeRange = "3months"
-        updateChart(timeRange, selectedSeries);
+        xAxisUnit = 'day'
+        updateChart(timeRange, selectedSeries, xAxisUnit);
     });
 
     document.getElementById("monthButton").addEventListener("click", function() {
         timeRange = "month"
-        updateChart(timeRange, selectedSeries);
+        xAxisUnit = 'day'
+        updateChart(timeRange, selectedSeries, xAxisUnit);
     });
 
     document.getElementById("weekButton").addEventListener("click", function() {
         timeRange = "week"
-        updateChart(timeRange, selectedSeries);
+        xAxisUnit = 'day'
+        updateChart(timeRange, selectedSeries, xAxisUnit);
+    });
+    document.getElementById("dayButton").addEventListener("click", function() {
+        timeRange = "day"
+        xAxisUnit = 'hour'
+        updateChart(timeRange, selectedSeries,xAxisUnit);
     });
 
     document.getElementById("showAllButton").addEventListener("click", function() {
         selectedSeries = null;
-        updateChart(timeRange, selectedSeries); // Set default time range to week when showing all data
+        updateChart(timeRange, selectedSeries, xAxisUnit); 
     });
 
     document.getElementById("showFearButton").addEventListener("click", function() {
     selectedSeries = "fear";
-    updateChart(timeRange, selectedSeries);
+    updateChart(timeRange, selectedSeries,xAxisUnit);
 });
 
 document.getElementById("showAngerButton").addEventListener("click", function() {
     selectedSeries = "anger";
-    updateChart(timeRange, selectedSeries);
+    updateChart(timeRange, selectedSeries,xAxisUnit);
 });
 
 document.getElementById("showDisgustButton").addEventListener("click", function() {
     selectedSeries = "disgust";
-    updateChart(timeRange, selectedSeries);
+    updateChart(timeRange, selectedSeries, xAxisUnit);
 });
 
 document.getElementById("showSadnessButton").addEventListener("click", function() {
     selectedSeries = "sadness";
-    updateChart(timeRange, selectedSeries);
+    updateChart(timeRange, selectedSeries, xAxisUnit);
 });
 
 document.getElementById("showContemptButton").addEventListener("click", function() {
     selectedSeries = "contempt";
-    updateChart(timeRange, selectedSeries);
+    updateChart(timeRange, selectedSeries, xAxisUnit);
 });
 
 document.getElementById("showSurpriseButton").addEventListener("click", function() {
     selectedSeries = "surprise";
-    updateChart(timeRange, selectedSeries);
+    updateChart(timeRange, selectedSeries, xAxisUnit);
 });
 
 document.getElementById("showEnjoymentButton").addEventListener("click", function() {
     selectedSeries = "enjoyment";
-    updateChart(timeRange, selectedSeries);
+    updateChart(timeRange, selectedSeries, xAxisUnit);
 });
     
         window.onload = function () {
             myChart = createChart(filteredDates, filteredLevels, selectedSeries); // Initialize chart
-            updateChart(timeRange, selectedSeries); // Set default time range
+            updateChart(timeRange, selectedSeries, xAxisUnit); // Set default time range
         };
 
 

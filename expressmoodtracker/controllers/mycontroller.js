@@ -656,10 +656,26 @@ exports.postAddSnapshot = (req, res) => {
     anger,
     notes,
   } = req.body;
-  const formTriggers = req.body.triggers;
+
+  const formTriggers = req.body.triggers ? req.body.triggers.split(',') : []; // Convert string to array using comma as delimiter or set it as an empty array if triggers are not provided
   console.log(formTriggers);
-  const filteredTriggers = formTriggers.filter(item => item !== 'on');
-  const selectedTriggers = filteredTriggers.flatMap(element => element.split(',')); //to make the array of triggers that can be used by SQL statement
+  let selectedTriggers;
+  if (formTriggers.length === 0) {
+      // Handle the case where no triggers are selected
+      console.log("No triggers selected.");
+      selectedTriggers = null; //putting const infront here causes an error. goodness knows why.
+      console.log(`Selected Triggers array should be null: ${selectedTriggers}`);     
+  } else {
+      const filteredTriggers = formTriggers.filter(item => item !== 'on');
+      selectedTriggers = filteredTriggers
+      console.log(selectedTriggers);
+      // Proceed with processing selected triggers
+  }
+
+  // const formTriggers = req.body.triggers;
+  // console.log(formTriggers);
+  // const filteredTriggers = formTriggers.filter(item => item !== 'on');
+  // const selectedTriggers = filteredTriggers.flatMap(element => element.split(',')); //to make the array of triggers that can be used by SQL statement
    const { user_ID } = req.session;
    console.log("Line 524");
   console.log(selectedTriggers);

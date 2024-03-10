@@ -9,7 +9,8 @@
       href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css"
     />
     <link rel="stylesheet" href="/css/mystyles.css" />
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="/js/confirmDelete.js"></script>    
   </head>
   <body>
     <%- include('navbar') %>
@@ -22,7 +23,7 @@
             <h1>Single Snapshot Placeholder</h1>
             <% for (let row of result) { %>
                 <% var id = row.snapshot_ID; %>
-                <% var date = row.timestamp; %>
+            
                 <% var enjoyment = row.enjoyment_level; %>
                 <% var surprise = row.surprise_level; %>
                 <% var contempt = row.contempt_level; %>
@@ -33,7 +34,7 @@
                 <% var notes = row.notes; %>
             
                 <p>ID: <%= id %></p>
-                <p>Date: <%= date %></p>
+              
                 <p>Enjoyment Level: <%= enjoyment %></p>
                 <p>Surprise Level: <%= surprise %></p>
                 <p>Contempt Level: <%= contempt %></p>
@@ -43,11 +44,32 @@
                 <p>Anger Level: <%= anger %></p>
             <% } %>
         </div>
+        <div class="column is-centered is-fullwidth">
+            <% const date = new Date(result[0].timestamp); %> <% const
+            formattedDate = date.toLocaleDateString('en-GB', { weekday: 'long',
+            year: 'numeric', month: 'long', day: 'numeric' }); %> <% const
+            formattedTime = date.toLocaleTimeString('en-GB', { hour: 'numeric',
+            minute: 'numeric', hour12: true }); %> <% const formattedDateTime =
+            `${formattedDate} at ${formattedTime}`; %>
+            <h1 class="main-title"><%= formattedDateTime %></h1>
+        </div>
+
+
         <div class="columns is-centered">
             <div class="column is-half">
-                <canvas id="emotionChart" width="500" height="400"></canvas>
+                <canvas id="emotionChart" width="600" height="400"></canvas>
             </div>
         </div>
+
+        <div class="trigger-container">
+            <% triggers.forEach((trigger) => { %>
+              <div class="card trigger-card">
+                <div class="card-content">
+                  <p ><%= trigger.trigger_name %></p>
+                </div>
+              </div>
+            <% }); %>
+          </div>
             <div class="column is-half">
                 <!-- Box for displaying notes -->
                 <div class="notes-box">
@@ -59,11 +81,20 @@
                     <% } %>
                 </div>
             </div>
-            <a href="/editsnapshotcheckbox/<%= result[0].snapshot_ID %>" class="button">Edit Snapshot</a>
+            <a href="/editsnapshotcheckbox/<%= result[0].snapshot_ID %>" class="button mybutton">Edit Snapshot</a>
+
+        
+            <button type="button" class="button mybutton" id="deleteButton">Delete Favorite</button>
+            <form id="deleteForm" action="/delfav/<%= id %>" method="post" style="display: none;">
+            
+            </form>
        
     </section>
    
     <script>
+
+document.getElementById('deleteButton').addEventListener('click', confirmDelete);
+
         // Data from your EJS template
         const result = <%- JSON.stringify(result) %>;
 
@@ -86,13 +117,13 @@
                 datasets: [
                     {
                         label: '',
-                        data: [enjoyment_level, surprise_level, contempt_level, fear_level, sadness_level, disgust_level, anger_level],
+                        data: [enjoyment_level, surprise_level, contempt_level, sadness_level, fear_level, disgust_level, anger_level],
                         backgroundColor: [
                             '#E69F00', // Orange
                             '#56B4E9', // Sky Blue
-                            '#009E73', // Bluish Green
-                            '#F0E442', // Yellow
+                            '#009E73', // Bluish Green                            
                             '#0072B2', // Blue
+                            '#F0E442', // Yellow
                             '#D55E00', // Vermillion
                             '#CC79A7'  // Reddish Purple
                         ]

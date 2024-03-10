@@ -312,25 +312,65 @@ console.log(selectedTriggers);
 // }
 
 
+//OLD VERSION - WORKS BUT NOW ADDING TRIGGERS TO IT ALSO
+// exports.getSingleSnapshot = async (req, res) => {
+//   const { id } = req.params;
+//   const {user_ID} = req.session
+//   const selectSQL = `SELECT * FROM snapshot WHERE snapshot_id = ${id} AND user_ID = ${user_ID}`;
+//   conn.query(selectSQL, (err, rows) => {
+//     if (err) {
+//       throw err;
+//     } else {
+//       if (rows.length >0){
+//         console.log(rows);
+//       res.render("singlesnapshot", { result: rows});
+//       } else {
+//         res.render('404');
+//       }
+      
+//     }
+//   });
+// }
 
 exports.getSingleSnapshot = async (req, res) => {
   const { id } = req.params;
-  const {user_ID} = req.session
-  const selectSQL = `SELECT * FROM snapshot WHERE snapshot_id = ${id} AND user_ID = ${user_ID}`;
-  conn.query(selectSQL, (err, rows) => {
+  const { user_ID } = req.session;
+
+  // Query to fetch snapshot details
+  const selectSnapshotSQL = `SELECT * FROM snapshot WHERE snapshot_id = ? AND user_ID = ?`;
+
+  // Query to fetch chosen triggers
+  const selectChosenTriggersSQL = `
+    SELECT t.trigger_name 
+    FROM snapshot_trigger st 
+    JOIN \`trigger\` t ON st.trigger_ID = t.trigger_ID 
+    WHERE st.snapshot_ID = ?`;
+
+  // Execute the queries
+  conn.query(selectSnapshotSQL, [id, user_ID], (err, rows) => {
     if (err) {
-      throw err;
+      console.error("Error fetching snapshot:", err);
+      return res.render('404', { error: err });
+    }
+
+    if (rows.length > 0) {
+      // If snapshot found, execute trigger query
+      conn.query(selectChosenTriggersSQL, [id], (triggerErr, triggers) => {
+        if (triggerErr) {
+          console.error("Error fetching triggers:", triggerErr);
+          return res.render('404', { error: triggerErr });
+        }
+
+        // Render the singlesnapshot page with snapshot and triggers
+        res.render("singlesnapshot", { result: rows, triggers });
+      });
     } else {
-      if (rows.length >0){
-        console.log(rows);
-      res.render("singlesnapshot", { result: rows});
-      } else {
-        res.render('404');
-      }
-      
+      // If snapshot not found, render 404 page
+      res.render('404');
     }
   });
-}
+};
+
 
 exports.getAllSnapshots = async (req, res) => {
   const { user_ID, isLoggedIn } = req.session;
@@ -757,10 +797,10 @@ exports.postEditSnapshot = (req, res) => {
     sadness,
     fear,
     disgust,
-    anger,
-    user_ID,
+    anger,    
     notes,
-    snapshot_ID
+    snapshot_ID,
+    user_ID
   ];
   
   console.log("Line 524");
@@ -777,10 +817,10 @@ exports.postEditSnapshot = (req, res) => {
     }
 
     // Insert snapshot data into the snapshot table
-    const insertSnapshotSQL = `UPDATE snapshot SET enjoyment_level=?, surprise_level=?, contempt_level=?, sadness_level=?, fear_level=?, disgust_level=?, anger_level=?, user_id=?,  notes=? WHERE snapshot_ID=?`;
+    const updateSnapshotSQL = `UPDATE snapshot SET enjoyment_level=?, surprise_level=?, contempt_level=?, sadness_level=?, fear_level=?, disgust_level=?, anger_level=?, notes=? WHERE snapshot_ID=? AND user_id=?`;
 
     conn.query(
-      insertSnapshotSQL,
+      updateSnapshotSQL,
       params,
       (err, result) => {
         if (err) {
@@ -838,12 +878,30 @@ exports.postEditSnapshot = (req, res) => {
                 }
                 console.log("Transaction successfully committed");
                 // Redirect to index or any other page after successful transaction
-                res.redirect("/");
+                res.redirect(`/singlesnapshot/${snapshot_ID}`);
               });
             });
           }
         );
       }
     );
+  });
+};
+
+
+exports.postDeleteSnapshot = (req, res) => { 
+
+  const { id: snapshot_ID } = req.params;
+
+  const deleteSnapshotTriggerSQL = `DELETE FROM snapshot_trigger WHERE snapshot_ID = ?`;
+  const deleteSnapshotSQL = `DELETE FROM snapshot WHERE snapshot_ID = ? AND user_ID = ?`;
+
+  conn.query(selectSQL, (err, rows) => {
+    if (err) {
+      throw err;
+    } else {
+      console.log(rows);
+      res.redirect("/allsnapshots");
+    }
   });
 };

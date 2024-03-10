@@ -5,16 +5,23 @@
 }
 
 .container {
-    display: flex;
-    justify-content: center;
-    width: 80%; /* Set a fixed width for the container and adjust as needed */
+  display: flex;
+  justify-content: center;
+  width: 80%; /* Set a fixed width for the container and adjust as needed */
+  margin-top: 10px; /* Add top margin */
+  margin-bottom: 10px; /* Add top margin */
+  padding-top: 10px; /* Add top padding */
+  padding-bottom: 10px; /* Add top padding */
 }
 
 /* Custom styling for card grid */
-.date-card {
-    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.1); /* Add shadow effect */
-    padding: 1rem; /* Add padding */
-    margin-bottom: 1rem; /* Add margin between cards */
+.date-card,
+.trigger-card {
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.1); /* Add shadow effect */
+  padding: 1rem; /* Add padding */
+  margin-bottom: 1rem; /* Add margin between cards */
+  font-size: 16px;
+  font-weight: bold;
 }
 
 .uk-grid {
@@ -85,12 +92,40 @@
 }
 
 .slider {
-    width: 75%; /* Adjust the width as needed */
+    width: 75%;
   }
 
-  .navbar-fixed {
+.navbar-fixed {
     position: fixed;
     top: 0;
     width: 100%;
-    z-index: 1000; /* Ensure the navbar appears above other content */
+    z-index: 1000; 
+}
+
+.main-title {
+  text-align: left;
+  font-size: 2em;
+  font-weight: bold;
+  padding-top: 20px;
+ 
+}
+
+#emotionChart {
+  width: 100%;
+  height: 800px; /* Adjust height as needed */
+}
+
+.trigger-card {
+  width: calc(33.33% - 20px); /* Adjust width as needed */
+  margin-bottom: 20px; /* Add margin between cards */
+}
+
+/* Adjust card content size */
+.trigger-card .card-content {
+  padding: 10px; /* Adjust padding as needed */
+}
+
+/* Adjust label font size */
+.trigger label {
+  font-size: 16px; /* Adjust font size as needed */
 }

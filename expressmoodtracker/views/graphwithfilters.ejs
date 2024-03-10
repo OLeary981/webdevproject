@@ -133,7 +133,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="uk-card uk-card-body uk-card-default date-card" data-notes="<%= snapshot.notes %>">
                         <% var formattedDate = new Date(snapshot.timestamp); %>
                         <a href="/singlesnapshot/<%= snapshot.snapshot_ID %>" class="uk-link-toggle">
-                            <h3 class="uk-card-title"><%= formattedDate.toLocaleDateString('en-GB') %></h3>
+                            <p><%= formattedDate.toLocaleDateString('en-GB') %></p>
                         </a>
                         <!-- Add a hidden paragraph to store the notes -->
                         <p class="notes" style="display: none;"><%= snapshot.notes %></p>

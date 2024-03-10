@@ -17,21 +17,28 @@
       <div class="container">
         <div class="columns is-centered">
           <div class="column is-centered is-fullwidth">
+            <div class="columns is-vcentered">
+              <div class="column">
             <% const date = new Date(snapshot[0].timestamp); %> <% const
             formattedDate = date.toLocaleDateString('en-GB', { weekday: 'long',
             year: 'numeric', month: 'long', day: 'numeric' }); %> <% const
             formattedTime = date.toLocaleTimeString('en-GB', { hour: 'numeric',
             minute: 'numeric', hour12: true }); %> <% const formattedDateTime =
             `${formattedDate} at ${formattedTime}`; %>
-            <h1><%= formattedDateTime %></h1>
-
+            <h1 class="main-title"><%= formattedDateTime %></h1>
+          </div>
+          <div class="column is-narrow">
+            <a href="/singlesnapshot/<%= snapshot[0].snapshot_ID %>" class="button mybutton">Back</a>
+          </div>
+        </div>
+            
+            <h3 class="main-title">Edit Snapshot</h3>
             <p>
               Lorem ipsum dolor sit amet consectetur, adipisicing elit. Quis
               similique a dolore, aperiam illum corrupti tempora consectetur
               placeat sunt ab molestias enim modi itaque illo voluptatem
               praesentium? Distinctio, nam ducimus.
             </p>
-            <h1>Add a Snapshot</h1>
             <form id="snapshot-form" action="/editsnapshot/<%= snapshot[0].snapshot_ID %>" method="POST">
               <% const sliders = [ { label: 'Enjoyment', id: 'enjoyment' }, {
               label: 'Surprise', id: 'surprise' }, { label: 'Contempt', id:

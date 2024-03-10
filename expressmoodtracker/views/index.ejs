@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" style="background-image: url('/imgs/sea_tile.jpeg');  background-size: tile;">">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Express Favourites</title>
   
-    <% var backgroundImage = "/imgs/background_sea.jpg"; %>
+   
     <link rel="icon" href="/imgs/favicon-16x16.png">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
     <link rel="stylesheet" href="/css/mystyles.css">
@@ -14,24 +14,26 @@
     
 </head>
 
-<body style="background-image: url('<%= backgroundImage %>');  background-size: cover;"">
-    <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(255, 255, 255, 0.2); z-index: -1;"></div>
+<body>
+    <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(255, 255, 255, 0.3); z-index: -1; "></div>
     <%- include('navbar') %>
     <section class="section">
-        <h1 class="main-title">Mood Tracker</h1>
+        <h1 class="main-title" style="z-index: 1;">Mood Tracker</h1>
     </section>
     <section class="section section-form">
         <div class="container">
             <div class="columns">
                 <div class="column">
                     <h1 class='title'>Login</h1>
-                    <form id="login-form" action="/login" method="post">
-                        <!-- Login form fields -->
+                    <form action="/login" method="post">
                         <div class="field">
                             <label class="label" for="username-input">Enter your username:<span id="message"></span></label>
+                        
                             <div class="control">
                                 <input class="input" name="username" type="text" placeholder="Username" id="username-input">
                             </div>
+                            </div>
+                            <div class="field">
                             <label class="label" for="userpass-input">Enter your password:</label>
                             <div class="control">
                                 <input class="input" name="userpass" type="password" placeholder="Password" id="userpass-input">
@@ -39,25 +41,24 @@
                         </div>
                         <div class="field">
                             <div class="control">
-                                <input class="button mybutton" type="submit" value="Login">
+                                <button class="button mybutton" type="submit" >Login</button>
                             </div>
                         </div>
                     </form>
                 </div>
                 <div class="column">
                     <h1 class="title">Register</h1>
-                    <form id="register-form" action="/register" method="post">
-                        <!-- Register form fields -->
+                    <form action="/register" method="post">
                         <div class="field">
-                            <label class="label" for="username">Username:</label>
+                            <label class="label" for="username">Username:<span id="message"></span></label>
                             <div class="control">
-                                <input class="input" type="text" id="username" name="username" required>
+                                <input class="input" type="text" placeholder="Choose a username" id="username" name="username" required>
                             </div>
                         </div>
                         <div class="field">
                             <label class="label" for="password">Password:</label>
                             <div class="control">
-                                <input class="input" type="password" id="password" name="password" required>
+                                <input class="input" type="password" placeholder="Choose a passowrd" id="password" name="password" required>
                             </div>
                         </div>
                         <div class="field">

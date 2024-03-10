@@ -116,9 +116,12 @@
 
 .main-title {
   text-align: left;
-  font-size: 2em;
+  font-size: 2.5em;
   font-weight: bold;
   padding-top: 20px;
+  color: #333;
+
+  
  
 }
 

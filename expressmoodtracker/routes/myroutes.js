@@ -5,13 +5,14 @@ const { check } = require("express-validator");
 
 const router = express.Router();
 
-router.get("/", controller.getAllFavourites);
+
 router.get("/editfav", isAuth, controller.getEditFavourites);
 router.get("/editfav/:id", isAuth, controller.getEditSingleFavourite);
 router.get("/delfav/:id", isAuth, controller.getDeleteSingleFavourite);
 router.get("/newfav", isAuth, controller.getAddFavourite);
 router.get("/newsnapshot", isAuth, controller.getAddSnapshot);
 
+router.get("/", controller.getIndex);
 router.get("/register", controller.getRegisterUser);
 router.get("/login", controller.getLogin);
 router.get("/logout", controller.getLogout);

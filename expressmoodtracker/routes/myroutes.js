@@ -22,7 +22,7 @@ router.get("/editsnapshotcheckbox/:id", isAuth, controller.getEditSnapshot);
 
 router.post("/newfav", controller.postInsertFavourite);
 router.post("/editfav/:id", controller.postUpdateFavourite);
-router.post("/delfav/:id", controller.postDeleteFavourite);
+router.post("/delsnapshot/:id", controller.postDeleteSnapshot);
 router.post(
   "/register",
   check("username")

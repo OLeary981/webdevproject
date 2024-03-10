@@ -206,15 +206,16 @@ INSERT INTO `trigger` (trigger_name) VALUES
 ('Self-care'),
 ('Environment'),
 ('Daily routine'),
-('Home maintenance');
+('Home maintenance'),
+('Politics');
 
 -- Snapshot_trigger table
 CREATE TABLE snapshot_trigger (
     snapshot_trigger_ID INT AUTO_INCREMENT PRIMARY KEY ,
     snapshot_ID INT,
     trigger_ID INT,
-    FOREIGN KEY (snapshot_ID) REFERENCES snapshot(snapshot_ID),
-    FOREIGN KEY (trigger_ID) REFERENCES `trigger`(trigger_ID)
+    FOREIGN KEY (snapshot_ID) REFERENCES snapshot(snapshot_ID) ON DELETE CASCADE,
+    FOREIGN KEY (trigger_ID) REFERENCES `trigger`(trigger_ID) ON DELETE CASCADE
 );
 INSERT INTO `snapshot_trigger` (snapshot_id, trigger_id) VALUES
 (82, 4),  (82, 6), (82, 9), (82, 10), (82, 11),  

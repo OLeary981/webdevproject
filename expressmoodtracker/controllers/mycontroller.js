@@ -892,11 +892,12 @@ exports.postEditSnapshot = (req, res) => {
 exports.postDeleteSnapshot = (req, res) => { 
 
   const { id: snapshot_ID } = req.params;
+  const { user_ID } = req.session;
 
   const deleteSnapshotTriggerSQL = `DELETE FROM snapshot_trigger WHERE snapshot_ID = ?`;
   const deleteSnapshotSQL = `DELETE FROM snapshot WHERE snapshot_ID = ? AND user_ID = ?`;
 
-  conn.query(selectSQL, (err, rows) => {
+  conn.query(deleteSnapshotSQL, [snapshot_ID, user_ID], (err, rows) => {
     if (err) {
       throw err;
     } else {

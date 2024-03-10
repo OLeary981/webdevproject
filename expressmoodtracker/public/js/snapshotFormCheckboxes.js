@@ -33,32 +33,39 @@ document.addEventListener('DOMContentLoaded', function() {
         this.submit(); // 'this' refers to the form element itself
     });
 
-    // Add event listener for trigger buttons
-    document.querySelectorAll(".trigger-checkbox").forEach((checkbox) => {
-        checkbox.addEventListener("change", () => {
-            const triggerName = checkbox.dataset.trigger;
-            const isChecked = checkbox.checked;
-            
-            // Update label style based on checkbox state
-            if (isChecked) {
-                checkbox.classList.add('is-clicked');
-            } else {
-                checkbox.classList.remove('is-clicked');
+    
+document.querySelectorAll(".trigger-checkbox:checked").forEach((checkbox) => {
+    selectedTriggers.push(checkbox.dataset.trigger);
+    console.log("pushing prechecked boxes now")
+    console.log(selectedTriggers);
+});
+
+// Add event listeners to checkboxes
+document.querySelectorAll(".trigger-checkbox").forEach((checkbox) => {
+    checkbox.addEventListener("change", () => {
+        const triggerName = checkbox.dataset.trigger;
+        const isChecked = checkbox.checked;
+
+        // Update label style based on checkbox state
+        if (isChecked) {
+            checkbox.classList.add('is-clicked');
+        } else {
+            checkbox.classList.remove('is-clicked');
+        }
+
+        // Update the selectedTriggers array
+        if (isChecked) {
+            selectedTriggers.push(triggerName);
+        } else {
+            const index = selectedTriggers.indexOf(triggerName);
+            if (index !== -1) {
+                selectedTriggers.splice(index, 1);
             }
-            
-            // Update the selectedTriggers array
-            if (isChecked) {
-                selectedTriggers.push(triggerName);
-            } else {
-                const index = selectedTriggers.indexOf(triggerName);
-                if (index !== -1) {
-                    selectedTriggers.splice(index, 1);
-                }
-            }
-            
-            console.log("Trigger added/removed:", triggerName);
-            console.log("Selected Triggers:", selectedTriggers); // Log the array for debugging
-        });
+        }
+
+        console.log("Trigger added/removed:", triggerName);
+        console.log("Selected Triggers:", selectedTriggers); // Log the array for debugging
     });
+});
 
 });

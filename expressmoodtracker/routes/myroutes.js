@@ -32,6 +32,7 @@ router.post(
   controller.postRegisterUser
 );
 router.post("/newsnapshot", controller.postAddSnapshot);
+router.post("/editsnapshot/:id", controller.postEditSnapshot);
 
 //router.post('/login', controller.postLogin);
 

@@ -9,6 +9,7 @@
       href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css"
     />
     <link rel="stylesheet" href="/css/mystyles.css" />
+    <script src="/js/snapshotFormCheckboxes.js" defer></script>
   </head>
   <body>
     <%- include('navbar') %>
@@ -31,7 +32,7 @@
               praesentium? Distinctio, nam ducimus.
             </p>
             <h1>Add a Snapshot</h1>
-            <form id="snapshot-form" action="/newsnapshot" method="POST">
+            <form id="snapshot-form" action="/editsnapshot/<%= snapshot[0].snapshot_ID %>" method="POST">
               <% const sliders = [ { label: 'Enjoyment', id: 'enjoyment' }, {
               label: 'Surprise', id: 'surprise' }, { label: 'Contempt', id:
               'contempt' }, { label: 'Sadness', id: 'sadness' }, { label:
@@ -68,21 +69,15 @@
                     <% triggers.forEach((trigger, index) => { %>
                     <div class="trigger">
                       <input
-                        class="trigger-checkbox"
-                        type="checkbox"
-                        id="trigger<%= index %>"
-                        data-trigger="<%= trigger.trigger_name %>"
-                        name="triggers"
-                        <%
-                        if
-                        (selectedTriggerNames.includes(trigger.trigger_name))
-                        {
-                        %
-                      />
-                      checked <% } %> >
-                      <label for="trigger<%= index %>"
-                        ><%= trigger.trigger_name %></label
-                      >
+                      class="trigger-checkbox"
+                      type="checkbox"
+                      id="trigger<%= index %>"
+                      data-trigger="<%= trigger.trigger_name %>"
+                      name="triggers"
+                      <% if (selectedTriggerNames.includes(trigger.trigger_name)) { %> checked <% } %>
+                    >
+                    <label for="trigger<%= index %>"
+                      ><%= trigger.trigger_name %></label
                     </div>
                     <% }); %>
                   </div>

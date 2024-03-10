@@ -1,6 +1,7 @@
 const mysql = require('mysql2');
 
-const db = mysql.createConnection({
+// Create a single database connection
+const connection = mysql.createConnection({
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
     password: process.env.DB_PASS,
@@ -8,12 +9,13 @@ const db = mysql.createConnection({
     port: process.env.DB_PORT
 });
 
-db.connect((err) => {
+// Connect to the database
+connection.connect((err) => {
     if (err) {
         throw err;
     } else {
-        console.log(`Database successfully connected!`);
+        console.log(`Database connection successfully created!`);
     }
 });
 
-module.exports = db;
+module.exports = connection;

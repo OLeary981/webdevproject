@@ -421,7 +421,9 @@ exports.getAllSnapshots = async (req, res) => {
       `SELECT * FROM snapshot WHERE user_id = ? ORDER BY timestamp`,
       vals
     );
-    console.log(snapshots);
+    //console.log(snapshots);
+
+    //console.log(levels);
 
     res.render("graphwithfilters", {
       dates,
@@ -436,6 +438,29 @@ exports.getAllSnapshots = async (req, res) => {
   }
 };
 
+exports.getAllSnapshotsSimplified = (req, res) => {
+  const { user_ID } = req.session;
+  const vals = user_ID;
+
+  const selectSnapshotsSQL = `SELECT * FROM snapshot WHERE user_id = ? ORDER BY timestamp`;
+
+  conn.query(selectSnapshotsSQL, vals, (err, results) => {
+    if (err) {
+      console.error(err);
+      res.status(500).send('Internal server error');
+      return;
+    }
+    //console.log(results)
+
+    res.render('newOverviewSimpleController', {
+      snapshots: results,
+      currentPage: '/allsnapshots',
+      isLoggedIn: true // Assuming you have a way to determine if the user is logged in
+    });
+  });
+};
+
+//can this be deleted? model used for other queries?
 const queryDatabase = (sql, params) => {
   return new Promise((resolve, reject) => {
     conn.query(sql, params, (err, result) => {

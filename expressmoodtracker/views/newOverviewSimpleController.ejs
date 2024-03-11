@@ -104,6 +104,8 @@
 //     });
 // });
 
+
+
 document.addEventListener('DOMContentLoaded', () => {
     const snapshotCards = document.querySelectorAll('.date-card');
     snapshotCards.forEach((card) => {
@@ -144,26 +146,69 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
     </div>
     <script>
-       const emotionColorMap = {
-            "enjoyment": "#E69F00",   // Orange
-            "surprise": "#56B4E9",    // Sky Blue
-            "contempt": "#009E73",    // Bluish Green
-            "fear": "#F0E442",        // Yellow
-            "sadness": "#0072B2",     // Blue
-            "disgust": "#D55E00",     // Vermillion
-            "anger": "#CC79A7"        // Reddish Purple
-        };
+        
 
-        let myChart; // Declare myChart variable in the global scope
+        // const dates = snapshots.map(snapshot => ({ timestamp: snapshot.timestamp }));
+        // const levels = [];
+
+        // Object.keys(snapshots[0]).forEach(key => {
+        // if (key !== 'snapshot_ID' && key !== 'timestamp' && key !== 'notes' && key !== 'user_id') {
+        //     const levelArray = snapshots.map(snapshot => ({ [key]: snapshot[key] }));
+        //     levels.push(levelArray);
+        // }
+        // // });
+
+        
+
+        //document.addEventListener('DOMContentLoaded', () => {
+            let snapshots;
+console.log("ejs script 165");
+
+snapshots = <%- JSON.stringify(snapshots) %>;
+console.log(snapshots[0]);
+
+const dates = snapshots.map(snapshot => snapshot.timestamp);
+
+const levelData = snapshots.map(snapshot => {
+    const level = {};
+    Object.keys(snapshot).forEach(key => {
+        if (key !== 'snapshot_ID' && key !== 'timestamp' && key !== 'notes' && key !== 'user_id') {
+            level[key] = snapshot[key];
+        }
+    });
+    return level;
+});
+console.log("printing leveldata:")
+console.log(levelData);
+const levels = Object.keys(levelData[0]).map(level => levelData.map(item => item[level]));
+            
+       // });
+
+console.log("Dates:", dates);
+         console.log("Levels:", levels);
+         let levelNames = Object.keys(snapshots[0]).filter(key => key !== 'snapshot_ID' && key !== 'timestamp' && key !== 'notes' && key !== 'user_id');
+         levelNames = levelNames.map(name => name.replace('_level', ''));
+        console.log(`Level names from the start of the code ${levelNames}`);
+
+        
+
+
+
+
+            const emotionColorMap = {
+                    "enjoyment": "#E69F00",   // Orange
+                    "surprise": "#56B4E9",    // Sky Blue
+                    "contempt": "#009E73",    // Bluish Green
+                    "fear": "#F0E442",        // Yellow
+                    "sadness": "#0072B2",     // Blue
+                    "disgust": "#D55E00",     // Vermillion
+                    "anger": "#CC79A7"        // Reddish Purple
+                };
+
+        //let myChart; // Declare myChart variable in the global scope
     
         // Extracting dates and levels from EJS variables
-        const dates = JSON.parse('<%- JSON.stringify(dates.map(dateObj => dateObj.timestamp)) %>');
-        const levelData = JSON.parse(`<%- JSON.stringify(levels) %>`);
-        const levels = levelData.map(level => level.map(levelObj => Object.values(levelObj)[0]));
-        console.log("line 163");
-        console.log(levels);
-        const levelNames = levelData.map(level => Object.keys((level)[0])[0].replace('_level', ''));
-        console.log(`Level names from the start of the code ${levelNames}`);
+      
         const emotionLabels = ["enjoyment", "surprise", "contempt", "sadness", "fear", "disgust", "anger"];
         let timeRange = 'week'; // Default time range
         let selectedSeries = null;
@@ -528,13 +573,18 @@ document.getElementById("showEnjoymentButton").addEventListener("click", functio
     updateChart(timeRange, selectedSeries, xAxisUnit);
 });
     
-        window.onload = function () {
-            myChart = createChart(filteredDates, filteredLevels, selectedSeries); // Initialize chart
-            updateChart(timeRange, selectedSeries, xAxisUnit); // Set default time range
+        
+
+
+window.onload = function () {
+            //myChart = createChart(filteredDates, filteredLevels, selectedSeries); // Initialize chart
+            //updateChart(timeRange, selectedSeries, xAxisUnit); // Set default time range
+            
+              // Initialize chart and set default time range
+    myChart = createChart(filteredDates, filteredLevels, selectedSeries, xAxisUnit);
+    updateChart(timeRange, selectedSeries, xAxisUnit);
+
         };
-
-
-
         
 
 

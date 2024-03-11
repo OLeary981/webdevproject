@@ -17,9 +17,12 @@
 /* Custom styling for card grid */
 .date-card,
 .trigger-card {
+  background-color: white;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.1); /* Add shadow effect */
   padding: 1rem; /* Add padding */
   margin-bottom: 1rem; /* Add margin between cards */
+  margin-right: 1rem;
+  margin-left: 1rem;
   font-size: 16px;
   font-weight: bold;
 }
@@ -43,6 +46,7 @@
   width: 100%;
   height: 50%;
   border: 2px solid #2c2c2c;
+  background-color: white;
 }
 
   .enjoyment {
@@ -155,4 +159,32 @@ body {
     border: 3px solid #4a4a4a; 
     box-sizing: border-box; 
     padding: 10px; 
+}
+
+/* CSS Styles */
+.columns {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.column {
+  flex: 1;
+  margin-right: 10px;
+  margin-left: 10px; /* Adjust margin as needed */
+}
+
+.column.is-half.is-centered {
+  display: flex;
+  justify-content: center;
+}
+
+.buttons {
+  display: flex;
+  flex-direction: column;
+  align-items: centre;
+}
+
+.button {
+  margin-bottom: 5px; /* Adjust margin as needed */
 }

@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" style="background-image: url('/imgs/sea_tile.jpeg');  background-size: tile;">">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Line Graph</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="/imgs/favicon-32x32.png"> 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-moment"></script>
@@ -17,30 +18,32 @@
 </head>
 </head>
 <body>
-    <%- include('navbar', { isLoggedIn }) %>
+    <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(255, 255, 255, 0.5); z-index: -1; "></div>
+    <%- include('navbar') %>
     <section class="section">
-        <div class="container">
-    <h1 class="title">Emotion Snapshot Overview</h1>
-</div>        
+          
 </section>
-    <!-- Container for the graph using Bulma columns -->
-    <div class="columns is-centered">
-        <div class="column is-half is-centered">
-            <!-- Canvas element for the chart -->
-            <canvas id="myChart"  ></canvas>
+<!-- NEW EXPERIMENTAL SECTION-->
+<div class="columns is-centered">
+    <!-- Container for time buttons -->
+    <div class="column">
+        <div class="buttons is-flex is-flex-direction-column is-justify-content-flex-end">
+            <button id="allButton" class="button mybutton">All Time</button>
+            <button id="yearButton" class="button mybutton">Year</button>
+            <button id="threeMonthsButton" class="button mybutton">3 Months</button>
+            <button id="monthButton" class="button mybutton">Month</button>
+            <button id="weekButton" class="button mybutton">Week</button>
+            <button id="dayButton" class="button mybutton">Day</button>
         </div>
     </div>
-    <div class="buttons is-flex is-justify-content-center">
-        <!-- Buttons for changing the time range -->
-        <button id="allButton" class="button mybutton">All Time</button>
-        <button id="yearButton" class="button mybutton">Year</button>
-        <button id="threeMonthsButton" class="button mybutton">3 Months</button>
-        <button id="monthButton" class="button mybutton">Month</button>
-        <button id="weekButton" class="button mybutton">Week</button>
-        <button id="dayButton" class="button mybutton">Day</button>
+    <!-- Container for the chart -->
+    <div class="column is-half is-centered">
+        <!-- Canvas element for the chart -->
+        <canvas id="myChart"></canvas>
     </div>
-    <div class="buttons is-flex is-justify-content-center">
-        <button id="showAllButton" class="button mybutton">Show All</button>
+    <div class="column">
+        <div class="buttons is-flex is-flex-direction-column">
+    <button id="showAllButton" class="button mybutton">Show All</button>
         <button id="showEnjoymentButton" class="button enjoyment">Enjoyment</button>
         <button id="showSurpriseButton" class="button surprise">Surprise</button>
         <button id="showContemptButton" class="button contempt">Contempt</button>
@@ -49,64 +52,12 @@
         <button id="showDisgustButton" class="button disgust">Disgust</button>
         <button id="showAngerButton" class="button anger">Anger</button>
     </div>
-
-    <script>
-        // const emotionColorMap = {
-        //     "enjoyment": "#E69F00",   // Orange
-        //     "surprise": "#56B4E9",    // Sky Blue
-        //     "contempt": "#009E73",    // Bluish Green
-        //     "fear": "#F0E442",        // Yellow
-        //     "sadness": "#0072B2",     // Blue
-        //     "disgust": "#D55E00",     // Vermillion
-        //     "anger": "#CC79A7"        // Reddish Purple
-        // };
-    //non-working code attempting to colour the backgrounds of the cards according to emotion.
-    //     function getDominantEmotions(snapshot) {
-    // const levelsForDate = [
-    //     snapshot.enjoyment_level,
-    //     snapshot.surprise_level,
-    //     snapshot.contempt_level,
-    //     snapshot.sadness_level,
-    //     snapshot.fear_level,
-    //     snapshot.disgust_level,
-    //     snapshot.anger_level
-    // ];
-
-//     const dominantEmotions = [];
-//     const maxLevel = Math.max(...levelsForDate);
-//     Object.keys(snapshot).forEach((emotion, index) => {
-//         if (levelsForDate[index] === maxLevel) {
-//             dominantEmotions.push(emotion);
-//         }
-//     });
-//     return dominantEmotions;
-// }
-
-// // Function to generate a gradient CSS string based on dominant emotions
-// function generateGradient(dominantEmotions) {
-//     // Calculate color stops for gradient
-//     const numEmotions = dominantEmotions.length;
-//     const colorStops = dominantEmotions.map((emotion, index) => {
-//         const color = emotionColorMap[emotion];
-//         const position = index * (100 / (numEmotions - 1));
-//         return `${color} ${position}%`;
-//     });
-
-//     // Construct gradient CSS string
-//     return `linear-gradient(to right, ${colorStops.join(', ')})`;
-// }
-
-// document.addEventListener('DOMContentLoaded', () => {
-//     const snapshotCards = document.querySelectorAll('.date-card');
-//     snapshotCards.forEach((card, index) => {
-//         const snapshot = snapshots[index]; // Assuming snapshots array is available
-//         const dominantEmotions = getDominantEmotions(snapshot);
-//         const gradient = generateGradient(dominantEmotions);
-//         card.style.backgroundImage = gradient;
-//     });
-// });
-
-
+</div>
+</div>
+</div>
+<!-- END EXPERIMENTAL SECTION-->
+   
+    <script>     
 
 document.addEventListener('DOMContentLoaded', () => {
     const snapshotCards = document.querySelectorAll('.date-card');
@@ -143,8 +94,7 @@ document.addEventListener('DOMContentLoaded', () => {
     </div>
 </div>
     <div class="container">
-        <div class="uk-grid uk-child-width-1-5" uk-grid id="snapshot-container">
-            <!-- Snapshot cards will be dynamically generated here -->
+        <div class="uk-grid uk-child-width-1-5" uk-grid id="snapshot-container">            
         </div>
     </div>
     
@@ -403,7 +353,11 @@ console.log("Dates:", dates);
                 tooltips: { enabled: true },
                 title: {
                     display: true,
-                    text: "Levels Snapshot",
+                    text: <% if (session.first_name) { %>
+                            "<%= session.first_name %>'s Emotional Journey"
+                        <% } else { %>
+                            "Your Emotional Journey"
+                        <% } %>,
                     font: { size: 20 },
                 },
                 backgroundColor: 'rgba(0, 0, 0, 0.5)'

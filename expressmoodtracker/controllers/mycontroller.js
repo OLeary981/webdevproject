@@ -394,7 +394,7 @@ exports.getAllSnapshotsSimplified = (req, res) => {
     res.render('newOverviewSimpleController', {
       snapshots: results,
       currentPage: '/allsnapshots',
-      isLoggedIn: true // Assuming you have a way to determine if the user is logged in
+      session: req.session // Assuming you have a way to determine if the user is logged in
     });
   });
 };
@@ -506,6 +506,7 @@ exports.postLoginBcrypt = (req, res) => {
         const session = req.session;
         session.isLoggedIn = true;
         session.user_ID = rows[0].user_ID;
+        session.first_name = rows[0].first_name;
         console.log(`postLogin: session: ${session}`);
         console.log(`user number: ${session.user_ID}`);
 

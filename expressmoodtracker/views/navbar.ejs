@@ -13,7 +13,8 @@
     </div>
   
     <!-- Navbar menu -->
-    <div id="navbarBasicExample" class="navbar-menu">
+    <div id="navbarBasicExample" class="navbar-menu" style="background-color: black; color: white;">
+        <!-- Moved all the navbar links here -->
         <div class="navbar-start">
             <% if (currentPage !== '/allsnapshots' && currentPage!= '/register' ) { %>
                 <a class="navbar-item is-hoverable" href="/allsnapshots">Mood Overview</a>
@@ -26,7 +27,7 @@
             <% } %>
         </div>
     
-        <div class="navbar-end">
+        <div class="navbar-end" style="color: white;"> <!-- Set font color here -->
             <% if (!isLoggedIn && currentPage !== '/login') { %>
                 <a class="navbar-item is-hoverable" href="/login">Login</a>
             <% } else if (currentPage !== '/login'){ %>
@@ -37,3 +38,17 @@
         </div>
     </div>
 </nav>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Get the hamburger button and the menu
+        var burger = document.querySelector('.navbar-burger');
+        var menu = document.querySelector('.navbar-menu');
+
+        // Toggle the 'is-active' class on both elements
+        burger.addEventListener('click', function () {
+            burger.classList.toggle('is-active');
+            menu.classList.toggle('is-active');
+        });
+    });
+</script>

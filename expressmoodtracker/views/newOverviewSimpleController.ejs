@@ -4,13 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Line Graph</title>
-    <!-- Include Chart.js library -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- Include Moment.js library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
-    <!-- Include Moment.js adapter for Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-moment"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
+    <!-- Flatpickr CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
+<!-- Flatpickr JavaScript -->
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <link rel="stylesheet" href="/css/mystyles.css">
 </head>
 </head>
@@ -25,7 +27,7 @@
     <div class="columns is-centered">
         <div class="column is-half is-centered">
             <!-- Canvas element for the chart -->
-            <canvas id="myChart" ></canvas>
+            <canvas id="myChart"  ></canvas>
         </div>
     </div>
     <div class="buttons is-flex is-justify-content-center">
@@ -128,23 +130,113 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
     </script>
-    
-    <div class="container">
-        <div class="uk-grid uk-child-width-1-5" uk-grid>
-            <% snapshots.reverse().forEach((snapshot) => { %>
-                <div>
-                    <div class="uk-card uk-card-body uk-card-default date-card" data-notes="<%= snapshot.notes %>">
-                        <% var formattedDate = new Date(snapshot.timestamp); %>
-                        <a href="/singlesnapshot/<%= snapshot.snapshot_ID %>" class="uk-link-toggle">
-                            <p><%= formattedDate.toLocaleDateString('en-GB') %></p>
-                        </a>
-                        <!-- Add a hidden paragraph to store the notes -->
-                        <p class="notes" style="display: none;"><%= snapshot.notes %></p>
-                    </div>
-                </div>
-            <% }); %>
+   <div class="container">
+    <div class="columns is-variable is-desktop">
+        <div class="column">
+            <label class="label" for="start-date">Start Date:</label>
+            <input class="input" type="text" id="start-date" placeholder="Select start date">
+        </div>
+        <div class="column">
+            <label class="label" for="end-date">End Date:</label>
+            <input class="input" type="text" id="end-date" placeholder="Select end date">
         </div>
     </div>
+</div>
+    <div class="container">
+        <div class="uk-grid uk-child-width-1-5" uk-grid id="snapshot-container">
+            <!-- Snapshot cards will be dynamically generated here -->
+        </div>
+    </div>
+    
+    <script>
+        // Calculate the default start date (1 week ago)
+        var startDate = new Date();
+        startDate.setDate(startDate.getDate() - 7);
+    
+        // Set the default end date to the current date
+        var endDate = new Date();
+    
+        // Initialize Flatpickr on start-date input field with default values
+        flatpickr("#start-date", {
+            dateFormat: "Y-m-d",
+            defaultDate: startDate,
+            onChange: function(selectedDates, dateStr) {
+                updateSnapshotCards();
+            }
+        });
+    
+        // Initialize Flatpickr on end-date input field with default values
+        flatpickr("#end-date", {
+            dateFormat: "Y-m-d",
+            defaultDate: endDate,
+            onChange: function(selectedDates, dateStr) {
+                updateSnapshotCards();
+            }
+        });
+    
+        // Function to update the snapshot cards based on the selected date range
+        function updateSnapshotCards() {
+            // Get the selected start and end dates
+            var startDateStr = document.getElementById("start-date").value;
+            var endDateStr = document.getElementById("end-date").value;
+            var startDate = new Date(startDateStr);
+            var endDate = new Date(endDateStr);
+            
+            // Clear existing snapshot cards
+            document.getElementById("snapshot-container").innerHTML = '';
+    
+            // Iterate through snapshots and render cards for snapshots within the selected date range
+            snapshots.reverse().forEach((snapshot) => {
+                var snapshotDate = new Date(snapshot.timestamp);
+                if (snapshotDate >= startDate && snapshotDate <= endDate) {
+                    // Create a new snapshot card element
+                    var cardDiv = document.createElement('div');
+                    cardDiv.classList.add('uk-card', 'uk-card-body', 'uk-card-default', 'date-card');
+                    cardDiv.setAttribute('data-notes', snapshot.notes);
+    
+                    // Create a link for the snapshot
+                    var link = document.createElement('a');
+                    link.setAttribute('href', '/singlesnapshot/' + snapshot.snapshot_ID);
+                    link.classList.add('uk-link-toggle');
+    
+                    // Create paragraph elements for date and time
+                    var datePara = document.createElement('p');
+                    datePara.textContent = new Date(snapshot.timestamp).toLocaleDateString('en-GB');
+    
+                    var timePara = document.createElement('p');
+                    timePara.textContent = new Date(snapshot.timestamp).toLocaleTimeString('en-GB');
+    
+                    // Append date and time paragraphs to the link
+                    link.appendChild(datePara);
+                    link.appendChild(timePara);
+    
+                    // Append link to the card
+                    cardDiv.appendChild(link);
+    
+                    // Create a hidden paragraph to store the notes
+                    var notesPara = document.createElement('p');
+                    notesPara.classList.add('notes');
+                    notesPara.style.display = 'none';
+                    notesPara.textContent = snapshot.notes;
+    
+                    // Append hidden notes paragraph to the card
+                    cardDiv.appendChild(notesPara);
+    
+                    // Append the card to the snapshot container
+                    document.getElementById('snapshot-container').appendChild(cardDiv);
+                }
+            });
+        }
+    
+        // Initial update of snapshot cards based on default date range
+        updateSnapshotCards();
+    </script>
+    
+    <script>
+        window.addEventListener("load", function() {
+            updateSnapshotCards();
+        });
+    </script>
     <script>
         
 
@@ -199,7 +291,7 @@ console.log("Dates:", dates);
                     "enjoyment": "#E69F00",   // Orange
                     "surprise": "#56B4E9",    // Sky Blue
                     "contempt": "#009E73",    // Bluish Green
-                    "fear": "#F0E442",        // Yellow
+                    "fear": "#ffd700",        // Yellow
                     "sadness": "#0072B2",     // Blue
                     "disgust": "#D55E00",     // Vermillion
                     "anger": "#CC79A7"        // Reddish Purple
@@ -244,7 +336,8 @@ console.log("Dates:", dates);
                 data: [],
                 fill: false,
                 borderColor: 'rgba(0, 0, 0, 0)',
-                tension: 0.1
+                tension: 0.1,
+                pointRadius: 0
             };;
         } else  {
             console.log("in the bottom if statement");
@@ -253,7 +346,8 @@ console.log("Dates:", dates);
                 data: level,
                 fill: false,
                 borderColor: emotionColorMap[levelNames[index]],
-                tension: 0.1
+                tension: 0.1,
+                pointRadius: 0
             };
         }
     });
@@ -276,7 +370,13 @@ console.log("Dates:", dates);
             scales: {
                 y: {
                     min: 0,
-                    max: 10
+                    max: 10,
+                    ticks: {
+                    color: '#2c2c2c' // Set font color for y-axis labels
+                },
+                grid: {
+                    color: 'rgba(44, 44, 44, 0.1)' // Set color for x-axis gridlines
+                }
                 },
                 x: {
                     type: 'time',
@@ -285,17 +385,28 @@ console.log("Dates:", dates);
                         displayFormats: {
                             'day': 'DD/MM/YYYY'
                         }
-                    }
+                    },
+                    ticks: {
+                    color: '#2c2c2c' // Set font color for y-axis labels
+                },
+                grid: {
+                    color: 'rgba(44, 44, 44, 0.1)' // Set color for x-axis gridlines
+                }
                 }
             },
             plugins: {
-                legend: { display: true, position: 'right' },
+                legend: { display: true, position: 'right', labels: {
+                    boxWidth: 20, // Set the width of the legend box
+                    boxHeight: 0, // Set the height of the legend box
+                    fontColor: 'black', // Set the color of the text inside the legend
+                    align: 'start' }},
                 tooltips: { enabled: true },
                 title: {
                     display: true,
                     text: "Levels Snapshot",
                     font: { size: 20 },
                 },
+                backgroundColor: 'rgba(0, 0, 0, 0.5)'
             },
             onResize: function(chart, size) {
                 if (size.width !== chart.width || size.height !== chart.height) {

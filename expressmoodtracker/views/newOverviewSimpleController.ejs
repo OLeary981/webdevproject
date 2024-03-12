@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Line Graph</title>
+    <title>Snapshot Overview</title>
     <link rel="icon" type="image/png" sizes="32x32" href="/imgs/favicon-32x32.png"> 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
@@ -18,7 +18,7 @@
 </head>
 </head>
 <body>
-    <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(255, 255, 255, 0.8); z-index: -1; "></div>
+    <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(255, 255, 255, 0.6); z-index: -1; "></div>
     <%- include('navbar') %>
     <section class="section">
           
@@ -98,6 +98,7 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
     </div>
     
+   
     <script>
         // Calculate the default start date (1 week ago)
         var startDate = new Date();

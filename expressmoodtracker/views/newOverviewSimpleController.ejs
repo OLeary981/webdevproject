@@ -132,7 +132,7 @@ document.addEventListener('DOMContentLoaded', () => {
             var endDateStr = document.getElementById("end-date").value;
             var startDate = new Date(startDateStr);
             var endDate = new Date(endDateStr);
-            
+            endDate.setHours(23, 59, 59, 999);
             // Clear existing snapshot cards
             document.getElementById("snapshot-container").innerHTML = '';
     

@@ -81,9 +81,12 @@
                         type="checkbox"
                         id="trigger<%= index %>"
                         data-trigger="<%= trigger.trigger_name %>"
-                        name="triggers"
-                      >
+                        name="triggers"                      
+                      <% if (selectedTriggerNames.includes(trigger.trigger_name)) { %>                 
+                        checked 
+                        <% } %> 
                       <label for="trigger<%= index %>"><%= trigger.trigger_name %></label>
+                      
                     </div>
                     <% }); %>
                     
@@ -123,6 +126,9 @@
           output.textContent = slider.value;
         });
       });
+
+   
+
     </script>
   </body>
 </html>

@@ -1,72 +1,23 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register</title>
-    <link rel="icon" type="image/png" sizes="32x32" href="/imgs/favicon-32x32.png"> 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <link rel="stylesheet" href="/css/mystyles.css">
-</head>
-<body>
-    <%- include('navbar') %>
-    <section class="section">
-        <div >
-            <div class="section">
-                <h1 class="main-title">Register for Emotion Monitor:</h1>
-            </div>
-            <div class = "section">
-            <form action="/register" method="post">
-                <div class="field">
-                    <label class="label" for="username">Username:<span id="message"></span></label>
-                    <div class="control">
-                        <input class="input" type="text" placeholder="Choose a username" id="username" name="username" required>
-                    </div>
-                </div>
-                <div class="field">
-                    <label class="label" for="password">Password:</label>
-                    <div class="control">
-                        <input class="input" type="password" placeholder="Choose a passowrd" id="password" name="password" required>
-                    </div>
-                </div>
-                <div class="field">
-                    <div class="control">
-                        <button class="button mybutton" type="submit">Register</button>
-                    </div>
-                </div>
-            </form>
-        </div>
-        </div>
-        <% if (error) { %>
-            <script>
-                $(document).ready(function() {
-                    const msg = '<%= error %>';
-                    $('#message').html(msg)
-                        .css('color', 'red')
-                        .show()
-                        .fadeOut(8000);
-                });
-            </script>
-        <% } %>
-    </section>
+<%- include('template', { pageTitle: 'Register' }) %>
 
 
-    <script>
-        $(document).ready(function() {
-            $("form").submit(function(event) {
-                const regex = /^[a-zA-Z0-9]+$/; // Allow alphanumeric characters
-                const msg = 'Username must be alphanumeric!!';
-                var currentUsername = $('#username').val(); // Corrected selector
-                if (!regex.test(currentUsername)) {
-                    $('#message').html(msg)
-                        .css('color', 'red')
-                        .show()
-                        .fadeOut(4000);
-                    event.preventDefault();
-                }
-            });
-        });
-    </script>
+<section class="section">
+    <div>
+        <div class="section">
+        <h1 class='main-title'>Register for mood tracker here:</h1>
+        </div>
+        <div class = "section">
+            <%- include('registerForm', { formId: 'registerForm' }) %>
+        </div>
+    </div>
+</div>
+
+   
+
+</section>
+
+
+
+
 </body>
 </html>

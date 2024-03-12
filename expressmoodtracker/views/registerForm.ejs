@@ -1,0 +1,92 @@
+<form action="/register" method="post" id="<%= formId %>">
+    <div class="field">
+        <label class="label" for="username">Username:<span id="username-message"></span></label>
+        <div class="control">
+            <input class="input" type="text" placeholder="Choose a username" id="username" name="username" required>
+        </div>
+    </div>
+    <div class="field">
+        <label class="label" for="email">Email:<span id="email-message"></span></label>
+        <div class="control">
+            <input class="input" type="text" placeholder="Email" id="email" name="email" required>
+        </div>
+    </div>
+    <div class="field">
+        <label class="label" for="firstname">First name:<span id="firstname-message"></span></label>
+        <div class="control">
+            <input class="input" type="text" placeholder="First name" id="firstname" name="firstname" required>
+        </div>
+    </div>
+    <div class="field">
+        <label class="label" for="lastname">Last name:<span id="lastname-message"></span></label>
+        <div class="control">
+            <input class="input" type="text" placeholder="Last name" id="lastname" name="lastname" required>
+        </div>
+    </div>
+    <div class="field">
+        <label class="label" for="password">Password:</label>
+        <div class="control">
+            <input class="input" type="password" placeholder="Choose a password" id="password" name="password" required>
+        </div>
+    </div>
+    <div class="field">
+        <div class="control">
+            <button class="button mybutton" type="submit">Register</button>
+        </div>
+    </div>
+</form>
+
+<% if (error) { %>
+    <script>
+        $(document).ready(function() {
+            const msg = '<%= error %>';
+            $('#username-message').html(msg) // Display error message next to the email field
+                .css('color', 'red')
+                .show()
+                .fadeOut(8000);
+        });
+
+        const url = new URL(window.location.href);
+        url.searchParams.delete('error');
+        window.history.replaceState({}, document.title, url);
+    </script>
+<% } %>
+
+<script>
+    $(document).ready(function() {
+        $("#<%= formId %>").submit(function(event) {
+            const regex = /^[a-zA-Z0-9]+$/;
+            const usernameMsg = 'Username must be alphanumeric!!';
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            const emailMsg = 'Invalid email address!!';
+
+            var currentUsername = $('#username').val().trim();
+            var currentEmail = $('#email').val();
+
+            var valid = true;
+
+            // Validate username
+            if (!regex.test(currentUsername)) {
+                $('#username-message').html(usernameMsg)
+                    .css('color', 'red')
+                    .show()
+                    .fadeOut(3000);
+                valid = false;
+            }
+
+            // Validate email
+            if (!emailRegex.test(currentEmail)) {
+                $('#email-message').html(emailMsg)
+                    .css('color', 'red')
+                    .show()
+                    .fadeOut(4000);
+                valid = false;
+            }
+
+            // Prevent form submission if validation fails
+            if (!valid) {
+                event.preventDefault();
+            }
+        });
+    });
+</script>

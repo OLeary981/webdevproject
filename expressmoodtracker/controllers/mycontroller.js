@@ -553,7 +553,7 @@ exports.postRegisterUser = async (req, res) => {
       if (rows.length > 0) {
         // Username already exists
         return res.redirect(
-            "/register?error=Username taken choose another or <a>/login</a>"
+            "/register?error=Username taken choose another or login"
         );
       }
 

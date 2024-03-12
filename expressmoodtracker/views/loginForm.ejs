@@ -1,0 +1,49 @@
+<form action="/login" method="post" id="<%= formId %>">
+    <div class="field">
+        <label class="label" for="username-input">Enter your username:<span id="message"></span></label>
+    
+        <div class="control">
+            <input class="input" name="username" type="text" placeholder="Username" id="username-input">
+        </div>
+        </div>
+        <div class="field">
+        <label class="label" for="userpass-input">Enter your password:</label>
+        <div class="control">
+            <input class="input" name="userpass" type="password" placeholder="Password" id="userpass-input">
+        </div>
+    </div>
+    <div class="field">
+        <div class="control">
+            <button class="button mybutton" type="submit" >Login</button>
+        </div>
+    </div>
+</form>
+
+<% if (error) { %>
+    <script>
+        console.log("script is running")
+        const msg = '<%= error %>';
+        $('#message').html(msg)
+            .css('color', 'red')
+            .show()
+            .fadeOut(8000);
+    </script>
+<% } %>
+
+<script>
+    $(document).ready(function() {
+        $("#<%= formId %>").submit(function(event) {
+            const regex = /^[a-zA-Z0-9]+$/;
+            const msg = 'Username must be alphanumeric!!';
+            var currentUsername = $('#username-input').val().trim();
+
+            if (!regex.test(currentUsername)) {
+                $('#message').html(msg)
+                    .css('color', 'red')
+                    .show()
+                    .fadeOut(3000);
+                event.preventDefault();
+            }
+        });
+    });
+</script>

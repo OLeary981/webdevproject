@@ -1,74 +1,22 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Express Favourites</title>
-    <link rel="icon" type="image/png" sizes="32x32" href="/imgs/favicon-32x32.png"> 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <link rel="stylesheet" href="/css/mystyles.css">
-</head>
-<body>
-    <%- include('navbar') %>
-    <section class="section">
-        <div>
-            <div class="section">
-            <h1 class='main-title'>Login here:</h1>
-            </div>
-            <div class = "section">
-            <form action="/login" method="post">
-                <div class="field">
-                    <label class="label" for="username-input">Enter your username:<span id="message"></span></label>
-                
-                    <div class="control">
-                        <input class="input" name="username" type="text" placeholder="Username" id="username-input">
-                    </div>
-                    </div>
-                    <div class="field">
-                    <label class="label" for="userpass-input">Enter your password:</label>
-                    <div class="control">
-                        <input class="input" name="userpass" type="password" placeholder="Password" id="userpass-input">
-                    </div>
-                </div>
-                <div class="field">
-                    <div class="control">
-                        <button class="button mybutton" type="submit" >Login</button>
-                    </div>
-                </div>
-            </form>
+<%- include('template', { pageTitle: 'Register' }) %>
+<section class="section">
+    <div>
+        <div class="section">
+        <h1 class='main-title'>Login here:</h1>
+        </div>
+        <div class = "section">
+        <%- include('loginForm', { formId: 'loginForm' })%>
         </div>
     </div>
+</div>
 
-        <% if (error) { %>
-            <script>
-                console.log("script is running")
-                const msg = ' <%= error %>';
-                $('#message').html(msg)
-                .css('color', 'red')
-                .show()
-                .fadeOut(8000);
-            </script>
-        <% } %>
+   
 
-    </section>
+</section>
 
 
-    <script>
-        $("form").submit((event) => {
-            const regex = /^[a-zA-Z]+$/;
-            const msg = ' Username must be alphabetic!!';
-            var currentUsername = $('#username-input').val();
-            if (regex.test(currentUsername) == false) {
-                $('#message').html(msg)
-                .css('color', 'red')
-                .show()
-                .fadeOut(3000);
-                event.preventDefault();
-            }
-        });
-    </script>
-    
+
+
 </body>
 </html>
+   

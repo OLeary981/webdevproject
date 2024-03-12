@@ -13,6 +13,7 @@ router.get("/newfav", isAuth, controller.getAddFavourite);
 router.get("/newsnapshot", isAuth, controller.getAddSnapshot);
 
 router.get("/", controller.getIndex);
+router.get("/about", controller.getAbout);
 router.get("/register", controller.getRegisterUser);
 router.get("/login", controller.getLogin);
 router.get("/logout", controller.getLogout);

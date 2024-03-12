@@ -20,6 +20,8 @@ exports.getAllFavourites = (req, res) => {
 };
 */
 
+
+
 exports.getAllFavourites = (req, res) => {
   const { isLoggedIn } = req.session;
 
@@ -199,6 +201,10 @@ exports.getIndex = (req, res) => {
   const {error} = req.query;
       res.render("index", { error });    
 };
+
+exports.getAbout = (req,res) => {
+ res.render("about") ;
+}
 
 exports.getRegisterUser = (req, res) => {
     const {error} = req.query;

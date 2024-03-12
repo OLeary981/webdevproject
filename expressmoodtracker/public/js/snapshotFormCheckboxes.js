@@ -14,6 +14,9 @@ document.addEventListener('DOMContentLoaded', function() {
         // Get the value of the notes input field
         const notesValue = document.getElementById('notes').value;
 
+        // // Convert selectedTriggers array to a comma-separated string
+        // const selectedTriggersString = selectedTriggers.join(',');
+
         const newElement = document.createElement('input');
         newElement.name = 'triggers';
         newElement.type = 'hidden';

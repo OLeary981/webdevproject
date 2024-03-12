@@ -627,8 +627,9 @@ exports.postAddSnapshot = (req, res) => {
     anger,
     notes,
   } = req.body;
+  console.log("In the line before the formTriggers extraction")
 
-  const formTriggers = req.body.triggers ? req.body.triggers.split(',') : []; // Convert string to array using comma as delimiter or set it as an empty array if triggers are not provided
+  const formTriggers = req.body.triggers || []; 
   console.log(formTriggers);
   let selectedTriggers;
   if (formTriggers.length === 0) {
@@ -637,7 +638,8 @@ exports.postAddSnapshot = (req, res) => {
       selectedTriggers = null; //putting const infront here causes an error. goodness knows why.
       console.log(`Selected Triggers array should be null: ${selectedTriggers}`);     
   } else {
-      const filteredTriggers = formTriggers.filter(item => item !== 'on');
+      const formTriggersSeparated = formTriggers.flatMap(item => item.split(','));
+      const filteredTriggers = formTriggersSeparated.filter(item => item !== 'on');
       selectedTriggers = filteredTriggers
       console.log(selectedTriggers);
       // Proceed with processing selected triggers

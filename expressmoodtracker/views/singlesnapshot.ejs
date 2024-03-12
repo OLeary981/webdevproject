@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" style="background-image: url('/imgs/sea_tile.jpeg');  background-size: tile;">">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -13,17 +13,12 @@
     <script src="/js/confirmDelete.js"></script>    
   </head>
   <body>
-    <%- include('navbar') %>
-    <section class="section">
-        <%- result[0].snapshot_ID %>
-        <div class="container">
-            
-
-
-            <h1>Single Snapshot Placeholder</h1>
+    <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(255, 255, 255, 0.8); z-index: -1; "></div>
+    <%- include('navbar') %>    
+        
+                      
             <% for (let row of result) { %>
-                <% var id = row.snapshot_ID; %>
-            
+                <% var id = row.snapshot_ID; %>            
                 <% var enjoyment = row.enjoyment_level; %>
                 <% var surprise = row.surprise_level; %>
                 <% var contempt = row.contempt_level; %>
@@ -32,18 +27,9 @@
                 <% var disgust = row.disgust_level; %>
                 <% var anger = row.anger_level; %>
                 <% var notes = row.notes; %>
-            
-                <p>ID: <%= id %></p>
-              
-                <p>Enjoyment Level: <%= enjoyment %></p>
-                <p>Surprise Level: <%= surprise %></p>
-                <p>Contempt Level: <%= contempt %></p>
-                <p>Fear Level: <%= fear %></p>
-                <p>Sadness Level: <%= sadness %></p>
-                <p>Disgust Level: <%= disgust %></p>
-                <p>Anger Level: <%= anger %></p>
             <% } %>
-        </div>
+        
+        <section class="section">
         <div class="column is-centered is-fullwidth">
             <% const date = new Date(result[0].timestamp); %> <% const
             formattedDate = date.toLocaleDateString('en-GB', { weekday: 'long',
@@ -61,20 +47,24 @@
             </div>
         </div>
         <div >
-        <h1>Triggers:</h1>
+        <h1 class = "sub-title">Triggers:</h1>
     </div>
 
-        <div class="trigger-container">
-            
+    <div class="trigger-container ">
+        <% if (triggers.length === 0) { %>
+            <p class = "minor-title">No triggers recorded for this snapshot</p>
+        <% } else { %>
             <% triggers.forEach((trigger) => { %>
-              <div class="card trigger-card">
-                <div class="card-content">
-                  <p ><%= trigger.trigger_name %></p>
+                <div class="card trigger-card">
+                    <div class="card-content">
+                        <p class = "sub-title"><%= trigger.trigger_name %></p>
+                    </div>
                 </div>
-              </div>
             <% }); %>
-          </div>
-            <div class="column is-half">              
+        <% } %>
+    </div>
+          </section>
+            <div class="column is-centered">              
                 <div class="notes-box">                    
                     <% if (notes) { %>
                         <p><%= notes %></p>
@@ -83,13 +73,15 @@
                     <% } %>
                 </div>
             </div>
+            <div class="column is-centered">  
             <a href="/editsnapshotcheckbox/<%= result[0].snapshot_ID %>" class="button mybutton">Edit Snapshot</a>
 
-        
+           
             <button type="button" class="button mybutton" id="deleteButton">Delete Snapshot</button>
             <form id="deleteForm" action="/delsnapshot/<%= id %>" method="post" style="display: none;">
             
             </form>
+            </div>
        
     </section>
    

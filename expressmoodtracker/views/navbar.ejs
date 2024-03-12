@@ -14,27 +14,34 @@
   
     <!-- Navbar menu -->
     <div id="navbarBasicExample" class="navbar-menu" style="background-color: black; color: white;">
-        <!-- Moved all the navbar links here -->
+       
         <div class="navbar-start">
-            <% if (currentPage !== '/allsnapshots' && currentPage!= '/register' ) { %>
-                <a class="navbar-item is-hoverable" href="/allsnapshots">Mood Overview</a>
+            <% if (currentPage !== '/about' ) { %>
+                <a class="navbar-item is-hoverable" href="/about">About</a> 
+                <% } %>
+            <% if (currentPage !== '/allsnapshots' && currentPage != '/register' && currentPage != '/login' && isLoggedIn) { %>
+                <a class="navbar-item is-hoverable" href="/allsnapshots">Overview</a>
             <% } %>
-            <% if (currentPage !== '/newsnapshot' && currentPage !== '/login'&& currentPage!= '/register') { %>
+            <% if (currentPage !== '/newsnapshot' && currentPage !== '/login' && currentPage != '/register' && isLoggedIn) { %>
                 <a class="navbar-item is-hoverable" href="/newsnapshot">Add Snapshot</a>
             <% } %>
-            <% if (currentPage !== '/editfav' && currentPage !== '/login'&& currentPage!= '/register' ) { %>
-                <a class="navbar-item is-hoverable" href="/singlesnapshot">Should be deleted?</a>
-            <% } %>
+            
+            
         </div>
     
-        <div class="navbar-end" style="color: white;"> <!-- Set font color here -->
-            <% if (!isLoggedIn && currentPage !== '/login') { %>
+        <div class="navbar-end" style="color: white;">
+            <% if (isLoggedIn) { %>
+                <a class="navbar-item is-hoverable" href="/account">Account</a>
+            <% } %>
+            <% if ((!isLoggedIn && currentPage !== '/login') || (currentPage === '/about')) { %>
                 <a class="navbar-item is-hoverable" href="/login">Login</a>
+                <a class="navbar-item is-hoverable" href="/register">Register</a>
             <% } else if (currentPage !== '/login'){ %>
                 <a class="navbar-item is-hoverable" href="/logout">Logout</a>
             <% } else { %>
                 <a class="navbar-item is-hoverable" href="/register">Register</a>
             <% } %>
+            
         </div>
     </div>
 </nav>

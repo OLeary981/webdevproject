@@ -30,9 +30,7 @@
         </div>
     
         <div class="navbar-end" style="color: white;">
-            <% if (isLoggedIn) { %>
-                <a class="navbar-item is-hoverable" href="/account">Account</a>
-            <% } %>
+           
             <% if ((!isLoggedIn && currentPage !== '/login') || (currentPage === '/about')) { %>
                 <a class="navbar-item is-hoverable" href="/login">Login</a>
                 <a class="navbar-item is-hoverable" href="/register">Register</a>

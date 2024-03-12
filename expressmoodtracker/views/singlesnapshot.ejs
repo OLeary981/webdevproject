@@ -43,7 +43,7 @@
 
         <div class="columns is-centered">
             <div class="column is-half">
-                <canvas id="emotionChart" width="600" height="400"></canvas>
+                <canvas id="emotionChart" width="500" height="300"></canvas>
             </div>
         </div>
         <div >
@@ -57,7 +57,7 @@
             <% triggers.forEach((trigger) => { %>
                 <div class="card trigger-card">
                     <div class="card-content">
-                        <p class = "sub-title"><%= trigger.trigger_name %></p>
+                        <h2><%= trigger.trigger_name %></h2>
                     </div>
                 </div>
             <% }); %>

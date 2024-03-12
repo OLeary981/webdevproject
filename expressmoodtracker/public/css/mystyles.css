@@ -159,18 +159,21 @@
 }
 
 .trigger-card {
-  width: calc(15% - 20px); /* Adjust width as needed */
-  margin-bottom: 20px; /* Add margin between cards */
+  width: calc(20% - 20px); /* Adjust width as needed */
+  margin-bottom: 5px;
+  margin-top: 5px; /* Add margin between cards */
+  word-wrap: break-word;
+  text-align: center;
 }
 
 /* Adjust card content size */
 .trigger-card .card-content {
-  padding: 10px; /* Adjust padding as needed */
+  padding: 5px; /* Adjust padding as needed */
 }
 
 /* Adjust label font size */
 .trigger label {
-  font-size: 14px; /* Adjust font size as needed */
+  font-size: 16px; /* Adjust font size as needed */
 }
 
 body {

@@ -324,7 +324,7 @@ exports.getAllSnapshotsSimplified = (req, res) => {
       return res.redirect(`/newsnapshot?message=${encodeURIComponent(welcomeMessage)}`);
     }
 
-    res.render('newOverviewSimpleController', {
+    res.render('overview', {
       snapshots: results,
       currentPage: '/allsnapshots',
       session: req.session // Assuming you have a way to determine if the user is logged in

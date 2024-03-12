@@ -12,16 +12,21 @@
   <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(255, 255, 255, 0.9); z-index: -1; "></div>
   <%- include('navbar') %>
   <section class="section">
+    <% if (message) { %>
+      <div class="notification is-info">
+        <%= message %>
+      </div>
+    <% } %>
     <div class="container">
       <div class="columns is-centered">
         <div class="column is-centered is-fullwidth">
           <p>
-            Lorem ipsum dolor sit amet consectetur, adipisicing elit. Quis
-            similique a dolore, aperiam illum corrupti tempora consectetur
-            placeat sunt ab molestias enim modi itaque illo voluptatem
-            praesentium? Distinctio, nam ducimus.
+            This tool helps you monitor and understand your emotions over time. To use it, simply adjust the sliders below to reflect how strongly you are experiencing this emotion. You can also check any triggers that may have influenced your mood and add notes to provide context. Once you're done, click "Submit" to save your snapshot.
           </p>
-          <h1>Add a Snapshot</h1>
+          <p>
+            If you're not sure what each emotion represents, you can learn more about them on our <a href="/about">About page</a>.
+          </p>
+          <h1 class="sub-title">Add a Snapshot</h1>
           <form id="snapshot-form" action="/newsnapshot" method="POST">
             <% const sliders = [
               { label: 'Enjoyment', id: 'enjoyment' },

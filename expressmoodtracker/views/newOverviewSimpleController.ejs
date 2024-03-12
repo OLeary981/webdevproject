@@ -23,6 +23,9 @@
     <section class="section">
           
 </section>
+<% if (!snapshots) { %>
+    <h1>Welcome <%= session.first_name %>! Click Add Snapshot to start logging your emotions!</h1>
+<% } %>
 <!-- NEW EXPERIMENTAL SECTION-->
 <div class="columns is-centered">
     <!-- Container for time buttons -->

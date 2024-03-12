@@ -218,13 +218,15 @@ exports.getLogin = (req, res) => {
 };
 
 exports.getAddSnapshot = (req, res) => {
-  const { isLoggedIn } = req.session;
+  //const { user_ID, first_name } = req.session;
+  const { message } = req.query;
+  const welcomeMessage = message || `How are you feeling?`;
   conn.query("SELECT * FROM `trigger` ORDER BY trigger_name ASC", (err, rows) => {
     if (err) {
       console.error(err);
       return res.status(500).send("Error fetching triggers");
-    }
-    res.render("addsnapshotcheckboxes", { triggers: rows, currentPage: "/newsnapshot" });
+    }    
+    res.render("addsnapshotcheckboxes", { triggers: rows, currentPage: "/newsnapshot", message: welcomeMessage });
   });
 };
 
@@ -260,88 +262,6 @@ console.log(selectedTriggers);
   });
 };
 
-//overly complicated.
-// exports.getEditSnapshot = async (req, res) => {
-//   const { id } = req.params;
-//   const selectAllTriggersSQL = "SELECT * FROM `trigger` ORDER BY trigger_name ASC";
-//   const selectChosenTriggersSQL = `SELECT t.trigger_name FROM snapshot_trigger st  JOIN \`trigger\` t ON st.trigger_ID = t.trigger_ID WHERE st.snapshot_ID = ${id};`
-//   const selectSnapshotSQL = `SELECT enjoyment_level, surprise_level, contempt_level, sadness_level, fear_level, disgust_level, anger_level, timestamp FROM snapshot WHERE snapshot_ID = ${id};`
-
-//   const getSnapshot = () => {
-//     return new Promise((resolve, reject) => {
-//         conn.query(selectSnapshotSQL, (err, snapshot) => {
-//             if (err) {
-//                 reject(err);
-//             } else {
-//               console.log(snapshot);
-//                 resolve(snapshot);
-//             }
-//         });
-//     });
-// };
-
-// const getTriggers = () => {
-//     return new Promise((resolve, reject) => {
-//         conn.query(selectAllTriggersSQL, (err, triggers) => {
-//             if (err) {
-//                 reject(err);
-//             } else {
-//               console.log(triggers);
-//                 resolve(triggers);
-//             }
-//         });
-//     });
-// };
-
-// const getSelectedTriggers = () => {
-//     return new Promise((resolve, reject) => {
-//         conn.query(selectChosenTriggersSQL, (err, selectedTriggers) => {
-//             if (err) {
-//                 reject(err);
-//             } else {
-//               console.log(selectedTriggers);
-//                 resolve(selectedTriggers);
-//             }
-//         });
-//     });
-// };
-
-
-//   try {
-//       const snapshot = await getSnapshot();
-//       const triggers = await getTriggers();
-//       const selectedTriggers = await getSelectedTriggers();
-
-//       // Pass the data to your rendering function
-//       res.render("editsnapshotcheckboxes", { snapshot, triggers, selectedTriggers });
-//   } catch (error) {
-//       console.error("Error:", error);
-//       res.render('404', { error });
-//   }
-
-  
-// }
-
-
-//OLD VERSION - WORKS BUT NOW ADDING TRIGGERS TO IT ALSO
-// exports.getSingleSnapshot = async (req, res) => {
-//   const { id } = req.params;
-//   const {user_ID} = req.session
-//   const selectSQL = `SELECT * FROM snapshot WHERE snapshot_id = ${id} AND user_ID = ${user_ID}`;
-//   conn.query(selectSQL, (err, rows) => {
-//     if (err) {
-//       throw err;
-//     } else {
-//       if (rows.length >0){
-//         console.log(rows);
-//       res.render("singlesnapshot", { result: rows});
-//       } else {
-//         res.render('404');
-//       }
-      
-//     }
-//   });
-// }
 
 exports.getSingleSnapshot = async (req, res) => {
   const { id } = req.params;
@@ -384,7 +304,7 @@ exports.getSingleSnapshot = async (req, res) => {
 
 
 exports.getAllSnapshotsSimplified = (req, res) => {
-  const { user_ID } = req.session;
+  const { user_ID, first_name } = req.session;
   const vals = user_ID;
 
   const selectSnapshotsSQL = `SELECT * FROM snapshot WHERE user_id = ? ORDER BY timestamp`;
@@ -395,7 +315,14 @@ exports.getAllSnapshotsSimplified = (req, res) => {
       res.status(500).send('Internal server error');
       return;
     }
-    //console.log(results)
+    console.log("About to render allSnapshots")
+    console.log(results)
+    console.log(req.session.first_name);
+//If the user has no snapshots to display, then direct them to the addSnapshot instead
+    if (results.length === 0) {
+      const welcomeMessage = `Welcome to mood tracker ${first_name}! Add the first snapshot of your emotions to get started!`;
+      return res.redirect(`/newsnapshot?message=${encodeURIComponent(welcomeMessage)}`);
+    }
 
     res.render('newOverviewSimpleController', {
       snapshots: results,
@@ -405,18 +332,6 @@ exports.getAllSnapshotsSimplified = (req, res) => {
   });
 };
 
-//can this be deleted? model used for other queries?
-const queryDatabase = (sql, params) => {
-  return new Promise((resolve, reject) => {
-    conn.query(sql, params, (err, result) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(result);
-      }
-    });
-  });
-};
 
 exports.getLogout = (req, res) => {
   req.session.destroy(() => {
@@ -498,8 +413,9 @@ exports.postLoginBcrypt = (req, res) => {
 
     if (rows.length === 0) {
       return res.redirect("/login?error=User not found");
-    }
-
+    };
+    console.log("About to print rows");
+    console.log(rows);
     const hashedPassword = rows[0].user_password;
 
     bcrypt.compare(userpass, hashedPassword, (err, result) => {
@@ -534,7 +450,8 @@ exports.postLoginBcrypt = (req, res) => {
 };
 
 exports.postRegisterUser = async (req, res) => {
-  const { username, password } = req.body;
+  const { username, password, firstname, lastname, email } = req.body;
+  console.log(req.body);
   const errors = validationResult(req);
   console.log(errors.array());
   if (!errors.isEmpty()) {
@@ -566,8 +483,8 @@ exports.postRegisterUser = async (req, res) => {
 
         // Insert user into database
         const insertSQL =
-          "INSERT INTO user_details (username, user_password) VALUES (?, ?)";
-        conn.query(insertSQL, [username, hash], (error, result) => {
+          "INSERT INTO user_details (username, user_password, first_name, last_name, email_address) VALUES (?, ?, ?, ?, ?)";
+        conn.query(insertSQL, [username, hash, firstname, lastname, email], (error, result) => {
           if (error) {
             console.error(error);
             return res.status(500).send("Error registering user");

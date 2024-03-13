@@ -93,38 +93,36 @@ exports.getAllSnapshotsSimplified = async (req, res) => {
 };
 
 
-
-exports.getEditSnapshot = (req, res) => {
+//has an API
+exports.getEditSnapshot = async (req, res) => {
   const { id } = req.params;
-  const selectAllTriggersSQL = "SELECT * FROM `trigger` ORDER BY trigger_name ASC";
-  const selectChosenTriggersSQL = `SELECT t.trigger_name FROM snapshot_trigger st JOIN \`trigger\` t ON st.trigger_ID = t.trigger_ID WHERE st.snapshot_ID = ?`;
-  const selectSnapshotSQL = `SELECT * FROM snapshot WHERE snapshot_ID = ?`;
-
-  conn.query(selectSnapshotSQL, [id], (err, snapshot) => {
-      if (err) {
-          console.error("Error fetching snapshot:", err);
-          return res.render('404', { error: err });
-      }
-
-      conn.query(selectAllTriggersSQL, (err, triggers) => {
-          if (err) {
-              console.error("Error fetching triggers:", err);
-              return res.render('404', { error: err });
-          }
-
-          conn.query(selectChosenTriggersSQL, [id], (err, selectedTriggers) => {
-              if (err) {
-                  console.error("Error fetching selected triggers:", err);
-                  return res.render('404', { error: err });
-              }
-console.log(snapshot);
-console.log(triggers);
-console.log(selectedTriggers);
-              res.render("editsnapshotcheckboxes", { snapshot, triggers, selectedTriggers });
-          });
-      });
+  const { user_ID } = req.session;  
+  const endpoint = `http://localhost:3002/editsinglesnapshot/${id}/${user_ID}`;
+  await axios.get(endpoint)
+  .then((response) => {
+    console.log("made it back from the axios endpoint");  
+    const snapshot = response.data.snapshot;
+    const triggers = response.data.triggers;
+    const selectedTriggers = response.data.selectedTriggers;
+    console.log(snapshot);
+    console.log(req.session.first_name);   
+    res.render("editsnapshotcheckboxes", { snapshot, triggers, selectedTriggers });
+  })
+  .catch((error) => {
+    console.log(`Error making API request: ${error}`);
+    res.status(500).send("An error occurred. Please try again later.");
+    res.render('404');
   });
 };
+
+
+
+
+
+
+
+
+
 
 
 
@@ -141,7 +139,6 @@ console.log(selectedTriggers);
 exports.postAddSnapshot = (req, res) => {
   // Extract slider levels and notes from request body
   console.log(req.body);
-
   const {
     enjoyment,
     surprise,

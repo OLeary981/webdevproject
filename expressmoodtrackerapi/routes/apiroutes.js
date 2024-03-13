@@ -1,14 +1,14 @@
 const express = require('express');
-const controller = require('./../controllers/apicontroller');
+const controller = require('./../controllers/apicontrollerv2');
+
 const router = express.Router();
 
-router.get('/', controller.getFavourites);
-router.get('/:id', controller.getFavourite);
+router.get('/favourites', controller.getFavourites);
+router.get('/snapshots', controller.getSnapshots);
+router.get('/snapshots/:id', controller.getUserSnapshots);
 
-router.post('/', controller.insertFavourite);
 
-router.put('/:id', controller.updateFavourite);
 
-router.delete('/:id', controller.deleteFavourite);
+
 
 module.exports = router;

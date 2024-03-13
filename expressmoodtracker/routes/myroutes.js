@@ -20,8 +20,7 @@ router.get("/newsnapshot", isAuth, controller.getAddSnapshot);
 router.get("/singlesnapshot/:id", isAuth, controller.getSingleSnapshot);
 router.get("/editsnapshotcheckbox/:id", isAuth, controller.getEditSnapshot);
 
-router.post("/newfav", controller.postInsertFavourite);
-router.post("/editfav/:id", controller.postUpdateFavourite);
+
 router.post("/delsnapshot/:id", controller.postDeleteSnapshot);
 router.post(
   "/register",

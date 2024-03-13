@@ -440,7 +440,7 @@ function updateChart(timeRange, selectedSeries, xAxisUnit) {
             // Use all data
             filteredDates = dates;
             filteredLevels = levels;
-            targetPoints = 50; // Specify the target number of data points after downsampling
+            targetPoints = 150; // Specify the target number of data points after downsampling
             windowSize = Math.ceil(filteredDates.length / targetPoints); // Adjust the window size based on the target number of data points
             filteredLevels = levels.map(level => downsampleAndComputeRollingAverages(level, targetPoints, windowSize));
             // Downsample the dates array after computing rolling averages
@@ -450,7 +450,7 @@ function updateChart(timeRange, selectedSeries, xAxisUnit) {
             // Filter data for the last year
             const defaultStartDateYear = currentDate.clone().subtract(1, 'year');
             filteredDates = dates.filter(date => moment(date).isSameOrAfter(defaultStartDateYear));
-            targetPoints = 50; // Specify the target number of data points after downsampling
+            targetPoints = 100; // Specify the target number of data points after downsampling
             windowSize = Math.ceil(filteredDates.length / targetPoints); // Adjust the window size based on the target number of data points
             filteredLevels = levels.map(level => downsampleAndComputeRollingAverages(level, targetPoints, windowSize));
             // Downsample the dates array after computing rolling averages
@@ -462,7 +462,7 @@ function updateChart(timeRange, selectedSeries, xAxisUnit) {
             // Filter data for the last 3 months
             const defaultStartDate3Months = currentDate.clone().subtract(3, 'months');
             filteredDates = dates.filter(date => moment(date).isSameOrAfter(defaultStartDate3Months));
-            targetPoints = 30; // Specify the target number of data points after downsampling
+            targetPoints = 70; // Specify the target number of data points after downsampling
             windowSize = Math.ceil(filteredDates.length / targetPoints); // Adjust the window size based on the target number of data points
             filteredLevels = levels.map(level => downsampleAndComputeRollingAverages(level, targetPoints, windowSize));
             // Downsample the dates array after computing rolling averages
@@ -472,21 +472,31 @@ function updateChart(timeRange, selectedSeries, xAxisUnit) {
             // Filter data for the last month
             const defaultStartDateMonth = currentDate.clone().subtract(1, 'month');
             filteredDates = dates.filter(date => moment(date).isSameOrAfter(defaultStartDateMonth));           
-            targetPoints = 30; // Specify the target number of data points after downsampling
+            targetPoints = 70; // Specify the target number of data points after downsampling
             windowSize = Math.ceil(filteredDates.length / targetPoints); // Adjust the window size based on the target number of data points
-            filteredLevels = levels.map(level => downsampleAndComputeRollingAverages(level, targetPoints, windowSize));
-            // Downsample the dates array after computing rolling averages
-            filteredDates = downsampleDates(filteredDates, targetPoints);
+            if (filteredDates.length > targetPoints) {
+        filteredLevels = levels.map(level => downsampleAndComputeRollingAverages(level, targetPoints, windowSize));
+        // Downsample the dates array after computing rolling averages
+        filteredDates = downsampleDates(filteredDates, targetPoints);
+    } else {
+        // No downsampling needed, use the original data
+        filteredLevels = levels.map(level => computeRollingAverages(level, windowSize));
+    }
             break;
         case 'week':
             // Filter data for the last week
             const defaultStartDateWeek = currentDate.clone().subtract(1, 'week');
             filteredDates = dates.filter(date => moment(date).isSameOrAfter(defaultStartDateWeek));
-            targetPoints = 14; // Specify the target number of data points after downsampling
+            targetPoints = 20; // Specify the target number of data points after downsampling
             windowSize = Math.ceil(filteredDates.length / targetPoints); // Adjust the window size based on the target number of data points
-            filteredLevels = levels.map(level => downsampleAndComputeRollingAverages(level, targetPoints, windowSize));
-            // Downsample the dates array after computing rolling averages
-            filteredDates = downsampleDates(filteredDates, targetPoints);
+            if (filteredDates.length > targetPoints) {
+        filteredLevels = levels.map(level => downsampleAndComputeRollingAverages(level, targetPoints, windowSize));
+        // Downsample the dates array after computing rolling averages
+        filteredDates = downsampleDates(filteredDates, targetPoints);
+    } else {
+        // No downsampling needed, use the original data
+        filteredLevels = levels.map(level => computeRollingAverages(level, windowSize));
+    }
             break;
             case 'day':
             // Filter data for the last week

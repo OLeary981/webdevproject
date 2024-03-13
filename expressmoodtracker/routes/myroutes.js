@@ -1,37 +1,36 @@
 const express = require("express");
-const controller = require("./../controllers/mycontroller");
+const user_controller = require("./../controllers/user_controller");
+const snapshot_controller = require("./../controllers/snapshot_controller");
 const { isAuth } = require("./../middleware/auth");
 const { check } = require("express-validator");
 
 const router = express.Router();
 
 
+router.get("/", snapshot_controller.getIndex);
+router.get("/about", snapshot_controller.getAbout);
+router.get("/landing", snapshot_controller.getLanding);
+router.get("/allsnapshots", isAuth, snapshot_controller.getAllSnapshotsSimplified);
+router.get("/newsnapshot", isAuth, snapshot_controller.getAddSnapshot);
+router.get("/singlesnapshot/:id", isAuth, snapshot_controller.getSingleSnapshot);
+router.get("/editsnapshotcheckbox/:id", isAuth, snapshot_controller.getEditSnapshot);
+router.post("/delsnapshot/:id", snapshot_controller.postDeleteSnapshot);
+router.post("/newsnapshot", snapshot_controller.postAddSnapshot);
+router.post("/editsnapshot/:id", snapshot_controller.postEditSnapshot);
 
 
-
-router.get("/", controller.getIndex);
-router.get("/about", controller.getAbout);
-router.get("/register", controller.getRegisterUser);
-router.get("/login", controller.getLogin);
-router.get("/logout", controller.getLogout);
-router.get("/landing", controller.getLanding);
-router.get("/allsnapshots", isAuth, controller.getAllSnapshotsSimplified);
-router.get("/newsnapshot", isAuth, controller.getAddSnapshot);
-router.get("/singlesnapshot/:id", isAuth, controller.getSingleSnapshot);
-router.get("/editsnapshotcheckbox/:id", isAuth, controller.getEditSnapshot);
-
-
-router.post("/delsnapshot/:id", controller.postDeleteSnapshot);
+router.get("/register", user_controller.getRegisterUser);
+router.get("/login", user_controller.getLogin);
+router.get("/logout", user_controller.getLogout);
 router.post(
   "/register",
   check("username")
     .exists()
     .isLength({ min: 3 })
     .withMessage("Username must be at least 3 chars!"),
-  controller.postRegisterUser
+  user_controller.postRegisterUser
 );
-router.post("/newsnapshot", controller.postAddSnapshot);
-router.post("/editsnapshot/:id", controller.postEditSnapshot);
+
 
 //router.post('/login', controller.postLogin);
 
@@ -41,7 +40,7 @@ router.post(
     .exists()
     .isLength({ min: 3 })
     .withMessage("Username must be at least 3 chars!"),
-  controller.postLoginBcrypt
+  user_controller.postLoginBcrypt
 );
 
 module.exports = router;

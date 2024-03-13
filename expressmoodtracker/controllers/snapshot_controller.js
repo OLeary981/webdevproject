@@ -10,6 +10,11 @@ exports.getIndex = (req, res) => {
       res.render("index", { error });    
 };
 
+exports.get500 = (req, res) => { 
+  const {error} = req.query;
+      res.render("500", { errorMessage: errorMessage  });    
+};
+
 exports.getAbout = (req,res) => {
  res.render("about") ;
 }
@@ -55,9 +60,16 @@ exports.getAddSnapshot = async (req, res) => {
         res.render("singlesnapshot", { result: results, triggers: triggers }); // Fix 'rows' to 'results'
       })
       .catch((error) => {
-        console.log(`Error making API request: ${error}`);
-        res.status(500).send("An error occurred. Please try again later.");
-        res.render('404');
+        if (error.response && error.response.status === 401) {
+          // Handle 401 Unauthorized error
+          console.log("Unauthorized access to snapshot");
+          res.status(401).render('500', { errorMessage: "Unauthorized access to snapshot" });
+      } else {
+          // Handle other errors
+          console.log(`Error making API request: ${error}`);
+          res.status(500).send("An error occurred. Please try again later.");
+          res.render('404');
+      }
       });
   };
 

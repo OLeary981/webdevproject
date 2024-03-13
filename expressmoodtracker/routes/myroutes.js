@@ -8,6 +8,7 @@ const router = express.Router();
 
 
 router.get("/", snapshot_controller.getIndex); //doesn't need api
+router.get('/500', snapshot_controller.get500);
 router.get("/about", snapshot_controller.getAbout); //doesn't need api
 router.get("/allsnapshots", isAuth, snapshot_controller.getAllSnapshotsSimplified); //has an API
 router.get("/newsnapshot", isAuth, snapshot_controller.getAddSnapshot); //this one has an API

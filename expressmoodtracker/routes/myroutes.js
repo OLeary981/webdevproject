@@ -7,15 +7,14 @@ const { check } = require("express-validator");
 const router = express.Router();
 
 
-router.get("/", snapshot_controller.getIndex);
-router.get("/about", snapshot_controller.getAbout);
-router.get("/landing", snapshot_controller.getLanding);
-router.get("/allsnapshots", isAuth, snapshot_controller.getAllSnapshotsSimplified);
-router.get("/newsnapshot", isAuth, snapshot_controller.getAddSnapshot);
-router.get("/singlesnapshot/:id", isAuth, snapshot_controller.getSingleSnapshot);
+router.get("/", snapshot_controller.getIndex); //doesn't need api
+router.get("/about", snapshot_controller.getAbout); //doesn't need api
+router.get("/allsnapshots", isAuth, snapshot_controller.getAllSnapshotsSimplified); //has an API
+router.get("/newsnapshot", isAuth, snapshot_controller.getAddSnapshot); //this one has an API
+router.get("/singlesnapshot/:id", isAuth, snapshot_controller.getSingleSnapshot); //this one has an API
 router.get("/editsnapshotcheckbox/:id", isAuth, snapshot_controller.getEditSnapshot);
 router.post("/delsnapshot/:id", snapshot_controller.postDeleteSnapshot);
-router.post("/newsnapshot", snapshot_controller.postAddSnapshot);
+router.post("/newsnapshot", snapshot_controller.postAddSnapshot); 
 router.post("/editsnapshot/:id", snapshot_controller.postEditSnapshot);
 
 

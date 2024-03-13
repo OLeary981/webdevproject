@@ -14,6 +14,7 @@ exports.getAbout = (req,res) => {
  res.render("about") ;
 }
 
+//has an API
 exports.getAddSnapshot = async (req, res) => {
   //const { user_ID, first_name } = req.session;
   const { message } = req.query;
@@ -38,18 +39,58 @@ exports.getAddSnapshot = async (req, res) => {
       });
   
   };
- 
+ //has an API
+  exports.getSingleSnapshot = async (req, res) => {
+    const { id } = req.params;
+    const { user_ID } = req.session;  
+    const endpoint = `http://localhost:3002/singlesnapshot/${id}/${user_ID}`;
+    
+    await axios.get(endpoint)
+      .then((response) => {
+        console.log("made it back from the axios endpoint");  
+        const results = response.data.result;
+        const triggers = response.data.triggers;
+        console.log(results);
+        console.log(req.session.first_name);   
+        res.render("singlesnapshot", { result: results, triggers: triggers }); // Fix 'rows' to 'results'
+      })
+      .catch((error) => {
+        console.log(`Error making API request: ${error}`);
+        res.status(500).send("An error occurred. Please try again later.");
+        res.render('404');
+      });
+  };
 
+  //has an API 
+exports.getAllSnapshotsSimplified = async (req, res) => {
+  const { user_ID, first_name } = req.session;
+  const vals = user_ID;
 
-
-
-
-
-
-
-
-
-
+  const endpoint = `http://localhost:3002/snapshots/${vals}`;
+  await axios
+  .get(endpoint)
+  .then((response) => {
+    console.log("made it back from the axios endpoint")  
+    const results = response.data.result
+    console.log(results)
+    console.log(req.session.first_name);
+//If the user has no snapshots to display, then direct them to the addSnapshot instead
+    if (results.length === 0) {
+      const welcomeMessage = `Welcome to mood tracker ${first_name}! Add the first snapshot of your emotions to get started!`;
+      return res.redirect(`/newsnapshot?message=${encodeURIComponent(welcomeMessage)}`);
+    }
+    res.render('overview', {
+      snapshots: results,
+      currentPage: '/allsnapshots',
+      session: req.session // Assuming you have a way to determine if the user is logged in
+    })
+  })
+    .catch((error) => {
+      console.log(`Error making API request: ${error}`);
+      res.status(500).send("An error occurred. Please try again later.");
+      });
+  
+};
 
 
 
@@ -86,83 +127,16 @@ console.log(selectedTriggers);
 };
 
 
-exports.getSingleSnapshot = async (req, res) => {
-  const { id } = req.params;
-  const { user_ID } = req.session;
-
-  // Query to fetch snapshot details
-  const selectSnapshotSQL = `SELECT * FROM snapshot WHERE snapshot_id = ? AND user_ID = ?`;
-
-  // Query to fetch chosen triggers
-  const selectChosenTriggersSQL = `
-    SELECT t.trigger_name 
-    FROM snapshot_trigger st 
-    JOIN \`trigger\` t ON st.trigger_ID = t.trigger_ID 
-    WHERE st.snapshot_ID = ?`;
-
-  // Execute the queries
-  conn.query(selectSnapshotSQL, [id, user_ID], (err, rows) => {
-    if (err) {
-      console.error("Error fetching snapshot:", err);
-      return res.render('404', { error: err });
-    }
-
-    if (rows.length > 0) {
-      // If snapshot found, execute trigger query
-      conn.query(selectChosenTriggersSQL, [id], (triggerErr, triggers) => {
-        if (triggerErr) {
-          console.error("Error fetching triggers:", triggerErr);
-          return res.render('404', { error: triggerErr });
-        }
-
-        // Render the singlesnapshot page with snapshot and triggers
-        res.render("singlesnapshot", { result: rows, triggers });
-      });
-    } else {
-      // If snapshot not found, render 404 page
-      res.render('404');
-    }
-  });
-};
-
-
-exports.getAllSnapshotsSimplified = async (req, res) => {
-  const { user_ID, first_name } = req.session;
-  const vals = user_ID;
-
-  const endpoint = `http://localhost:3002/snapshots/${vals}`;
-  await axios
-  .get(endpoint)
-  .then((response) => {
-    console.log("made it back from the axios endpoint")  
-    const results = response.data.result
-    console.log(results)
-    console.log(req.session.first_name);
-//If the user has no snapshots to display, then direct them to the addSnapshot instead
-    if (results.length === 0) {
-      const welcomeMessage = `Welcome to mood tracker ${first_name}! Add the first snapshot of your emotions to get started!`;
-      return res.redirect(`/newsnapshot?message=${encodeURIComponent(welcomeMessage)}`);
-    }
-    res.render('overview', {
-      snapshots: results,
-      currentPage: '/allsnapshots',
-      session: req.session // Assuming you have a way to determine if the user is logged in
-    })
-  })
-    .catch((error) => {
-      console.log(`Error making API request: ${error}`);
-      });
-  
-};
 
 
 
 
 
-exports.getLanding = (req, res) => {
-  const { isLoggedIn } = req.session; //use this later to redirect to home page if already logged in?
-  res.render("landing", { currentPage: "/landing", isLoggedIn, error: null });
-};
+
+
+
+
+
 
 exports.postAddSnapshot = (req, res) => {
   // Extract slider levels and notes from request body

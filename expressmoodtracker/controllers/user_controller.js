@@ -1,5 +1,4 @@
 const conn = require("./../util/dbconn");
-const pool = require("./../util/dbconn");
 const { validationResult } = require("express-validator");
 const bcrypt = require("bcrypt");
 

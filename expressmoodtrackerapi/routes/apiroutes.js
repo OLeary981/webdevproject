@@ -3,12 +3,12 @@ const controller = require('./../controllers/apicontrollerv2');
 
 const router = express.Router();
 
-router.get('/favourites', controller.getFavourites);
-router.get('/triggers', controller.getTriggers);
-router.get('/snapshots/:id', controller.getUserSnapshots);
-router.get('/singlesnapshot/:id/:user_ID', controller.getSingleSnapshot);
-router.get('/chosentriggers/:id', controller.getChosenTriggers);
 
+router.get('/triggers', controller.getTriggers); //used by add snapshot
+router.get('/snapshots/:id', controller.getUserSnapshots); //used by overview
+router.get('/singlesnapshot/:id/:user_ID', controller.getSingleSnapshot); //used for single snapshot view
+//router.get('/chosentriggers/:id', controller.getChosenTriggers); //not currently in use.
+router.get('/editsinglesnapshot/:id/:user_ID', controller.getEditSingleSnapshotv2);
 
 
 

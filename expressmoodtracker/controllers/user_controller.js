@@ -9,13 +9,12 @@ const bcrypt = require("bcrypt");
 
 exports.getRegisterUser = (req, res) => {
     const {error} = req.query;
-  res.render("register", { error }); //add protection etc so can only register if not logged in?
+  res.render("register", { error });
 };
 
-exports.getLogin = (req, res) => {
-  const { isLoggedIn } = req.session;
+exports.getLogin = (req, res) => {  
   const {error} = req.query;
-  res.render("login", { currentPage: "/login", isLoggedIn, error});
+  res.render("login", { currentPage: "/login", error});
 };
 
 exports.getLogout = (req, res) => {
@@ -27,39 +26,32 @@ exports.getLogout = (req, res) => {
 
 exports.postLoginBcrypt = (req, res) => {
   const { isLoggedIn } = req.session;
-  const errors = validationResult(req);
-  console.log(errors.array());
+  const errors = validationResult(req);  
   if (!errors.isEmpty()) {
     return res.status(422).render("login", { error: errors.array()[0].msg });
   }
 
   const { username, userpass } = req.body;
   const vals = [username, userpass];
-  console.log(`postLogin vals: ${vals}`);
-
-
+  
 
   const checkuserSQL = `SELECT * FROM user_details WHERE user_details.username = ? `;
 
   conn.query(checkuserSQL, vals, (err, rows) => {
     if (err) {
       console.error(err);
-      return res.status(500).send("Error checking username"); //consider changing this to something more graceful
+      return res.status(500).send("Error checking username"); 
     }
-
     if (rows.length === 0) {
       return res.redirect("/login?error=User not found");
     };
-    console.log("About to print rows");
-    console.log(rows);
+    
     const hashedPassword = rows[0].user_password;
-
     bcrypt.compare(userpass, hashedPassword, (err, result) => {
       if (err) {
         console.error(err);
         return res.status(500).send("Error comparing passwords");
       }
-
       if (result) {
         const session = req.session;
         session.isLoggedIn = true;
@@ -135,46 +127,3 @@ exports.postRegisterUser = async (req, res) => {
   }
 };
 
-
-
-// exports.postLogin = (req, res) => {
-//   const errors = validationResult(req);
-//   console.log(errors.array());
-//   if (!errors.isEmpty()) {
-//     return res.status(422).render("login", { error: errors.array()[0].msg });
-//   }
-
-//   const { username, userpass } = req.body;
-//   const vals = [username, userpass];
-//   console.log(`postLogin vals: ${vals}`);
-
-//   /*
-//     const checkuserSQL = `SELECT * FROM favourites_users WHERE favourites_users.username = '${ username }' 
-//                             AND favourites_users.password = '${ userpass }'`;
-//     */
-
-//   const checkuserSQL = `SELECT * FROM user_details WHERE user_details.username = ? 
-//                             AND user_details.user_password = ?`;
-
-//   conn.query(checkuserSQL, vals, (err, rows) => {
-//     if (err) throw err;
-
-//     if (rows.length > 0) {
-//       const session = req.session;
-//       session.isLoggedIn = true;
-//       console.log(`postLogin: session: ${session}`);
-
-//       var orig_route = session.route;
-//       console.log(`postLogin: orig_route: ${orig_route}`);
-
-//       if (!orig_route) {
-//         orig_route = "/";
-//       }
-//       res.redirect(`${orig_route}`);
-
-//       //res.redirect('/');
-//     } else {
-//       res.redirect("/");
-//     }
-//   });
-// };

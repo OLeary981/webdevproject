@@ -1,7 +1,4 @@
 const conn = require("./../util/dbconn");
-const pool = require("./../util/dbconn");
-
-
 
 // Website page and snapshot page controllers
 
@@ -11,11 +8,11 @@ exports.getIndex = (req, res) => {
 };
 
 exports.getAbout = (req,res) => {
- res.render("about") ;
+  const {error} = req.query;
+ res.render("about",  { error }) ;
 }
 
-exports.getAddSnapshot = (req, res) => {
-  //const { user_ID, first_name } = req.session;
+exports.getAddSnapshot = (req, res) => { 
   const { message } = req.query;
   const welcomeMessage = message || `How are you feeling?`;
   conn.query("SELECT * FROM `trigger` ORDER BY trigger_name ASC", (err, rows) => {
@@ -27,36 +24,58 @@ exports.getAddSnapshot = (req, res) => {
   });
 };
 
-exports.getEditSnapshot = (req, res) => {
-  const { id } = req.params;
-  const selectAllTriggersSQL = "SELECT * FROM `trigger` ORDER BY trigger_name ASC";
-  const selectChosenTriggersSQL = `SELECT t.trigger_name FROM snapshot_trigger st JOIN \`trigger\` t ON st.trigger_ID = t.trigger_ID WHERE st.snapshot_ID = ?`;
-  const selectSnapshotSQL = `SELECT * FROM snapshot WHERE snapshot_ID = ?`;
+// exports.getEditSnapshot = (req, res) => {
+//   const { id } = req.params;
+//   const selectAllTriggersSQL = "SELECT * FROM `trigger` ORDER BY trigger_name ASC";
+//   const selectChosenTriggersSQL = `SELECT t.trigger_name FROM snapshot_trigger st JOIN \`trigger\` t ON st.trigger_ID = t.trigger_ID WHERE st.snapshot_ID = ${id}`;
+//   const selectSnapshotSQL = `SELECT snapshot_ID, enjoyment_level, surprise_level, contempt_level, sadness_level, fear_level, disgust_level, anger_level, timestamp FROM snapshot WHERE snapshot_ID = ${id}`;
 
-  conn.query(selectSnapshotSQL, [id], (err, snapshot) => {
-      if (err) {
-          console.error("Error fetching snapshot:", err);
-          return res.render('404', { error: err });
-      }
+//   conn.query(selectSnapshotSQL, (err, snapshot) => {
+//       if (err) {
+//           console.error("Error fetching snapshot:", err);
+//           return res.render('404', { error: err });
+//       }
 
-      conn.query(selectAllTriggersSQL, (err, triggers) => {
-          if (err) {
-              console.error("Error fetching triggers:", err);
-              return res.render('404', { error: err });
-          }
+//       conn.query(selectAllTriggersSQL, (err, triggers) => {
+//           if (err) {
+//               console.error("Error fetching triggers:", err);
+//               return res.render('404', { error: err });
+//           }
 
-          conn.query(selectChosenTriggersSQL, [id], (err, selectedTriggers) => {
-              if (err) {
-                  console.error("Error fetching selected triggers:", err);
-                  return res.render('404', { error: err });
-              }
-console.log(snapshot);
-console.log(triggers);
-console.log(selectedTriggers);
-              res.render("editsnapshotcheckboxes", { snapshot, triggers, selectedTriggers });
-          });
-      });
-  });
+//           conn.query(selectChosenTriggersSQL, (err, selectedTriggers) => {
+//               if (err) {
+//                   console.error("Error fetching selected triggers:", err);
+//                   return res.render('404', { error: err });
+//               }
+
+//               res.render("editsnapshotcheckboxes", { snapshot, triggers, selectedTriggers });
+//           });
+//       });
+//   });
+// };
+
+exports.getEditSnapshot = async (req, res) => {
+  try {
+      const { id } = req.params;
+
+      // Query for fetching snapshot data
+      const snapshotQuery = `SELECT snapshot_ID, enjoyment_level, surprise_level, contempt_level, sadness_level, fear_level, disgust_level, anger_level, timestamp FROM snapshot WHERE snapshot_ID = ${id}`;
+      const [snapshot] = await conn.query(snapshotQuery);
+
+      // Query for fetching all triggers
+      const allTriggersQuery = "SELECT * FROM `trigger` ORDER BY trigger_name ASC";
+      const [triggers] = await conn.query(allTriggersQuery);
+
+      // Query for fetching selected triggers for the snapshot
+      const selectedTriggersQuery = `SELECT t.trigger_name FROM snapshot_trigger st JOIN \`trigger\` t ON st.trigger_ID = t.trigger_ID WHERE st.snapshot_ID = ${id}`;
+      const [selectedTriggers] = await conn.query(selectedTriggersQuery);
+
+      // Render the page with fetched data
+      res.render("editsnapshotcheckboxes", { snapshot, triggers, selectedTriggers });
+  } catch (error) {
+      console.error("Error fetching data:", error);
+      res.render('404', { error });
+  }
 };
 
 

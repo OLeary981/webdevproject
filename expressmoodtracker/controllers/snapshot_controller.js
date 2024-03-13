@@ -87,7 +87,7 @@ exports.getAllSnapshotsSimplified = async (req, res) => {
     console.log(results)
     console.log(req.session.first_name);
 //If the user has no snapshots to display, then direct them to the addSnapshot instead
-    if (results.length === 0) {
+    if (response.status === 204) {
       const welcomeMessage = `Welcome to mood tracker ${first_name}! Add the first snapshot of your emotions to get started!`;
       return res.redirect(`/newsnapshot?message=${encodeURIComponent(welcomeMessage)}`);
     }

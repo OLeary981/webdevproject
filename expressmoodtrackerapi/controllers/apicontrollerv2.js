@@ -43,9 +43,9 @@ exports.getUserSnapshots = (req, res) => {
           result: rows,
         });
       } else {
-        res.status(404);
+        res.status(204);
         res.json({
-          status: "failure",
+          status: "success",
           message: `No snapshot records found for user_id :${id}`,
         });
       }

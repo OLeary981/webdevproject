@@ -154,7 +154,7 @@ if (formTriggers.length === 0) {
 
 
  const { user_ID } = req.session;
- console.log("Line 524");
+ console.log("Line 157");
 console.log(selectedTriggers);
 
 
@@ -170,7 +170,7 @@ console.log([
   user_ID,
   notesValue,
 ]);
-console.log("line 540")
+console.log("line 173")
 console.log(selectedTriggers);
 
 // Start a transaction
@@ -212,7 +212,7 @@ conn.beginTransaction((err) => {
         "SELECT trigger_ID FROM `trigger` WHERE trigger_name IN (?)",
         [selectedTriggers],
         (err, triggerResults) => {
-          console.log(`trigger results are: ${triggerResults}`);
+          console.log("trigger results are: ", triggerResults);
           if (err) {
             console.error("Error retrieving trigger IDs:", err);
             return conn.rollback(() => {

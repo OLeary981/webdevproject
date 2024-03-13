@@ -14,18 +14,44 @@ exports.getAbout = (req,res) => {
  res.render("about") ;
 }
 
-exports.getAddSnapshot = (req, res) => {
+exports.getAddSnapshot = async (req, res) => {
   //const { user_ID, first_name } = req.session;
   const { message } = req.query;
   const welcomeMessage = message || `How are you feeling?`;
-  conn.query("SELECT * FROM `trigger` ORDER BY trigger_name ASC", (err, rows) => {
-    if (err) {
-      console.error(err);
-      return res.status(500).send("Error fetching triggers");
-    }    
-    res.render("addsnapshotcheckboxes", { triggers: rows, currentPage: "/newsnapshot", message: welcomeMessage });
-  });
-};
+  const endpoint = `http://localhost:3002/triggers`;
+  await axios
+  .get(endpoint)
+  .then((response) => {
+    console.log("made it back from the axios endpoint")  
+    const results = response.data.result
+    console.log(results)
+    console.log(req.session.first_name);
+  //If the user has no snapshots to display, then direct them to the addSnapshot instead
+    if (results.length === 0) {
+      const welcomeMessage = `Welcome to mood tracker ${first_name}! Add the first snapshot of your emotions to get started!`;
+      return res.redirect(`/newsnapshot?message=${encodeURIComponent(welcomeMessage)}`);
+    }
+    res.render("addsnapshotcheckboxes", { triggers: results, currentPage: "/newsnapshot", message: welcomeMessage });
+  })
+    .catch((error) => {
+      console.log(`Error making API request: ${error}`);
+      });
+  
+  };
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 exports.getEditSnapshot = (req, res) => {
   const { id } = req.params;
@@ -104,7 +130,6 @@ exports.getAllSnapshotsSimplified = async (req, res) => {
   const { user_ID, first_name } = req.session;
   const vals = user_ID;
 
-  const selectSnapshotsSQL = `SELECT * FROM snapshot WHERE user_id = ? ORDER BY timestamp`;
   const endpoint = `http://localhost:3002/snapshots/${vals}`;
   await axios
   .get(endpoint)

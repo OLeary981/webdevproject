@@ -23,10 +23,10 @@ exports.getFavourites = (req, res) => {
 };
 
 // GET /snapshots
-exports.getSnapshots = (req, res) => {
-  const selectSnapshotSQL = "SELECT * FROM snapshot";
+exports.getTriggers = (req, res) => {
+  const selectTriggersSQL = "SELECT * FROM `trigger` ORDER BY trigger_name ASC";
 
-  conn.query(selectSnapshotSQL, (err, rows) => {
+  conn.query(selectTriggersSQL, (err, rows) => {
     if (err) {
       res.status(500);
       res.json({

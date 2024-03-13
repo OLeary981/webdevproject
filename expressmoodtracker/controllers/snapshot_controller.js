@@ -1,5 +1,5 @@
 const conn = require("./../util/dbconn");
-const pool = require("./../util/dbconn");
+const axios = require('axios');
 
 
 
@@ -100,19 +100,17 @@ exports.getSingleSnapshot = async (req, res) => {
 };
 
 
-exports.getAllSnapshotsSimplified = (req, res) => {
+exports.getAllSnapshotsSimplified = async (req, res) => {
   const { user_ID, first_name } = req.session;
   const vals = user_ID;
 
   const selectSnapshotsSQL = `SELECT * FROM snapshot WHERE user_id = ? ORDER BY timestamp`;
-
-  conn.query(selectSnapshotsSQL, vals, (err, results) => {
-    if (err) {
-      console.error(err);
-      res.status(500).send('Internal server error');
-      return;
-    }
-    console.log("About to render allSnapshots")
+  const endpoint = `http://localhost:3002/snapshots/${vals}`;
+  await axios
+  .get(endpoint)
+  .then((response) => {
+    console.log("made it back from the axios endpoint")  
+    const results = response.data.result
     console.log(results)
     console.log(req.session.first_name);
 //If the user has no snapshots to display, then direct them to the addSnapshot instead
@@ -120,14 +118,19 @@ exports.getAllSnapshotsSimplified = (req, res) => {
       const welcomeMessage = `Welcome to mood tracker ${first_name}! Add the first snapshot of your emotions to get started!`;
       return res.redirect(`/newsnapshot?message=${encodeURIComponent(welcomeMessage)}`);
     }
-
     res.render('overview', {
       snapshots: results,
       currentPage: '/allsnapshots',
       session: req.session // Assuming you have a way to determine if the user is logged in
-    });
-  });
+    })
+  })
+    .catch((error) => {
+      console.log(`Error making API request: ${error}`);
+      });
+  
 };
+
+
 
 
 

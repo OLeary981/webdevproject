@@ -38,11 +38,11 @@
               Adjust the sliders and change the textboxes and notes to better fit your emotional state at the time this snapshot was taken.
             </p>
             <form id="snapshot-form" action="/editsnapshot/<%= snapshot[0].snapshot_ID %>" method="POST">
-              <% const sliders = [ { label: 'Enjoyment', id: 'enjoyment' }, {
-              label: 'Surprise', id: 'surprise' }, { label: 'Contempt', id:
-              'contempt' }, { label: 'Sadness', id: 'sadness' }, { label:
-              'Fear', id: 'fear' }, { label: 'Disgust', id: 'disgust' }, {
-              label: 'Anger', id: 'anger' } ]; sliders.forEach(slider => { %>
+              <% const sliders = [ { label: 'Enjoyment', id: 'enjoyment_level' }, {
+              label: 'Surprise', id: 'surprise_level' }, { label: 'Contempt', id:
+              'contempt_level' }, { label: 'Sadness', id: 'sadness_level' }, { label:
+              'Fear', id: 'fear_level' }, { label: 'Disgust', id: 'disgust_level' }, {
+              label: 'Anger', id: 'anger_level' } ]; sliders.forEach(slider => { %>
               <div class="field">
                 <label class="label" for="<%= slider.id %>"
                   ><%= slider.label %>:</label
@@ -53,15 +53,15 @@
                     type="range"
                     id="<%= slider.id %>"
                     name="<%= slider.id %>"
-                    min="0"
-                    max="10"
-                    value="<%= snapshot[0][slider.id + '_level'] %>"
+                    min=0
+                    max=10
+                    value="<%= snapshot[0][slider.id] %>""
                   />
                   <output
                     for="<%= slider.id %>"
                     id="output-<%= slider.id %>"
                     class="slider-value"
-                    ><%= snapshot[0][slider.id + '_level'] %></output
+                    ><%= snapshot[0][slider.id] %></output
                   >
                 </div>
               </div>
@@ -98,7 +98,7 @@
                     id="notes"
                     name="notes"
                     placeholder="Enter your notes here"
-                  ><%= snapshot[0].notes %></textarea>
+                  ><%= (snapshot[0].notes !== null && snapshot[0].notes !== undefined && snapshot[0].notes !== "null") ? snapshot[0].notes : "No notes available" %></textarea>
                 </div>
               </div>
               <div class="field">
@@ -118,14 +118,14 @@
       const sliders = document.querySelectorAll('input[type="range"]');
       sliders.forEach((slider) => {
         const output = document.getElementById(`output-${slider.id}`);
-        output.textContent = slider.value;
+        output.textContent = (slider.value);
         slider.addEventListener("input", () => {
           output.textContent = slider.value;
         });
-      });
-
-   
+      });  
 
     </script>
+
+
   </body>
 </html>

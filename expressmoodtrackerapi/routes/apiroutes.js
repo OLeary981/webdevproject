@@ -10,9 +10,9 @@ router.get('/singlesnapshot/:id/:user_ID', controller.getSingleSnapshot); //used
 //router.get('/chosentriggers/:id', controller.getChosenTriggers); //not currently in use.
 router.get('/editsinglesnapshot/:id/:user_ID', controller.getEditSingleSnapshotv2); //used in app for edit snapshot
 
-router.post('/deletesinglesnapshot/:id/:user_ID', controller.postDeleteSnapshot);
+router.delete('/deletesinglesnapshot/:id/:user_ID', controller.deleteSnapshot);
 router.post('/newsnapshot', controller.postAddSnapshot);
-
+router.put('/editsnapshot/:id', controller.updateSnapshot);
 
 
 

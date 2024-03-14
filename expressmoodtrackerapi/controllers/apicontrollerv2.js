@@ -240,10 +240,7 @@ exports.postAddSnapshot = (req, res) => {
  
 };
 
-
-//DON't go above here//// ALLL CODE ABOVE HERE WORKS!
-
-exports.postDeleteSnapshot = (req, res) => {
+exports.deleteSnapshot = (req, res) => {
   const { id, user_ID } = req.params;
   
   const deleteSnapshotTriggersSQL = `DELETE  FROM snapshot_trigger WHERE snapshot_id = ?`;
@@ -274,4 +271,75 @@ exports.postDeleteSnapshot = (req, res) => {
       });
     }
   });
+};
+//DON't go above here//// ALLL CODE ABOVE HERE WORKS!
+
+
+exports.updateSnapshot = (req, res) => {    
+  const vals = { snapshot, selectedTriggers } = req.body;
+  const snapshot_ID = req.params.id;
+  const updateSnapshotSQL = `UPDATE snapshot SET enjoyment_level=?, surprise_level=?, contempt_level=?, sadness_level=?, fear_level=?, disgust_level=?, anger_level=?, notes=? WHERE snapshot_ID=? AND user_id = ?`; //AND user_id=?
+  const identifyTriggerSQL = "SELECT trigger_ID FROM `trigger` WHERE trigger_name IN (?)";    
+  const deleteSnapshotTriggersSQL = `DELETE FROM snapshot_trigger WHERE snapshot_ID = ?`;
+  const insertSnapshotTriggerSQL = `INSERT INTO snapshot_trigger (snapshot_ID, trigger_ID) VALUES (?, ?)`;
+  // Start a transaction
+  conn.beginTransaction(err => {
+      if (err) {
+          res.status(500).json({ error: 'Failed to start transaction' });
+          return;
+      }    
+      // Execute SQL queries within the transaction
+      conn.query(updateSnapshotSQL, [snapshot.enjoyment_level, snapshot.surprise_level, snapshot.contempt_level, snapshot.sadness_level, snapshot.fear_level, snapshot.disgust_level, snapshot.anger_level, snapshot.notes, snapshot_ID, snapshot.user_id ], (err, updateSnapshotResult) => {
+          if (err) {
+              return conn.rollback(() => {
+                  res.status(500).json({ error: 'Error updating snapshot', message: err.message });
+              });
+          }
+           //Check if any rows were affected by the UPDATE query
+           if (updateSnapshotResult.affectedRows === 0) {
+            return conn.rollback(() => {
+                res.status(404).json({ error: 'Snapshot not found - check user_ID and snapshot_ID' });
+            });
+        }
+        console.log('Update snapshot result:', updateSnapshotResult);
+          conn.query(deleteSnapshotTriggersSQL, [snapshot_ID], (err, deleteTriggersResult) => {
+            if (err) {
+                return conn.rollback(() => {
+                    res.status(500).json({ error: 'Error deleting triggers', message: err.message });
+                });
+            }         
+
+
+          conn.query(identifyTriggerSQL, [selectedTriggers], (err, triggerResults) => {
+              if (err) {
+                  return conn.rollback(() => {
+                      res.status(500).json({ error: 'Error searching for trigger names', message: err.message });
+                  });
+              }
+              console.log(triggerResults) 
+             
+                  triggerResults.forEach((row) => {
+                      conn.query(
+                          insertSnapshotTriggerSQL,
+                          [snapshot_ID, row.trigger_ID],
+                          (err, result) => {
+                              // If all queries executed successfully, commit the transaction
+                              
+                          });
+                          
+                        });
+                        conn.commit(err => {
+                          if (err) {
+                              return conn.rollback(() => {
+                                  res.status(500).json({ error: 'Error committing transaction', message: err.message });
+                              });
+                          }                
+                          // Transaction successfully committed
+                          res.status(200).json({ message: 'Transaction successfully completed', snapshot_ID });
+                  });
+              });
+          });
+        });
+      });
+ 
 };

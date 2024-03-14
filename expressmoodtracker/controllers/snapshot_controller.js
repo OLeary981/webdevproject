@@ -3,7 +3,7 @@ const axios = require('axios');
 
 
 
-// Website page and snapshot page controllers
+// basic page controllers
 
 exports.getIndex = (req, res) => { 
   const {error} = req.query;
@@ -115,6 +115,7 @@ exports.getEditSnapshot = async (req, res) => {
     const snapshot = response.data.snapshot;
     const triggers = response.data.triggers;
     const selectedTriggers = response.data.selectedTriggers;
+    console.log("Printing snapshot from the getEditSnapshot controller")
     console.log(snapshot);
     console.log(req.session.first_name);   
     res.render("editsnapshotcheckboxes", { snapshot, triggers, selectedTriggers });
@@ -209,11 +210,11 @@ exports.postDeleteSnapshot = (req, res) => {
         .then((response) => {
             const status = response.status;
             if (status === 200) {
-                res.redirect('/editfav');
+                res.redirect('/allsnapshots');
             } else {
                 console.log(response.status);
                 console.log(response.data);
-                res.redirect('/allsnapshots');
+                res.send(`<script>alert('Delete unsuccessful. Please try again.'); window.location='/allsnapshots';</script>`);
             }
         })
         .catch((error) => {
@@ -221,123 +222,80 @@ exports.postDeleteSnapshot = (req, res) => {
         });
 };
 
+//has API working
 exports.postEditSnapshot = (req, res) => {
   // Extract slider levels and notes from request body
   console.log(req.body);
-
-  const {
-    enjoyment,
-    surprise,
-    contempt,
-    sadness,
-    fear,
-    disgust,
-    anger,
+  let {
+    enjoyment_level,
+    surprise_level,
+    contempt_level,
+    sadness_level,
+    fear_level,
+    disgust_level,
+    anger_level,
     notes,
   } = req.body;
-
-  const formTriggers = req.body.triggers;
-  console.log(formTriggers);
-
-  const filteredTriggers = formTriggers.filter(item => item !== 'on');
-  const selectedTriggers = filteredTriggers.flatMap(element => element.split(',')); //to make the array of triggers that can be used by SQL statement
-
-  const { user_ID } = req.session;
-  const { id: snapshot_ID } = req.params;
-  const params = [
-    enjoyment,
-    surprise,
-    contempt,
-    sadness,
-    fear,
-    disgust,
-    anger,    
-    notes,
-    snapshot_ID,
-    user_ID
-  ];
+  console.log("In the line before the formTriggers extraction")
   
-  console.log("Line 524");
+  const formTriggers = req.body.triggers || []; 
+  console.log(formTriggers);
+  let selectedTriggers;
+  if (formTriggers.length === 0) {
+      // Handle the case where no triggers are selected
+      console.log("No triggers selected.");
+      selectedTriggers = null; //putting const infront here causes an error. goodness knows why.
+      console.log(`Selected Triggers array should be null: ${selectedTriggers}`);     
+  } else {
+      const formTriggersSeparated = formTriggers.flatMap(item => item.split(','));
+      const filteredTriggers = formTriggersSeparated.filter(item => item !== 'on');
+      selectedTriggers = filteredTriggers
+      console.log(selectedTriggers);
+      // Proceed with processing selected triggers
+  }
+  
+  const { id: snapshot_ID } = req.params;
+   const { user_ID } = req.session;
+   console.log(user_ID);
+   console.log("Line 382");
   console.log(selectedTriggers);
-  console.log(params);
-  console.log("line 540");
-  console.log(selectedTriggers);
-
-  // Start a transaction
-  conn.beginTransaction((err) => {
-    if (err) {
-      console.error("Error beginning transaction:", err);
-      return res.status(500).send("Error beginning transaction");
-    }
-
-    // Insert snapshot data into the snapshot table
-    const updateSnapshotSQL = `UPDATE snapshot SET enjoyment_level=?, surprise_level=?, contempt_level=?, sadness_level=?, fear_level=?, disgust_level=?, anger_level=?, notes=? WHERE snapshot_ID=? AND user_id=?`;
-
-    conn.query(
-      updateSnapshotSQL,
-      params,
-      (err, result) => {
-        if (err) {
-          console.error("Error inserting data into snapshot table:", err);
-          return conn.rollback(() => {
-            res.status(500).send("Error inserting data into snapshot table");
-          });
-        }
-
-        // Retrieve trigger IDs for selected triggers
-        conn.query(
-          "SELECT trigger_ID FROM `trigger` WHERE trigger_name IN (?)",
-          [selectedTriggers],
-          (err, triggerResults) => {
-            console.log(`trigger results are: ${triggerResults}`);
-            if (err) {
-              console.error("Error retrieving trigger IDs:", err);
-              return conn.rollback(() => {
-                res.status(500).send("Error retrieving trigger IDs");
-              });
-            }
-
-            // Delete existing snapshot-trigger associations from the snapshot_trigger table
-            const deleteSnapshotTriggerSQL = `DELETE FROM snapshot_trigger WHERE snapshot_ID = ?`;
-
-            conn.query(deleteSnapshotTriggerSQL, [snapshot_ID], (deleteErr, deleteResult) => {
-              if (deleteErr) {
-                console.error("Error deleting data from snapshot_trigger table:", deleteErr);
-                conn.rollback(() => {
-                  res.status(500).send("Error deleting data from snapshot_trigger table");
-                });
-                return;
-              }
-
-              // Insert new snapshot-trigger associations into the snapshot_trigger table
-              const insertSnapshotTriggerSQL = `INSERT INTO snapshot_trigger (snapshot_ID, trigger_ID) VALUES (?, ?)`;
-              triggerResults.forEach((row) => {
-                conn.query(insertSnapshotTriggerSQL, [snapshot_ID, row.trigger_ID], (insertErr, insertResult) => {
-                  if (insertErr) {
-                    console.error("Error inserting data into snapshot_trigger table:", insertErr);
-                    conn.rollback(() => {
-                      res.status(500).send("Error inserting data into snapshot_trigger table");
-                    });
-                  }
-                });
-              });
-
-              // Commit the transaction
-              conn.commit((err) => {
-                if (err) {
-                  console.error("Error committing transaction:", err);
-                  return conn.rollback(() => {
-                    res.status(500).send("Error committing transaction");
-                  });
-                }
-                console.log("Transaction successfully committed");
-                // Redirect to index or any other page after successful transaction
-                res.redirect(`/singlesnapshot/${snapshot_ID}`);
-              });
-            });
-          }
-        );
-      }
-    );
+  
+  enjoyment_level=parseInt(enjoyment_level);
+  surprise_level = parseInt(surprise_level);
+  contempt_level = parseInt(contempt_level);
+  sadness_level = parseInt(sadness_level);
+  fear_level = parseInt(fear_level);
+  disgust_level = parseInt(disgust_level);
+  anger_level = parseInt(anger_level);
+  
+  const notesValue = notes ? notes : null;
+  const snapshot = {
+    enjoyment_level,
+    surprise_level,
+    contempt_level,
+    sadness_level,
+    fear_level,
+    disgust_level,
+    anger_level,
+    user_id: user_ID,  
+    notes: notesValue
+  };
+  console.log(snapshot)
+  const vals = {snapshot, selectedTriggers};
+  console.log("snapshot id:"); 
+  console.log(snapshot_ID);
+  console.log(vals);
+  //const endpoint = `http://localhost:3002/editsnapshot/${snapshot_ID}`;
+  const endpoint = `http://localhost:3002/editsnapshot/${snapshot_ID}`;
+  axios
+  .put(endpoint, vals)
+  .then((response) => {
+    const {snapshot_ID} = response.data;
+    res.redirect(`/singlesnapshot/${snapshot_ID}`);
+  })
+  .catch((error) => {
+    
+      console.log(`Error making API request: ${error}`);
+      console.log(error.message);
   });
-};
+  };

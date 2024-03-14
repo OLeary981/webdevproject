@@ -56,13 +56,14 @@ exports.postLoginBcrypt = (req, res) => {
         session.isLoggedIn = true;
         session.user_ID = rows[0].user_ID;
         session.first_name = rows[0].first_name;
+        const {user_ID} = req.session
         console.log(`postLogin: session: ${session}`);
         console.log(`user number: ${session.user_ID}`);
 
         var orig_route = session.route;
         console.log(`postLogin: orig_route: ${orig_route}`);
         if (!orig_route) {
-          orig_route = "/allsnapshots";
+          orig_route = "/allsnapshots", {user_ID};
         }
         return res.redirect(orig_route);
       } else {

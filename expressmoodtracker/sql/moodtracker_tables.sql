@@ -3,6 +3,7 @@ DROP TABLE IF EXISTS `snapshot`;
 DROP TABLE IF EXISTS `trigger`;
 DROP TABLE IF EXISTS user_details;
 
+
 -- User table
 CREATE TABLE user_details (
     user_ID INT AUTO_INCREMENT PRIMARY KEY,
@@ -14,7 +15,7 @@ CREATE TABLE user_details (
    
 );
 INSERT INTO user_details (first_name, last_name, username, user_password, email_address) VALUES
-('Joan', 'Bloggs', 'bcrypt', '$2b$10$qtxfGJKpY7yGVP1VYqAq1uQCXURrYz8szojZkgCEvX4uschKMnCBS','joan.bloggs@gmail.com');
+('Joan', 'Bloggs', 'jbloggs', '$2b$10$qtxfGJKpY7yGVP1VYqAq1uQCXURrYz8szojZkgCEvX4uschKMnCBS','joan.bloggs@gmail.com');
 
 -- Snapshot table
 CREATE TABLE `snapshot` (
@@ -151,9 +152,9 @@ INSERT INTO `snapshot` (`snapshot_ID`, `enjoyment_level`, `surprise_level`, `con
 (168, 7, 1, 0, 4, 4, 1, 1, 1, '2024-01-17 13:00:00', NULL),
 (169, 6, 1, 0, 6, 2, 1, 1, 1, '2024-01-19 15:00:00', 'Feeling determined to keep up with gym routine.'),
 (170, 7, 2, 0, 4, 3, 1, 1, 1, '2024-01-21 17:00:00', NULL),
-(171, 2, 3, 7, 9, 2, 8, 8, 1, '2024-01-23 19:00:00', 'Had a terrifying encounter with an aggressive driver while biking, feeling shaken and angry.'),
-(172, 8, 3, 0, 2, 2, 1, 1, 1, '2024-01-25 08:00:00', 'Enjoyed a refreshing workout session at the gym.'),
-(173, 8, 3, 0, 2, 2, 1, 1, 1, '2024-01-27 10:00:00', 'Feeling great after hitting the gym.'),
+(171, 2, 3, 7, 10, 2, 10, 10, 1, '2024-01-23 19:00:00', 'Had a terrifying encounter with an aggressive driver while biking, feeling shaken and angry.'),
+(172, 8, 3, 0, 9, 2, 9, 9, 1, '2024-01-25 08:00:00', 'Enjoyed a refreshing workout session at the gym.'),
+(173, 8, 3, 0, 8, 2, 1, 1, 1, '2024-01-27 10:00:00', 'Feeling great after hitting the gym.'),
 (174, 7, 1, 0, 4, 3, 1, 1, 1, '2024-01-29 12:00:00', NULL),
 (175, 7, 1, 0, 4, 3, 1, 1, 1, '2024-01-31 14:00:00', 'Felt lazy today, missed my workout, feeling a bit down.'),
 (176, 7, 2, 0, 2, 4, 1, 1, 1, '2024-02-01 10:00:00', NULL),
@@ -178,7 +179,34 @@ INSERT INTO `snapshot` (`snapshot_ID`, `enjoyment_level`, `surprise_level`, `con
 (195, 2, 3, 0, 7, 8, 6, 1, 1, '2024-03-05 18:00:00', 'Struggling to manage project workload.'),
 (196, 2, 4, 0, 7, 8, 6, 1, 1, '2024-03-06 20:00:00', 'Feeling overwhelmed with project demands.'),
 (197, 2, 4, 0, 7, 8, 6, 1, 1, '2024-03-07 22:00:00', 'Finding it challenging to stay positive.'),
-(198, 2, 5, 0, 6, 7, 5, 1, 1, '2024-03-08 09:00:00', 'Struggling to balance project and personal life.');
+(198, 2, 5, 0, 6, 7, 5, 1, 1, '2024-03-08 09:00:00', 'Struggling to balance project and personal life.'),
+(199, 3, 2, 1, 4, 5, 4, 2, 1, '2024-03-07 08:00:00', 'Feeling tired after a long day of work.'),
+(200, 4, 3, 2, 6, 3, 5, 3, 1, '2024-03-07 12:00:00', 'Lunch with friends lifted my spirits.'),
+(201, 2, 1, 3, 4, 3, 2, 1, 1, '2024-03-07 17:00:00', 'Feeling overwhelmed with tasks.'),
+(202, 7, 3, 2, 2, 5, 4, 2, 1, '2024-03-08 08:00:00', 'Enjoying a peaceful morning.'),
+(203, 6, 4, 3, 3, 6, 5, 3, 1, '2024-03-08 13:00:00', 'Productive meeting at work.'),
+(204, 2, 2, 1, 2, 4, 3, 1, 1, '2024-03-08 18:00:00', 'Feeling exhausted after a busy day.'),
+(205, 8, 3, 2, 1, 5, 4, 2, 1, '2024-03-09 08:00:00', 'Excited for the weekend ahead.'),
+(206, 9, 4, 3, 2, 6, 5, 3, 1, '2024-03-09 12:00:00', 'Finished a challenging project.'),
+(207, 8, 2, 1, 3, 4, 3, 1, 1, '2024-03-09 17:00:00', 'Feeling relieved after completing tasks.'),
+(208, 10, 3, 2, 2, 5, 4, 2, 1, '2024-03-10 08:00:00', 'Enjoying a leisurely morning.'),
+(209, 8, 4, 3, 3, 6, 5, 3, 1, '2024-03-10 12:00:00', 'Received positive feedback at work.'),
+(210, 6, 2, 1, 2, 4, 3, 1, 1, '2024-03-10 18:00:00', 'Feeling accomplished.'),
+(211, 5, 3, 2, 1, 5, 4, 2, 1, '2024-03-11 08:00:00', 'Excited for weekend plans.'),
+(212, 5, 4, 3, 2, 6, 5, 3, 1, '2024-03-11 12:00:00', 'Enjoyed a relaxing afternoon.'),
+(213, 4, 2, 1, 3, 4, 3, 1, 1, '2024-03-11 17:00:00', 'Feeling accomplished after completing tasks.'),
+(214, 5, 3, 2, 2, 5, 4, 2, 1, '2024-03-12 08:00:00', 'Excited for upcoming events.'),
+(215, 8, 4, 3, 3, 6, 5, 3, 1, '2024-03-12 12:00:00', 'Celebrated a birthday.'),
+(216, 3, 2, 1, 2, 4, 3, 1, 1, '2024-03-12 18:00:00', 'meh'),
+(217, 4, 3, 2, 1, 5, 1, 2, 1, '2024-03-13 08:00:00', 'Looking forward to spending time outdoors.'),
+(218, 5, 4, 3, 2, 6, 2, 3, 1, '2024-03-13 12:00:00', 'Completed a challenging workout.'),
+(219, 5, 2, 1, 3, 4, 2, 1, 1, '2024-03-13 17:00:00', 'Feeling optimistic about the future.'),
+
+(220, 7, 2, 2, 2, 2, 4, 2, 1, '2024-03-14 08:00:00', 'Starting the day with a positive mindset.'),
+(221, 0, 3, 3, 7, 3, 1, 3, 1, '2024-03-14 11:45:00', 'Got told at the last minute I had to run an important meeting.'),
+(222, 5, 2, 1, 2, 3, 3, 1, 1, '2024-03-14 18:00:00', 'null');
+
+
 
 
 -- Trigger table
@@ -240,4 +268,16 @@ INSERT INTO `snapshot_trigger` (snapshot_id, trigger_id) VALUES
 (119, 19), (119, 20),
 (121, 1), (123, 4), (125, 5), (125, 6), (127, 7),
 (157, 9), (157, 10), (121, 11), (127, 12), (125, 13),
-(125, 14), (127, 15), (151, 16), (157, 17);
+(125, 14), (127, 15), (151, 16), (157, 17), (158, 10), (158, 6), 
+(158, 7), (159, 15), (159, 18), (159, 13), (160, 18), (160, 4), (160, 8), (161, 17), 
+(161, 13), (161, 11), (162, 15), (162, 3), (162, 4), (163, 12), (163, 1), (163, 16), (164, 17), 
+(164, 16), (164, 3), (165, 10), (165, 1), (165, 11), (166, 15), (166, 8), (166, 3), (167, 7), (167, 11), 
+(167, 15), (168, 16), (168, 9), (168, 7), (169, 6), (169, 5), (169, 17), (170, 11), (170, 13), (170, 14), (171, 7), 
+(171, 3), (171, 15), (172, 16), (172, 2), (172, 10), (173, 9), (173, 5), (173, 8), (174, 17), (174, 2), (174, 12), (175, 5), 
+(175, 1), (175, 7), (176, 10), (176, 8), (176, 12), (177, 3), (177, 5), (177, 7), (178, 9), (178, 18), (178, 13), (179, 5), (179, 15), (179, 10), 
+(180, 5), (180, 6), (180, 13), (181, 15), (181, 6), (181, 9), (182, 10), (182, 7), (182, 18), (183, 11), (183, 13), (183, 4), (184, 13), 
+(184, 8), (184, 5), (185, 10), (185, 15), (185, 17), (186, 15), (186, 12), (186, 1), (187, 4), (187, 10), (187, 16), (188, 11), (188, 9), 
+(188, 8), (189, 6), (189, 12), (189, 8), (190, 8), (190, 4), (190, 3), (191, 1), (191, 3), (191, 11), (192, 5), (192, 15), (192, 8), 
+(193, 11), (193, 16), (193, 8), (194, 14), (194, 15), (194, 10), (195, 6), (195, 2), (195, 17), (196, 8), (196, 18), (196, 1), (197, 10), 
+(197, 14), (197, 4), (198, 14), (198, 11), (198, 1), (221, 1), (221, 15), (221,17);
+

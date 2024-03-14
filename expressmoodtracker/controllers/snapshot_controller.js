@@ -1,6 +1,4 @@
-const conn = require("./../util/dbconn");
 const axios = require('axios');
-
 
 
 // basic page controllers

@@ -1,4 +1,3 @@
-const conn = require("./../util/dbconn");
 const { validationResult } = require("express-validator");
 const bcrypt = require("bcrypt");
 const axios = require('axios');
@@ -90,10 +89,7 @@ exports.postLoginBcrypt = async (req, res) => {
   });
 };
 
-
-
-
-
+//API attached, tested and working for successful and unsuccessful
 exports.postRegisterUserv2 = async (req, res) => {
   const { username, password, firstname, lastname, email } = req.body;
   // Hash password

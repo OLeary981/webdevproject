@@ -1,8 +1,8 @@
 const conn = require('./../util/dbconn');
-
+//tested and working in postman
 exports.postLogin = (req, res) => {
-    const { username, userpass } = req.body;
-    const vals = [username, userpass];
+    const { username} = req.body;
+    const vals = [username];
     const checkuserSQL = `SELECT * FROM user_details WHERE user_details.username = ? `;
     
     conn.query(checkuserSQL, vals, (err, rows) => {
@@ -24,10 +24,36 @@ exports.postLogin = (req, res) => {
             } else {
                 res.status(401);
                 res.json({
-                  status: "failure",
+                  status: "success",
                   message: `Invalid user credentials - user not found.`,
                 });
               }
             }
           });
         };
+
+//tested and working in postman
+exports.postRegisterUser = (req, res) => {
+    const { username, password, firstname, lastname, email } = req.body;
+    const vals = [username, password, firstname, lastname, email];
+    
+    const insertUserSQL =
+        "INSERT INTO user_details (username, user_password, first_name, last_name, email_address) VALUES (?, ?, ?, ?, ?)";
+
+        conn.query(insertUserSQL, vals, (err, rows) => {
+            if (err) {
+              res.status(500);
+              res.json({
+                status: "failure",
+                message: err,
+              });
+            } else {
+              res.status(201);
+              res.json({
+                status: "success",
+                message: `Record ID ${rows.insertId} added`,
+              });
+            }
+          });
+        };
+

@@ -13,7 +13,7 @@ router.post("/newsnapshot", snapshotController.postAddSnapshot);
 router.put("/editsnapshot/:id", snapshotController.updateSnapshot);
 
 
-router.post("/userlogin", userController.postLogin);
-
+router.post("/userdetails", userController.postLogin);
+router.post("/registeruser", userController.postRegisterUser);
 
 module.exports = router;

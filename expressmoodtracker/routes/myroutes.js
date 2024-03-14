@@ -28,7 +28,7 @@ router.post(
     .exists()
     .isLength({ min: 3 })
     .withMessage("Username must be at least 3 chars!"),
-  user_controller.postRegisterUser
+  user_controller.postRegisterUserv2
 );
 
 

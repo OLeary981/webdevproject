@@ -22,62 +22,7 @@ exports.getLogout = (req, res) => {
 };
 
 
-//OLD VERSION!! WORKS WITHOUT API
-// exports.postLoginBcrypt = (req, res) => {
-//   const { isLoggedIn } = req.session;
-//   const errors = validationResult(req);  
-//   if (!errors.isEmpty()) {
-//     return res.status(422).render("login", { error: errors.array()[0].msg });
-//   }
-
-//   const { username, userpass } = req.body;
-//   const vals = [username, userpass];
-  
-
-//   const checkuserSQL = `SELECT * FROM user_details WHERE user_details.username = ? `;
-
-//   conn.query(checkuserSQL, vals, (err, rows) => {
-//     if (err) {
-//       console.error(err);
-//       return res.status(500).send("Error checking username"); 
-//     }
-//     if (rows.length === 0) {
-//       return res.redirect("/login?error=User not found");
-//     };
-    
-//     const hashedPassword = rows[0].user_password;
-//     bcrypt.compare(userpass, hashedPassword, (err, result) => {
-//       if (err) {
-//         console.error(err);
-//         return res.status(500).send("Error comparing passwords");
-//       }
-//       if (result) {
-//         const session = req.session;
-//         session.isLoggedIn = true;
-//         session.user_ID = rows[0].user_ID;
-//         session.first_name = rows[0].first_name;
-//         const {user_ID} = req.session
-//         console.log(`postLogin: session: ${session}`);
-//         console.log(`user number: ${session.user_ID}`);
-
-//         var orig_route = session.route;
-//         console.log(`postLogin: orig_route: ${orig_route}`);
-//         if (!orig_route) {
-//           orig_route = "/allsnapshots", {user_ID};
-//         }
-//         return res.redirect(orig_route);
-//       } else {
-//         return res.render("login", {
-//           currentPage: "/login",
-//           error: "Incorrect password",
-//           isLoggedIn,
-//         });
-//       }
-//     });
-//   });
-// };
-
-//works for successful logins
+//API attached, tested and working for successful and unsuccessful
 exports.postLoginBcrypt = async (req, res) => {
   const { isLoggedIn } = req.session;
   const errors = validationResult(req);  
@@ -94,7 +39,7 @@ exports.postLoginBcrypt = async (req, res) => {
   console.log(vals)
   
 
-  const endpoint = `http://localhost:3002/userlogin/`;
+  const endpoint = `http://localhost:3002/userdetails/`;
 
   await axios
   .post(endpoint, vals, { validateStatus: (status) => { return status < 500} })
@@ -149,25 +94,25 @@ exports.postLoginBcrypt = async (req, res) => {
 
 
 
-
-
-
-
-    
-   
-  
-
-
-
-
-
-
-
-
-
-exports.postRegisterUser = async (req, res) => {
+exports.postRegisterUserv2 = async (req, res) => {
   const { username, password, firstname, lastname, email } = req.body;
-  console.log(req.body);
+  // Hash password
+  const hashedPassword = await bcrypt.hash(password, 10);
+
+
+  const vals = {
+    username: username,
+    password: hashedPassword, 
+    firstname: firstname,
+    lastname: lastname,
+    email: email
+  };
+  console.log(vals);
+
+  const checkUserVals = {
+    username: username
+  };
+
   const errors = validationResult(req);
   console.log(errors.array());
   if (!errors.isEmpty()) {
@@ -176,42 +121,31 @@ exports.postRegisterUser = async (req, res) => {
 
   try {
     // Check if the username already exists in the database
-    const checkUserQuery = "SELECT * FROM user_details WHERE username = ?";
-    conn.query(checkUserQuery, [username], (err, rows) => {
-      if (err) {
-        console.error(err);
-        return res.status(500).send("Error checking username");
-      }
+    const checkUserEndpoint = `http://localhost:3002/userdetails`;
 
-      if (rows.length > 0) {
-        // Username already exists
-        return res.redirect(
-            "/register?error=Username taken choose another or login"
-        );
-      }
+    const response = await axios.put(checkUserEndpoint, checkUserVals);
+    console.log(response.data);
 
-      // Hash password
-      bcrypt.hash(password, 10, (err, hash) => {
-        if (err) {
-          console.error(err);
-          return res.status(500).send("Error hashing password");
-        }
-
-        // Insert user into database
-        const insertSQL =
-          "INSERT INTO user_details (username, user_password, first_name, last_name, email_address) VALUES (?, ?, ?, ?, ?)";
-        conn.query(insertSQL, [username, hash, firstname, lastname, email], (error, result) => {
-          if (error) {
-            console.error(error);
-            return res.status(500).send("Error registering user");
-          }
-          res.redirect("/login");
-        });
-      });
-    });
+    const status = response.status;
+    if (status === 200) {
+      // Username already exists
+      return res.redirect("/register?error=Username taken choose another or login");
+    }
   } catch (error) {
-    console.error(error);
-    return res.status(500).send("Error registering user");
+    console.log(`Error making API request: ${error}`);
   }
-};
 
+  
+    
+
+    const insertUserEndpoint = `http://localhost:3002/registeruser/`;
+
+    try {
+      const response = await axios.post(insertUserEndpoint, vals);
+      res.redirect("/login");
+    } catch (error) {
+      console.error(error);
+      return res.status(500).send("Error registering user");
+    }
+ 
+};

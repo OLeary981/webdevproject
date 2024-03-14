@@ -1,19 +1,19 @@
-const express = require('express');
-const controller = require('./../controllers/apicontrollerv2');
+const express = require("express");
+const snapshotController = require("../controllers/apisnapshotcontroller");
+const userController = require("../controllers/apiusercontroller");
 
 const router = express.Router();
 
+router.get("/triggers", snapshotController.getTriggers); //used by add snapshot
+router.get("/snapshots/:id", snapshotController.getUserSnapshots); //used by overview
+router.get("/singlesnapshot/:id/:user_ID", snapshotController.getSingleSnapshot); //used for single snapshot view
+router.get( "/editsinglesnapshot/:id/:user_ID", snapshotController.getEditSingleSnapshotv2); //used in app
+router.delete("/deletesinglesnapshot/:id/:user_ID", snapshotController.deleteSnapshot);
+router.post("/newsnapshot", snapshotController.postAddSnapshot);
+router.put("/editsnapshot/:id", snapshotController.updateSnapshot);
 
-router.get('/triggers', controller.getTriggers); //used by add snapshot
-router.get('/snapshots/:id', controller.getUserSnapshots); //used by overview
-router.get('/singlesnapshot/:id/:user_ID', controller.getSingleSnapshot); //used for single snapshot view
-//router.get('/chosentriggers/:id', controller.getChosenTriggers); //not currently in use.
-router.get('/editsinglesnapshot/:id/:user_ID', controller.getEditSingleSnapshotv2); //used in app for edit snapshot
 
-router.delete('/deletesinglesnapshot/:id/:user_ID', controller.deleteSnapshot);
-router.post('/newsnapshot', controller.postAddSnapshot);
-router.put('/editsnapshot/:id', controller.updateSnapshot);
-
+router.post("/userlogin", userController.postLogin);
 
 
 module.exports = router;

@@ -196,23 +196,30 @@ axios
 };
 
 
-       
+//working has API
 exports.postDeleteSnapshot = (req, res) => { 
 
-  const { id: snapshot_ID } = req.params;
-  const { user_ID } = req.session;
-  const deleteSnapshotSQL = `DELETE FROM snapshot WHERE snapshot_ID = ? AND user_ID = ?`;
+    const { id: snapshot_ID } = req.params;
+    const { user_ID } = req.session;
+    const vals = {snapshot_ID, user_ID};
+    const endpoint = `http://localhost:3002/deletesinglesnapshot/${snapshot_ID}/${user_ID}`;
 
-  conn.query(deleteSnapshotSQL, [snapshot_ID, user_ID], (err, rows) => {
-    if (err) {
-      throw err;
-    } else {
-      console.log(rows);
-      res.redirect("/allsnapshots");
-    }
-  });
+    axios
+        .delete(endpoint, { validateStatus: (status) => { return status < 500 } })
+        .then((response) => {
+            const status = response.status;
+            if (status === 200) {
+                res.redirect('/editfav');
+            } else {
+                console.log(response.status);
+                console.log(response.data);
+                res.redirect('/allsnapshots');
+            }
+        })
+        .catch((error) => {
+            console.log(`Error making API request: ${error}`);
+        });
 };
-
 
 exports.postEditSnapshot = (req, res) => {
   // Extract slider levels and notes from request body

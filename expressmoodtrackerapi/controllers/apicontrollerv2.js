@@ -53,43 +53,7 @@ exports.getUserSnapshots = (req, res) => {
   });
 };
 
-//works for compatable pairs
-// exports.getSingleSnapshot = (req, res) => {
-//         const { id, user_ID } = req.params;
-//         const selectUserSnapshotsSQL = `SELECT * FROM snapshot WHERE snapshot_id = ? AND user_id = ?`;
-//         const selectChosenTriggersSQL = `
-//                                         SELECT t.trigger_name 
-//                                         FROM snapshot_trigger st 
-//                                         JOIN \`trigger\` t ON st.trigger_ID = t.trigger_ID 
-//                                         WHERE st.snapshot_ID = ?`;
-//         conn.query(selectUserSnapshotsSQL, [id, user_ID], (err, rows) => {
-//           if (err) {
-//             res.status(500);
-//             res.json({
-//               status: "failure",
-//               message: err,
-//             });
-//           } else if (rows.length > 0) {
-//             conn.query(selectChosenTriggersSQL, [id], (triggerErr, triggers) => {
-//               if (triggerErr) {
-//                 res.status(500);
-//                 res.json({
-//                   status: "failure - but got this far",
-//                   message: triggerErr,
-//                 });
-//               } else {
-//                 res.status(200);
-//                 res.json({
-//                   status: "success",
-//                   message: `Snapshot id ${id}, returned with ${triggers.length} triggers`,
-//                   result: rows,
-//                   triggers: triggers
-//                 });
-//               }
-//             });
-//           }
-//         });
-//       };  
+
                 
 exports.getSingleSnapshot = (req, res) => {
   const { id, user_ID } = req.params;
@@ -221,60 +185,7 @@ exports.getEditSingleSnapshotv2 = (req, res) => {
         }
     });
 };
-//working in postman
-// exports.postAddSnapshot = (req, res) => {    
-//   const vals = { snapshot, selectedTriggers } = req.body;
-//   const insertSnapshotSQL = `INSERT INTO snapshot (enjoyment_level, surprise_level, contempt_level, sadness_level, fear_level, disgust_level, anger_level, user_id, timestamp, notes) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
-//   const identifyTriggerSQL = "SELECT trigger_ID FROM `trigger` WHERE trigger_name IN (?)";    
-//   const insertSnapshotTriggerSQL = `INSERT INTO snapshot_trigger (snapshot_ID, trigger_ID) VALUES (?, ?)`;
-//   // Start a transaction
-//   conn.beginTransaction(err => {
-//       if (err) {
-//           res.status(500).json({ error: 'Failed to start transaction' });
-//           return;
-//       }    
-//       // Execute SQL queries within the transaction
-//       conn.query(insertSnapshotSQL, [snapshot.enjoyment_level, snapshot.surprise_level, snapshot.contempt_level, snapshot.sadness_level, snapshot.fear_level, snapshot.disgust_level, snapshot.anger_level, snapshot.user_id, snapshot.timestamp, snapshot.notes], (err, snapshotResult) => {
-//           if (err) {
-//               return conn.rollback(() => {
-//                   res.status(500).json({ error: 'Error inserting snapshot', message: err.message });
-//               });
-//           }
-//           const snapshot_ID = snapshotResult.insertId;
-//           console.log(snapshot_ID)
-//           conn.query(identifyTriggerSQL, [selectedTriggers], (err, triggerResults) => {
-//               if (err) {
-//                   return conn.rollback(() => {
-//                       res.status(500).json({ error: 'Error searching for trigger names', message: err.message });
-//                   });
-//               }
-//               console.log(triggerResults) 
-             
-//                   triggerResults.forEach((row) => {
-//                       conn.query(
-//                           insertSnapshotTriggerSQL,
-//                           [snapshot_ID, row.trigger_ID],
-//                           (err, result) => {
-//                               // If all queries executed successfully, commit the transaction
-//                               conn.commit(err => {
-//                                   if (err) {
-//                                       return conn.rollback(() => {
-//                                           res.status(500).json({ error: 'Error committing transaction', message: err.message });
-//                                       });
-//                                   }                
-//                                   // Transaction successfully committed
-//                                   res.status(200).json({ message: 'Transaction successfully completed' });
-//                               });
-//                           });
-//                   });
-//               });
-//           });
-//       });
- 
-// };
 
-
-//DON't go above here//// ALLL CODE ABOVE HERE WORKS!
 
 exports.postAddSnapshot = (req, res) => {    
   const vals = { snapshot, selectedTriggers } = req.body;
@@ -327,4 +238,40 @@ exports.postAddSnapshot = (req, res) => {
           });
       });
  
+};
+
+
+//DON't go above here//// ALLL CODE ABOVE HERE WORKS!
+
+exports.postDeleteSnapshot = (req, res) => {
+  const { id, user_ID } = req.params;
+  
+  const deleteSnapshotTriggersSQL = `DELETE  FROM snapshot_trigger WHERE snapshot_id = ?`;
+  const deleteSnapshotSQL = `DELETE FROM snapshot WHERE snapshot_ID = ? AND user_ID = ?`;
+
+  conn.query(deleteSnapshotTriggersSQL, [id], (err, rows) => {
+    if (err) {
+      res.status(500);
+      res.json({
+        status: "failure",
+        message: err,
+      });
+    } else {
+      conn.query(deleteSnapshotSQL, [id, user_ID], (err, rows) => { 
+        if (err) {
+          res.status(500);
+          res.json({
+            status: "failure",
+            message: err,
+          });
+        } else {
+          res.status(200);
+          res.json({
+            status: "success",
+            message: `Snapshot id ${id}, deleted`, 
+          });
+        }
+      });
+    }
+  });
 };

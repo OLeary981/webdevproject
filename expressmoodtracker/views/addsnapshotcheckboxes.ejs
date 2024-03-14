@@ -29,13 +29,13 @@
           <h1 class="sub-title">Add a Snapshot</h1>
           <form id="snapshot-form" action="/newsnapshot" method="POST">
             <% const sliders = [
-              { label: 'Enjoyment', id: 'enjoyment' },
-              { label: 'Surprise', id: 'surprise' },
-              { label: 'Contempt', id: 'contempt' },
-              { label: 'Sadness', id: 'sadness' },
-              { label: 'Fear', id: 'fear' },
-              { label: 'Disgust', id: 'disgust' },
-              { label: 'Anger', id: 'anger' }
+              { label: 'Enjoyment', id: 'enjoyment_level' },
+              { label: 'Surprise', id: 'surprise_level' },
+              { label: 'Contempt', id: 'contempt_level' },
+              { label: 'Sadness', id: 'sadness_level' },
+              { label: 'Fear', id: 'fear_level' },
+              { label: 'Disgust', id: 'disgust_level' },
+              { label: 'Anger', id: 'anger_level' }
             ];
             sliders.forEach(slider => { %>
               <div class="field">

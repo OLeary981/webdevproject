@@ -221,7 +221,61 @@ exports.getEditSingleSnapshotv2 = (req, res) => {
         }
     });
 };
-//working
+//working in postman
+// exports.postAddSnapshot = (req, res) => {    
+//   const vals = { snapshot, selectedTriggers } = req.body;
+//   const insertSnapshotSQL = `INSERT INTO snapshot (enjoyment_level, surprise_level, contempt_level, sadness_level, fear_level, disgust_level, anger_level, user_id, timestamp, notes) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+//   const identifyTriggerSQL = "SELECT trigger_ID FROM `trigger` WHERE trigger_name IN (?)";    
+//   const insertSnapshotTriggerSQL = `INSERT INTO snapshot_trigger (snapshot_ID, trigger_ID) VALUES (?, ?)`;
+//   // Start a transaction
+//   conn.beginTransaction(err => {
+//       if (err) {
+//           res.status(500).json({ error: 'Failed to start transaction' });
+//           return;
+//       }    
+//       // Execute SQL queries within the transaction
+//       conn.query(insertSnapshotSQL, [snapshot.enjoyment_level, snapshot.surprise_level, snapshot.contempt_level, snapshot.sadness_level, snapshot.fear_level, snapshot.disgust_level, snapshot.anger_level, snapshot.user_id, snapshot.timestamp, snapshot.notes], (err, snapshotResult) => {
+//           if (err) {
+//               return conn.rollback(() => {
+//                   res.status(500).json({ error: 'Error inserting snapshot', message: err.message });
+//               });
+//           }
+//           const snapshot_ID = snapshotResult.insertId;
+//           console.log(snapshot_ID)
+//           conn.query(identifyTriggerSQL, [selectedTriggers], (err, triggerResults) => {
+//               if (err) {
+//                   return conn.rollback(() => {
+//                       res.status(500).json({ error: 'Error searching for trigger names', message: err.message });
+//                   });
+//               }
+//               console.log(triggerResults) 
+             
+//                   triggerResults.forEach((row) => {
+//                       conn.query(
+//                           insertSnapshotTriggerSQL,
+//                           [snapshot_ID, row.trigger_ID],
+//                           (err, result) => {
+//                               // If all queries executed successfully, commit the transaction
+//                               conn.commit(err => {
+//                                   if (err) {
+//                                       return conn.rollback(() => {
+//                                           res.status(500).json({ error: 'Error committing transaction', message: err.message });
+//                                       });
+//                                   }                
+//                                   // Transaction successfully committed
+//                                   res.status(200).json({ message: 'Transaction successfully completed' });
+//                               });
+//                           });
+//                   });
+//               });
+//           });
+//       });
+ 
+// };
+
+
+//DON't go above here//// ALLL CODE ABOVE HERE WORKS!
+
 exports.postAddSnapshot = (req, res) => {    
   const vals = { snapshot, selectedTriggers } = req.body;
   const insertSnapshotSQL = `INSERT INTO snapshot (enjoyment_level, surprise_level, contempt_level, sadness_level, fear_level, disgust_level, anger_level, user_id, timestamp, notes) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
@@ -256,23 +310,21 @@ exports.postAddSnapshot = (req, res) => {
                           [snapshot_ID, row.trigger_ID],
                           (err, result) => {
                               // If all queries executed successfully, commit the transaction
-                              conn.commit(err => {
-                                  if (err) {
-                                      return conn.rollback(() => {
-                                          res.status(500).json({ error: 'Error committing transaction', message: err.message });
-                                      });
-                                  }                
-                                  // Transaction successfully committed
-                                  res.status(200).json({ message: 'Transaction successfully completed' });
-                              });
+                              
                           });
+                          
+                        });
+                        conn.commit(err => {
+                          if (err) {
+                              return conn.rollback(() => {
+                                  res.status(500).json({ error: 'Error committing transaction', message: err.message });
+                              });
+                          }                
+                          // Transaction successfully committed
+                          res.status(200).json({ message: 'Transaction successfully completed', snapshot_ID });
                   });
               });
           });
       });
  
 };
-
-
-////DON't go above here//// ALLL CODE ABOVE HERE WORKS!
-

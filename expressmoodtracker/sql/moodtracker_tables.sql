@@ -33,7 +33,7 @@ CREATE TABLE `snapshot` (
     FOREIGN KEY (user_id) REFERENCES user_details (user_id)
 );
 INSERT INTO `snapshot` (`snapshot_ID`, `enjoyment_level`, `surprise_level`, `contempt_level`, `sadness_level`, `fear_level`, `disgust_level`, `anger_level`, `user_id`, `timestamp`, `notes`) VALUES
-(52, 6, 1, 1, 1, 2, 1, 1, 1, '2023-07-01 06:00:00', 'Enjoyed a morning walk in the park with friends.'),
+(52, 6, 1, 1, 1, 2, 1, 1, 1, '2023-07-01 06:00:00', 'First ever snapshot, feeling good about this! Enjoyed a morning walk in the park with friends.'),
 (53, 7, 1, 0, 2, 3, 1, 1, 1, '2023-07-03 14:00:00', 'Had a successful presentation at work.'),
 (54, 5, 1, 0, 6, 4, 1, 1, 1, '2023-07-05 10:00:00', 'Feeling a bit down due to family issues.'),
 (55, 8, 1, 2, 2, 2, 1, 1, 1, '2023-07-06 18:00:00', 'Spent a lovely evening with friends.'),
